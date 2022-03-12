@@ -1,13 +1,22 @@
 var express = require('express');
-var router = express.Router();
-var loginRouter = require('./login');
 var app = express();
+// var router = express.Router();
+// var loginRouter = require('./login');
 
-app.use('/login', loginRouter);
+// app.use('/login', loginRouter);
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+// /* GET home page. */
+// router.get('/', function(req, res, next) {
+//   res.render('index', { title: 'Express' });
+// });
 
-module.exports = router;
+// module.exports = router;
+
+app.use(express.json())
+
+app.use('/api/user', require('./user'))
+
+app.listen(3306, () => { 
+  console.log('Listening on port 3306')
+})
+
