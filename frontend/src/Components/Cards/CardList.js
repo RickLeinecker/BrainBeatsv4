@@ -24,5 +24,20 @@ export const CardList = [
         artist: 'First Last',
         time: 'mm:ss',
     },
+    {
+        title: 'Sixth song',
+        artist: 'First Last',
+        time: 'mm:ss',
+    },
+    {
+        title: 'Seventh song',
+        artist: 'First Last',
+        time: 'mm:ss',
+    },
+    {
+        title: 'Eighth song',
+        artist: 'First Last',
+        time: 'mm:ss',
+    },
 
 ]
