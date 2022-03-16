@@ -1,10 +1,8 @@
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
-const { ToggleButtonGroup } = require("react-bootstrap");
 const { user, post } = new PrismaClient();
 
 router.get('/:userId', async (req, res) => {
-
     const { userId } = req.params
 
     let posts = await post.findMany({
@@ -18,7 +16,6 @@ router.get('/:userId', async (req, res) => {
             user: true,
         }
     });
-
     res.send(posts);
 })
 
@@ -45,7 +42,20 @@ router.post('/', async (req, res) => {
         }
     })
     res.json(newPost)
-
 });
+
+router.put('/', async (req, res) => {
+    const { title, content, name, email } = req.body
+
+    const upsertUser = await user.upsert({
+        where: {
+            title,
+            post: content,
+            name,
+            email
+        }
+    })
+    res.json(upsertUser)
+})
 
 module.exports = router
