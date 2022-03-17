@@ -44,18 +44,18 @@ router.post('/', async (req, res) => {
     res.json(newPost)
 });
 
-router.put('/', async (req, res) => {
-    const { title, content, name, email } = req.body
+// router.put('/', async (req, res) => {
+//     const { title, content, name, email } = req.body
 
-    const upsertUser = await user.upsert({
-        where: {
-            title,
-            post: content,
-            name,
-            email
-        }
-    })
-    res.json(upsertUser)
-})
+//     const upsertUser = await user.upsert({
+//         where: {
+//             title,
+//             post: content,
+//             name,
+//             email
+//         }
+//     })
+//     res.json(upsertUser)
+// })
 
 module.exports = router

@@ -8,18 +8,18 @@ router.get('/', async (req, res) => {
     {
         const users =  await user.findMany({
             select: {
+                id: true,
                 name: true,
                 email: true,
                 posts: true
             }
         });
-        res.json(users)
+        res.status(200).send({Object: users});
     } 
     catch(err) {
-        console.log(err)
-        res.status(500).json({msg: err})
+        res.status(500).send({msg: err})
     }
-})
+});
 
 //Get record by name or unique identifier
 router.post('/', async (req, res) => {
@@ -50,50 +50,58 @@ router.post('/', async (req, res) => {
                 email
             }
         });
-        
         res.json(newUser)
-    } catch(err){
+    } 
+    catch(err) {
         console.log(err)
         res.status(500).json({msg: err})
     }
-})
+});
 
 //Upsert to update info or create if none existent
-router.put('/', async (req, res) => {
+router.patch('/', async (req, res) => {
     try 
     {
-        const { name } = req.body;
-        const { email } = req.body;
         const upsertUser = await user.upsert({
-            where: {
-              name,
-              email
+            where: 
+            {
+              id: req.body.id
             },
-            update: {
-              name,
-              email
-            },
-            create: {
-              name,
-              email
-            },
+            data: {
+                name: req.body.name,
+                email: req.body.email
+            }
           })
           res.json(upsertUser)
-    } catch(err) {
-        console.log(err)
-        res.status(500).json({msg: err})
+          res.status(200).send({msg: "OK"});
+    } 
+    catch(err) {
+        res.status(500).send(err);
     }
-
-})
+});
 
 //Delete 
-// router.delete('/', async (req, res) => {
-//     const deleteUser = await user.delete({
-//         where: {
-//           email: 'Samuel@gmail.com',
-//           name: 'Samuel'
-//         },
-//       })
-// })
+router.delete('/', async (req, res) => {
+    try 
+    { 
+        const deleteUser = await user.delete({
+            where: 
+            {
+            // id: req.body.id,
+            name: req.body.name,
+            email: req.body.email
+            },
+            select: {
+                // id: true,
+                name: true,
+                email: true
+            }
+        })
+        res.status(200).send({msg: "Deleted OK"});
+    } 
+    catch(err) {
+        res.status(500).send(err);
+    }
+});
 
 module.exports = router
