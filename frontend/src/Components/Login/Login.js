@@ -1,19 +1,37 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 
 import './Login.css'
-export default class LoginCard extends Component {
-    render() {
+const LoginCard = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const onSubmit = (event) =>{
+        alert(email +" "+password);
+    }
+
         return (
             <div className="">
-                <form>
+                <form onSubmit={onSubmit}>
                     <h3>Sign In</h3>
                     <div className="form-group">
                         <label>Email address</label>
-                        <input type="email" className="form-control" placeholder="Enter email" />
+                        <input 
+                            type="email" 
+                            className="form-control" 
+                            placeholder="Enter email" 
+                            value={email} 
+                            onChange={(event) => setEmail(event.target.value)}
+                        />
                     </div>
                     <div className="form-group">
                         <label>Password</label>
-                        <input type="password" className="form-control" placeholder="Enter password" />
+                        <input 
+                            type="password" 
+                            className="form-control" 
+                            placeholder="Enter password" 
+                            value={password} 
+                            onChange={(event) => setPassword(event.target.value)}
+                        />
                     </div>
                     <div className="form-group">
                         <div className="custom-control custom-checkbox">
@@ -30,5 +48,6 @@ export default class LoginCard extends Component {
                 </form>
             </div>
         );
-    }
 }
+
+export default LoginCard;
