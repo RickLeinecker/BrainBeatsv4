@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 
 import Navbar from '../Components/Navbar/Navbar'
-import LoginBody from '../Components/User/Login'
+import Forgot from '../Components/User/Forgot'
 
 export default class Login extends Component {
     render() {
         return (
             <>
             <Navbar />
-            <LoginBody />
+            <Forgot />
             </>
         );
     }
