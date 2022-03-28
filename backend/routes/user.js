@@ -64,8 +64,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try 
     {
-        const { name } = req.body;
-        const { email } = req.body;
+        const { name, email } = req.body;
         const userExists = await prisma.user.findUnique({
         where: { name },
             select: { name: true }
