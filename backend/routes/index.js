@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+
 // var router = express.Router();
 // var loginRouter = require('./login');
 
@@ -20,4 +21,3 @@ app.use('/api/post', require('./post'))
 app.listen(3306, () => { 
   console.log('Listening on port 3306')
 })
-

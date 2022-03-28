@@ -1,12 +1,51 @@
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const { user } = new PrismaClient();
+var express = require('express');
+var app = express();
+const prisma = new PrismaClient();
+const swaggerJsDoc = require("swagger-jsdoc");
+const swaggerUI = require('swagger-ui-express')
+
+
+// // SwaggerHub documentation
+// // For more info: https://swagger.io/specification/#infoObject
+// const swaggerOptions = {
+//     swaggerDefinition: {
+//       info: {
+//         version: "1.0.0",
+//         title: "BrainBeatsAPI",
+//         description: "User Information",
+//         contact: {
+//           name: "Amazing Developer"
+//         },
+//         servers: ["http://localhost:3306"]
+//       }
+//     },
+//     // ['.routes/*.js']
+//     apis: ["./backend/routes/user.js"]
+//   };
+
+// const swaggerDocs = swaggerJsDoc(swaggerOptions);
+// app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+
+
+// // Routes
+// /**
+//  * @swagger
+//  * /users:
+//  *  get:
+//  *    description: Use to request all users information
+//  *    responses:
+//  *      '200':
+//  *        description: A successful response
+//  */
 
 //Get all records
 router.get('/', async (req, res) => {
     try 
     {
-        const users =  await user.findMany({
+        const users =  await prisma.user.findMany({
             select: {
                 id: true,
                 name: true,
@@ -27,24 +66,20 @@ router.post('/', async (req, res) => {
     {
         const { name } = req.body;
         const { email } = req.body;
-        const userExists = await user.findUnique({
-        where: { 
-                name 
-            },
-            select: {
-                name: true
-            }
+        const userExists = await prisma.user.findUnique({
+        where: { name },
+            select: { name: true }
         });
 
     // Check if user already exists in db
         if(userExists) {
             return res.status(400).json({
-                msg: "user already exists"
+                msg: "User already exists"
             })
         }
 
     //Create a single record
-        const newUser = await user.create({
+        const newUser = await prisma.user.create({
             data: {
                 name,
                 email
@@ -54,47 +89,38 @@ router.post('/', async (req, res) => {
     } 
     catch(err) {
         console.log(err)
-        res.status(500).json({msg: err})
+        res.status(500).json({msg: "Unable to create user"})
     }
 });
 
-//Upsert to update info or create if none existent
-router.patch('/', async (req, res) => {
+//Update user info 
+router.put('/', async (req, res) => {
     try 
     {
-        const upsertUser = await user.upsert({
-            where: 
-            {
-              id: req.body.id
-            },
+        const { id, name, email } = req.body
+        const updateUser = await prisma.user.update({
+            where: { id : Number(id)},
             data: {
-                name: req.body.name,
-                email: req.body.email
+                name: name,
+                email: email
             }
           })
-          res.json(upsertUser)
-          res.status(200).send({msg: "OK"});
+          res.status(200).send({msg: "Updated OK"});
     } 
     catch(err) {
         res.status(500).send(err);
     }
 });
 
-//Delete 
+//Delete user info by ID
 router.delete('/', async (req, res) => {
     try 
     { 
-        const deleteUser = await user.delete({
+        const id =  req.body.id
+        const deleteUser = await prisma.user.delete({
             where: 
             {
-            // id: req.body.id,
-            name: req.body.name,
-            email: req.body.email
-            },
-            select: {
-                // id: true,
-                name: true,
-                email: true
+                id: Number(id)
             }
         })
         res.status(200).send({msg: "Deleted OK"});

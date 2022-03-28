@@ -1,14 +1,14 @@
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const { user, post } = new PrismaClient();
+const prisma = new PrismaClient();
 
+//Get user post information
 router.get('/:userId', async (req, res) => {
     const { userId } = req.params
 
-    let posts = await post.findMany({
-        where: {
-            userId: parseInt(userId)
-        }, 
+    let posts = await prisma.post.findMany({
+        where: { userId: parseInt(userId) }, 
         select: {
             title: true,
             createdAt: true,
@@ -19,13 +19,13 @@ router.get('/:userId', async (req, res) => {
     res.send(posts);
 })
 
+
+//Post at user account
 router.post('/', async (req, res) => {
     const { title, content, userId } =  req.body
 
-    const userExists = await user.findUnique({
-        where: {
-            id: userId
-        }
+    const userExists = await prisma.user.findUnique({
+        where: { id: userId }
     });
 
     if(!userExists) {
@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
         })
     }
 
-    const newPost = await post.create({
+    const newPost = await prisma.post.create({
         data: {
             title,
             post: content, 
@@ -43,19 +43,5 @@ router.post('/', async (req, res) => {
     })
     res.json(newPost)
 });
-
-// router.put('/', async (req, res) => {
-//     const { title, content, name, email } = req.body
-
-//     const upsertUser = await user.upsert({
-//         where: {
-//             title,
-//             post: content,
-//             name,
-//             email
-//         }
-//     })
-//     res.json(upsertUser)
-// })
 
 module.exports = router
