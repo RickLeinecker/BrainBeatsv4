@@ -3,17 +3,17 @@ const { PrismaClient } = require("@prisma/client");
 const { user, post } = new PrismaClient();
 const prisma = new PrismaClient();
 
-//Get user post information
+//Get user post information by ID
 router.get('/:userId', async (req, res) => {
     const { userId } = req.params
 
     let posts = await prisma.post.findMany({
         where: { userId: parseInt(userId) }, 
         select: {
+            user: true,
             title: true,
             createdAt: true,
-            post: true,
-            user: true,
+            post: true
         }
     });
     res.send(posts);
@@ -28,7 +28,7 @@ router.post('/', async (req, res) => {
         where: { id: userId }
     });
 
-    if(!userExists) {
+    if(userExists) {
         return res.status(400).json({
             msg: "User not found"
         })
@@ -36,9 +36,9 @@ router.post('/', async (req, res) => {
 
     const newPost = await prisma.post.create({
         data: {
+            userId,
             title,
-            post: content, 
-            userId
+            post: content
         }
     })
     res.json(newPost)

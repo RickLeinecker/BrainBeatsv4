@@ -1,47 +1,13 @@
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 const { user } = new PrismaClient();
 var express = require('express');
 var app = express();
-const prisma = new PrismaClient();
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUI = require('swagger-ui-express')
 
-
-// // SwaggerHub documentation
-// // For more info: https://swagger.io/specification/#infoObject
-// const swaggerOptions = {
-//     swaggerDefinition: {
-//       info: {
-//         version: "1.0.0",
-//         title: "BrainBeatsAPI",
-//         description: "User Information",
-//         contact: {
-//           name: "Amazing Developer"
-//         },
-//         servers: ["http://localhost:3306"]
-//       }
-//     },
-//     // ['.routes/*.js']
-//     apis: ["./backend/routes/user.js"]
-//   };
-
-// const swaggerDocs = swaggerJsDoc(swaggerOptions);
-// app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
-
-
-// // Routes
-// /**
-//  * @swagger
-//  * /users:
-//  *  get:
-//  *    description: Use to request all users information
-//  *    responses:
-//  *      '200':
-//  *        description: A successful response
-//  */
-
-//Get all records
+//Get all users with all records
 router.get('/', async (req, res) => {
     try 
     {
@@ -54,6 +20,32 @@ router.get('/', async (req, res) => {
             }
         });
         res.status(200).send({Object: users});
+    } 
+    catch(err) {
+        res.status(500).send({msg: err})
+    }
+});
+
+// Get user by ID
+router.get('/findUser', async (req, res) => {
+    try 
+    {
+        const id =  req.body.id
+        const findUserbyID =  await prisma.user.findUnique({
+            where: { id: parseInt(id) },
+            select: {
+                name: true,
+                email: true
+            }
+        });
+
+        if(!findUserbyID) {
+            return res.status(400).json({
+                msg: "User ID does not exist"
+            })
+        }
+        
+        res.status(200).send({Object: findUserbyID});
     } 
     catch(err) {
         res.status(500).send({msg: err})
