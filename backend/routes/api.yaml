@@ -5,7 +5,7 @@ info:
   version: 1.0
   contact:
     email: seskirjeh@knights.ucf.edu
-  liscence:
+  licenses:
     name: Apache 2.0
     url: "http://www.apache.org/liscences/LIS"
   servers:
@@ -13,31 +13,14 @@ info:
     description: Local server
     -url: http://xyz.com/
     description: Original URL
-schemes: [https,http]
+schemes: [http]
 
 
 paths:
-#Returns a User
-  /user:
+#Returns an array of users
+  /api/user:
     get:
-      summary: Returns a list of users.
-      description: People Who are already registered
-      responses:
-        200:    # status code
-          description: Successful Response
-          schema: 
-            type: object
-            properties:
-              id:
-                type: integer
-              name:
-                type: string
-
-#Returns an array of Users
-  /user:
-    get:
-      summary: Returns a list of users.
-      description: People Who are already registered
+      summary: Returns a list of all users.
       responses:
         200:    # status code
           description: Successul Response
@@ -53,53 +36,33 @@ paths:
 
 
 #Get Request with path id
-  /user/{userId}:
+  /api/user/findUser:
     get:
-      summary: Returns a user by ID.
-      description: Returns the Specific User
+      tags:
+        - Users
+      summary: Search a user by ID
+      operationId: searchUser
+      description: Search a user in the database
+      consumes: 
+      - application/json
+      produces:
+      - application/json
       parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type : integer
-            format: int64
-      responses: 
-        '200':
+      - in: formData
+        name: searchUser
+        description: userID
+        schema:
+          $ref: '#/definitions/searchUser'
+      responses:
+        200:
           description: OK
-          schema:
-            type: object
+        404:
+          description: URL Not Found
 
-#Post json/body & Body required
-  # /create:
-  #   post:
-  #     summary: Adds a new user
-  #     produces:
-  #       - application/json
-  #     consumes:
-  #       - application/json
-  #     parameters:
-  #       - in: body
-  #         name: body
-  #         schema:
-  #           type: object
-  #           required:
-  #             - name
-  #             - id
-  #           properties:
-  #             id:
-  #               type: integer
-  #             name:
-  #               type: string
-  #     responses:
-  #       '200':
-  #         description: OK
-
-
-#Defining Body Reference
-  /create:
+# Post json/body & Body required
+  /api/user:
     post:
-      summary: Creates new user
+      summary: Adds a new user
       produces:
         - application/json
       consumes:
@@ -107,8 +70,8 @@ paths:
       parameters:
         - in: body
           name: body
-          schema:
-           $ref: "#/components/schemas/user"
+      schema:
+          $ref: '#/definitions/UpdateContact'
       responses:
         '200':
           description: OK
@@ -147,37 +110,23 @@ paths:
           description: Internal Server Error
 
 
-#In Headers
-  /string:
-    get:
-      summary: Checks if the server is alive
-      parameters:
-        - in: header
-          name: X-Request-ID
-          schema:
-            type: string
-            format: uuid
-          required: true
-      responses:
-        200:
-          description: Successful Response
-        400:
-          description: User Error
-        500:
-          description: Internal Server Error
+definitions:
+  searchUser:
+    required: 
+    - id
+    properties:
+      id:
+        type: integer
+        example: 1
 
-components:
-  schemas:
-    User:
-      type: object
-      required:
-        - id
-        - name
-        - email
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        name:
-          type: string
+
+# components:
+#   schemas:
+#     searchUser:
+#       type: object
+#       properties:
+#         id:
+#           type: integer
+#           format: int64
+#       required:
+#         - id

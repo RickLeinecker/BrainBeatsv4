@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 //Get user post information by ID
 router.get('/:userId', async (req, res) => {
     const { userId } = req.params
-
     let posts = await prisma.post.findMany({
         where: { userId: parseInt(userId) }, 
         select: {
@@ -21,14 +20,13 @@ router.get('/:userId', async (req, res) => {
 
 
 //Post at user account
-router.post('/', async (req, res) => {
+router.post('/createPost', async (req, res) => {
     const { title, content, userId } =  req.body
-
     const userExists = await prisma.user.findUnique({
-        where: { id: userId }
+        where: { id: userId  },
     });
 
-    if(userExists) {
+    if(!userExists) {
         return res.status(400).json({
             msg: "User not found"
         })
