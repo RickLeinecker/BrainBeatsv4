@@ -4,13 +4,8 @@ const prisma = new PrismaClient();
 const { user } = new PrismaClient();
 var express = require('express');
 var app = express();
-<<<<<<< HEAD
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUI = require('swagger-ui-express');
-=======
-// const swaggerJsDoc = require("swagger-jsdoc");
-// const swaggerUI = require('swagger-ui-express')
->>>>>>> 7f9ff383c96bb9a63cfcd9f1529e47e3cda999a3
 
 //Get all users with all records
 router.get('/', async (req, res) => {
