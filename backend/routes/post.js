@@ -42,4 +42,4 @@ router.post('/createPost', async (req, res) => {
     res.json(newPost)
 });
 
-module.exports = router
+module.exports = router;

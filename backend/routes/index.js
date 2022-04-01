@@ -7,23 +7,23 @@ const YAML = require("yamljs");
 const PORT = process.env.PORT || 3306;
 
 
-// var router = express.Router();
-// var loginRouter = require('./login');
+var router = express.Router();
+var loginRouter = require('./login');
 
-// app.use('/login', loginRouter);
+app.use('/login', loginRouter);
 
 // /* GET home page. */
-// router.get('/', function(req, res, next) {
-//   res.render('index', { title: 'Express' });
-// });
+router.get('/', function(req, res, next) {
+  res.render('index', { title: 'Express' });
+});
 
-// module.exports = router;
+module.exports = router;
 
 
 // SwaggerHub documentation
 // For more info: https://swagger.io/specification/#infoObject
 // To test API's, use the SwaggerHub UI by going to http://localhost:3306/api-docs/ after running the application with "nodemon ./backend/routes/index"
-const swaggerJSDocs = YAML.load("./backend/routes/api.yaml");
+const swaggerJSDocs = YAML.load("./routes/api.yaml");
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJSDocs));
 
 

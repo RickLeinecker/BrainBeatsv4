@@ -4,8 +4,8 @@ const prisma = new PrismaClient();
 const { user } = new PrismaClient();
 var express = require('express');
 var app = express();
-const swaggerJsDoc = require("swagger-jsdoc");
-const swaggerUI = require('swagger-ui-express')
+// const swaggerJsDoc = require("swagger-jsdoc");
+// const swaggerUI = require('swagger-ui-express')
 
 //Get all users with all records
 router.get('/', async (req, res) => {
@@ -119,4 +119,4 @@ router.delete('/', async (req, res) => {
     }
 });
 
-module.exports = router
+module.exports = router;
