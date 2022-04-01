@@ -36,8 +36,8 @@ paths:
 
 
 #Get Request with path id
-  /api/user/findUser:
-    get:
+  /api/user/findUser/Swagger:
+    post:
       tags:
         - Users
       summary: Search a user by ID
@@ -48,7 +48,7 @@ paths:
       produces:
       - application/json
       parameters:
-      - in: formData
+      - in: body
         name: searchUser
         description: userID
         schema:

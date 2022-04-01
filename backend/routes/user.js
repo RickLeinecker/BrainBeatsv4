@@ -58,6 +58,32 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Get user by ID SWAGGERHUB
+router.post('/findUser/Swagger', async (req, res) => {
+    try 
+    {
+        const id =  req.body.id
+        const findUserbyIDSwagger =  await prisma.user.findUnique({
+            where: { id: parseInt(id) },
+            select: {
+                name: true,
+                email: true
+            }
+        });
+
+        if(!findUserbyIDSwagger) {
+            return res.status(400).json({
+                msg: "User ID does not exist"
+            })
+        }
+        
+        res.status(200).send({Object: findUserbyIDSwagger});
+    } 
+    catch(err) {
+        res.status(500).send({msg: err})
+    }
+});
+
 //Update user info 
 router.put('/', async (req, res) => {
     try 
