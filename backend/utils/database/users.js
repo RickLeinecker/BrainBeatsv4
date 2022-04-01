@@ -1,7 +1,7 @@
 import {PrismaClient} from '@prisma/client'
 import bcrypt from 'bcryptjs';
 
-/// Get the user by using email or id (Feel free to change this)
+// Get the user by using email or id (Feel free to change this)
 async function getUser({email, id} = {}) {
     const prisma = new PrismaClient();
     // TODO: Add more stuff here
