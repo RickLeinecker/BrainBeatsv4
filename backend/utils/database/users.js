@@ -18,3 +18,6 @@ async function updateUser({email, id} = {}, data) {
     const prisma = new PrismaClient();
     // TODO: Add more stuff here
 }
+
+
+export {getUser, updateUser, createUser};
