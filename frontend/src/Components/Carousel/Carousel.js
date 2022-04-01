@@ -4,12 +4,12 @@ import { Carousel } from "react-responsive-carousel";
 export default () => (
     <div style={{display: 'flex', justifyContent: 'center'}}>
         <Carousel autoPlay width={700} showThumbs={false} showIndicators={false}
-        infiniteLoop={true} dynamicHeight={true}>
+        infiniteLoop={true} dynamicHeight={true} interval={10000}>
             <div>
-                <img alt="" src="https://blog.greendot.org/wp-content/uploads/sites/13/2021/09/placeholder-image.png" />
+                <img alt="" src="http://via.placeholder.com/2048x1024" />
             </div>
             <div>
-                <img alt="" src="https://blog.greendot.org/wp-content/uploads/sites/13/2021/09/placeholder-image.png" />
+                <img alt="" src="http://via.placeholder.com/2048x1024" />
             </div>
             <div>
                 <img alt="" src="http://via.placeholder.com/2048x1024" />

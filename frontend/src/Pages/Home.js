@@ -12,12 +12,7 @@ const Home = () => {
     <br />
     <Carousel />
     <br />
-    <h1>Your Song</h1>
-    <br />
-    <Cards />
-    <br />
-    <h1>Favorite Song</h1>
-    <br />
+    <h1>Top Songs</h1>
     <Cards />
     </>
   )
