@@ -5,7 +5,7 @@ const { user } = new PrismaClient();
 var express = require('express');
 var app = express();
 const swaggerJsDoc = require("swagger-jsdoc");
-const swaggerUI = require('swagger-ui-express')
+const swaggerUI = require('swagger-ui-express');
 
 //Get all users with all records
 router.get('/', async (req, res) => {
@@ -20,32 +20,6 @@ router.get('/', async (req, res) => {
             }
         });
         res.status(200).send({Object: users});
-    } 
-    catch(err) {
-        res.status(500).send({msg: err})
-    }
-});
-
-// Get user by ID
-router.get('/findUser', async (req, res) => {
-    try 
-    {
-        const id =  req.body.id
-        const findUserbyID =  await prisma.user.findUnique({
-            where: { id: parseInt(id) },
-            select: {
-                name: true,
-                email: true
-            }
-        });
-
-        if(!findUserbyID) {
-            return res.status(400).json({
-                msg: "User ID does not exist"
-            })
-        }
-        
-        res.status(200).send({Object: findUserbyID});
     } 
     catch(err) {
         res.status(500).send({msg: err})
@@ -118,5 +92,7 @@ router.delete('/', async (req, res) => {
         res.status(500).send(err);
     }
 });
+
+app.use('/api/users/findUser', require('./users/findUser'));
 
 module.exports = router
