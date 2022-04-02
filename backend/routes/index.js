@@ -17,9 +17,6 @@ router.get('/', function(req, res, next) {
    res.render('index', { title: 'Express' });
  });
 
-module.exports = router;
-
-
 // SwaggerHub documentation
 // For more info: https://swagger.io/specification/#infoObject
 // To test API's, use the SwaggerHub UI by going to http://localhost:3306/api-docs/ after running the application with "nodemon ./backend/routes/index"
@@ -29,7 +26,14 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJSDocs));
 
 
 app.use(express.json())
-app.use('/api/user', require('./user'))
-app.use('/api/post', require('./post'))
+app.use('/api/users', require('./users/findUser')); 
+app.use('/api/users', require('./users/getAllUsers'));
+app.use('/api/users', require('./users/getUserPosts'));
+app.use('/api/users', require('./users/updateUser'));
+app.use('/api/users', require('./users/deleteUser'));
+app.use('/api/users', require('./users/createPost'));
+app.use('/api/users', require('./users/getPostsByID'));
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+module.exports = router;

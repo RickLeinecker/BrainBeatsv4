@@ -17,8 +17,9 @@ schemes: [http]
 
 
 paths:
+
 #Returns an array of users
-  /api/user:
+  /api/users:
     get:
       summary: Returns a list of all users.
       responses:
@@ -36,7 +37,7 @@ paths:
 
 
 #Get Request with path id
-  /api/user/findUser/Swagger:
+  /api/users/findUser:
     post:
       tags:
         - Users
@@ -118,15 +119,3 @@ definitions:
       id:
         type: integer
         example: 1
-
-
-# components:
-#   schemas:
-#     searchUser:
-#       type: object
-#       properties:
-#         id:
-#           type: integer
-#           format: int64
-#       required:
-#         - id

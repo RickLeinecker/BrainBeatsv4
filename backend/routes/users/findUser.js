@@ -1,14 +1,9 @@
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const { user } = new PrismaClient();
-var express = require('express');
-var app = express();
-const swaggerJsDoc = require("swagger-jsdoc");
-const swaggerUI = require('swagger-ui-express');
 
 // Get user by ID
-router.get('/findUser', async (req, res) => {
+router.post('/findUser', async (req, res) => {
     try 
     {
         const id =  req.body.id
@@ -32,3 +27,5 @@ router.get('/findUser', async (req, res) => {
         res.status(500).send({msg: err})
     }
 });
+
+module.exports = router;
