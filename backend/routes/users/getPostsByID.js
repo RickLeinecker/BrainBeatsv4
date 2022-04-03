@@ -1,12 +1,14 @@
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
-const { user, post } = new PrismaClient();
 const prisma = new PrismaClient();
+const { user, post } = new PrismaClient();
 
 //Get user post information by ID
-router.get('/:userId', async (req, res) => {
-    const { userId } = req.params
-    let posts = await prisma.post.findMany({
+router.get('/getPostsByID', async (req, res) => {
+    try 
+    {
+    const userId =  req.body.userId
+    const posts = await prisma.post.findMany({
         where: { userId: parseInt(userId) }, 
         select: {
             user: true,
@@ -15,7 +17,11 @@ router.get('/:userId', async (req, res) => {
             post: true
         }
     });
-    res.send(posts);
+    res.status(200).send({Object: posts});
+    } 
+    catch(err) {
+        res.status(500).send(err);
+    }
 })
 
 module.exports = router;

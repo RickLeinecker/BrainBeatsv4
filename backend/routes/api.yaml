@@ -19,8 +19,10 @@ schemes: [http]
 paths:
 
 #Returns an array of users
-  /api/users:
+  /api/users/getAllUsers:
     get:
+      tags:
+        - Users
       summary: Returns a list of all users.
       responses:
         200:    # status code
@@ -36,7 +38,7 @@ paths:
                   type: string
 
 
-#Get Request with path id
+# Find user with userId
   /api/users/findUser:
     post:
       tags:
@@ -60,25 +62,127 @@ paths:
         404:
           description: URL Not Found
 
-# Post json/body & Body required
-  /api/user:
+# Create a new user
+  /api/users/createUser:
     post:
-      summary: Adds a new user
+      tags:
+        - Users
+      summary: Create a user
+      operationId: createUser
+      description: Create a new user in the database
+      consumes: 
+      - application/json
       produces:
-        - application/json
-      consumes:
-        - application/json
+      - application/json
       parameters:
-        - in: body
-          name: body
-      schema:
-          $ref: '#/definitions/UpdateContact'
+      - in: body
+        name: Create
+        description: User Creation
+        schema:
+          $ref: '#/definitions/createUser'
       responses:
-        '200':
+        200:
           description: OK
+        404:
+          description: URL Not Found
 
+# Update user information
+  /api/users/updateUser:
+    put:
+      tags:
+        - Users
+      summary: Update user
+      operationId: updateUser
+      description: Update user information
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Update
+        description: UpdateUser
+        schema:
+          $ref: '#/definitions/updateUser'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
 
-#File Upload Multiform Data
+# Delete a user by ID
+  /api/users/deleteUser:
+    delete:
+      tags:
+        - Users
+      summary: Delete user by ID
+      operationId: deleteUser
+      description: Delete a user from the database
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: User Deletion by ID
+        description: Delete
+        schema:
+          $ref: '#/definitions/deleteUser'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
+# Create user posts
+  /api/users/createPost:
+    post:
+      tags:
+        - Users
+      summary: Create post at user profile
+      operationId: createPost
+      description: Create a post for a user by ID
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: User Deletion by ID
+        description: User Creation
+        schema:
+          $ref: '#/definitions/createPost'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
+# Get user posts by userId
+  /api/users/getPostsByID:
+    post:
+      tags:
+        - Users
+      summary: Search a users posts by ID
+      operationId: getPostsByID
+      description: Get posts from user profile
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Posts
+        description: Get user posts by ID
+        schema:
+          $ref: '#/definitions/getPostsByID'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
+# File Upload Multiform Data
   /upload:
     post:
       tags:
@@ -92,16 +196,16 @@ paths:
           type: file
           required: true
           description: A file to upload.
-        # - in: formData
-        #   name: app
-        #   type: string
-        #   required: true
-        #   description: Name of the model.
-        # - in: formData
-        #   name: id
-        #   type: string
-        #   required: true
-        #   description: Some random Id.
+        - in: formData
+          name: app
+          type: string
+          required: true
+          description: Name of the model.
+        - in: formData
+          name: id
+          type: string
+          required: true
+          description: Some random Id.
       responses:
         200:
           description: Successful Response
@@ -112,6 +216,7 @@ paths:
 
 
 definitions:
+
   searchUser:
     required: 
     - id
@@ -119,3 +224,64 @@ definitions:
       id:
         type: integer
         example: 1
+
+  createUser:
+    required: 
+    - name
+    - email
+    properties:
+      name:
+        type: string
+        example: John Doe
+      email:
+        type: string
+        example: JohnDoe@gmail.com
+
+  deleteUser:
+    required: 
+    - id
+    properties:
+      id:
+        type: integer
+        example: 1
+
+  createPost:
+    required: 
+    - userId
+    - title
+    - content
+    properties:
+      userId:
+        type: integer
+        example: 1
+      title:
+        type: string
+        example: Post title
+      content:
+        type: string
+        example: Post description
+
+  getPostsByID:
+    required: 
+    - userId
+    properties:
+      userId:
+        type: integer
+        example: 1
+
+  updateUser:
+    required: 
+    - id
+    - name
+    - email
+    properties:
+      id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: John Doe
+      email:
+        type: string
+        example: JohnDoe@gmail.com
+    

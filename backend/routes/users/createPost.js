@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
-const { user, post } = new PrismaClient();
 const prisma = new PrismaClient();
+const { user, post } = new PrismaClient();
 
 //Post at user account
 router.post('/createPost', async (req, res) => {

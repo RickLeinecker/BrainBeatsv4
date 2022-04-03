@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { user, post } = new PrismaClient();
 
-//Get record by name or unique identifier
-router.post('/', async (req, res) => {
+// Create a new user
+router.post('/createUser', async (req, res) => {
     try 
     {
         const { name, email } = req.body;

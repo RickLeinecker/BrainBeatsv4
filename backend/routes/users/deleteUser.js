@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { user, post } = new PrismaClient();
 
 //Delete user info by ID
-router.delete('/', async (req, res) => {
+router.delete('/deleteUser', async (req, res) => {
     try 
     { 
         const id =  req.body.id

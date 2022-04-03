@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { user, post } = new PrismaClient();
 
 //Get all users with all records
-router.get('/', async (req, res) => {
+router.get('/getAllUsers', async (req, res) => {
     try 
     {
         const users =  await prisma.user.findMany({

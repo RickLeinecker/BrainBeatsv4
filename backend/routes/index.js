@@ -28,7 +28,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJSDocs));
 app.use(express.json())
 app.use('/api/users', require('./users/findUser')); 
 app.use('/api/users', require('./users/getAllUsers'));
-app.use('/api/users', require('./users/getUserPosts'));
+app.use('/api/users', require('./users/createUser'));
 app.use('/api/users', require('./users/updateUser'));
 app.use('/api/users', require('./users/deleteUser'));
 app.use('/api/users', require('./users/createPost'));
