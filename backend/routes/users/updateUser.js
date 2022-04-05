@@ -7,12 +7,13 @@ const { user, post } = new PrismaClient();
 router.put('/updateUser', async (req, res) => {
     try 
     {
-        const { id, name, email } = req.body
+        const { id, name, email, username } = req.body
         const updateUser = await prisma.user.update({
-            where: { id : Number(id)},
+            where: { id : id},
             data: {
                 name: name,
-                email: email
+                email: email,
+                username: username
             }
           })
           res.status(200).send({msg: "Updated OK"});

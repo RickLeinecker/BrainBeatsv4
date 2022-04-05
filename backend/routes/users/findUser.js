@@ -9,10 +9,11 @@ router.post('/findUser', async (req, res) => {
     {
         const id =  req.body.id
         const findUserbyID =  await prisma.user.findUnique({
-            where: { id: parseInt(id) },
+            where: { id: id },
             select: {
                 name: true,
-                email: true
+                email: true,
+                username: true,
             }
         });
 
