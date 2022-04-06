@@ -3,9 +3,16 @@ var app = express();
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUI = require('swagger-ui-express')
 const YAML = require("yamljs");
+const cors = require("cors")
 
 const PORT = process.env.PORT || 3306;
 
+const corsOptions ={
+    origin: '*', 
+    credentials: true,
+    optionSuccessStatus: 200
+}
+app.use(cors(corsOptions));
 
 var router = express.Router();
 var loginRouter = require('./login');
