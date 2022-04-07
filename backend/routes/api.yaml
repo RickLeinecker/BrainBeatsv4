@@ -9,7 +9,7 @@ info:
     name: Apache 2.0
     url: "http://www.apache.org/liscences/LIS"
   servers:
-    -url: http://localhost:3306
+    -url: http://localhost:2000
     description: Local server
     -url: http://xyz.com/
     description: Original URL

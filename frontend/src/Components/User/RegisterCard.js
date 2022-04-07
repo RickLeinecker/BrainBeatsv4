@@ -1,7 +1,7 @@
 import React, { Component, useState } from "react";
 import './Login.css'
 import axios from "axios";
-const bp =  'http://localhost:3306/api/users/createUser';
+const bp =  'http://localhost:2000/api/users/createUser';
 
 
 const RegisterCard = () => {
@@ -13,7 +13,7 @@ const RegisterCard = () => {
 
     const onSubmit = (event) => {
         //event.preventDefault();
-        alert(name + " " + email + " " + username + " " + password);
+        //alert(name + " " + email + " " + username + " " + password);
 
         const newUser = {
             "name": name,
@@ -26,7 +26,7 @@ const RegisterCard = () => {
 
         let config = {
             method: "post",
-            url: bp.buildPath("createUser"),
+            url: bp,
             headers:{
                 "Content-Type": "application/json"
             },
@@ -38,7 +38,7 @@ const RegisterCard = () => {
             console.log(res.data);
         })
         .catch(function (err){
-            console.log(err.response.data);
+            console.error(err.response.data);
         })
     }
 
