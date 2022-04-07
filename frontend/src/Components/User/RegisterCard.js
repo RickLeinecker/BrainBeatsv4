@@ -1,40 +1,42 @@
 import React, { Component, useState } from "react";
 import './Login.css'
 import axios from "axios";
-const bp =  'http://localhost:2000/api/users/createUser';
+
 
 
 const RegisterCard = () => {
+    //useStates to get required fields
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername ] = useState("");
     const [name, setName ] = useState("");
     
 
-    const onSubmit = (event) => {
-        //event.preventDefault();
-        //alert(name + " " + email + " " + username + " " + password);
+    const createAccount = (event) => {
+        //allows form to work without problems on start and submit
+        event.preventDefault();
 
+        //starting path for API endpoint
+        const path = require('../Path');
+        
+        //put all input fields into a json object
         const newUser = {
             "name": name,
             "email": email,
             "username": username,
             "password": password
         };
-
-        let newUserJson = JSON.stringify(newUser);
-
+        //create a json to pass into axois
         let config = {
             method: "post",
-            url: bp,
+            url: path.buildPath('/users/createUser'),
             headers:{
                 "Content-Type": "application/json"
             },
-            data: newUserJson
+            data: newUser
         };
-        // console.log(config.data)
+        //axios command
         axios(config).then(function (res){
-            alert("in axios");
             console.log(res.data);
         })
         .catch(function (err){
@@ -47,17 +49,18 @@ const RegisterCard = () => {
         const regexp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if(regexp.test(email))
         {
-            onSubmit();
+            createAccount();
         }
         else
         {
             alert("FALSE EMAIL");
         }
     }
+    
 
     return (
         <div className="">
-            <div>
+            <form onSubmit={createAccount}>
                 <h3>Sign Up</h3>
                 <div className="form-group">
                     <label>Full name</label>
@@ -99,9 +102,8 @@ const RegisterCard = () => {
                         onChange={(event) => setPassword(event.target.value)}
                     />
                 </div>
-
-                <button type="submit" className="btn btn-primary btn-block" onClick={validateEmail}>Submit</button>
-            </div>
+                <button type="submit" className="btn btn-primary btn-block col-md-4">Submit</button>
+            </form>
         </div>
     )
 }
