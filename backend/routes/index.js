@@ -30,8 +30,6 @@ router.get('/', function(req, res, next) {
 const swaggerJSDocs = YAML.load("./routes/api.yaml");
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJSDocs));
 
-
-
 app.use(express.json())
 app.use('/api/users', require('./users/findUser')); 
 app.use('/api/users', require('./users/getAllUsers'));
@@ -40,6 +38,7 @@ app.use('/api/users', require('./users/updateUser'));
 app.use('/api/users', require('./users/deleteUser'));
 app.use('/api/users', require('./users/createPost'));
 app.use('/api/users', require('./users/getPostsByID'));
+app.use('/api/users', require('./users/sendVerificationEmail'));
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

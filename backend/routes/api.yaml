@@ -216,6 +216,31 @@ paths:
         404:
           description: URL Not Found
 
+# Send a verification email to a user
+  /api/users/sendVerificationEmail:
+    post:
+      tags:
+        - Users
+      summary: Send a user a verification email
+      operationId: sendVerificationEmail
+      description: Sends a user a verification email to their account's email address
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Email
+        required: true
+        type: string
+        schema:
+          $ref: '#/definitions/sendVerificationEmail'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
 # File Upload Multiform Data
   /upload:
     post:
@@ -342,4 +367,20 @@ definitions:
       password:
         type: string
         example: Secret_Password123
+
+  sendVerificationEmail:
+    required:
+    - email
+    - subject
+    - text
+    properties:
+      email:
+        type: string
+        example: JohnDoe@gmail.com
+      subject:
+        type: string
+        example: Verification Email Alert
+      text:
+        type: string
+        example: Sending you a message in an e-mail!
     

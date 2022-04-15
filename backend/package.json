@@ -20,6 +20,7 @@
     "morgan": "~1.9.1",
     "mysql-server": "^0.0.5",
     "mysql2": "^2.3.3",
+    "nodemailer": "^6.7.3",
     "prisma": "^3.11.1",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.3.0",
