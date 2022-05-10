@@ -4,13 +4,15 @@ import { Routes, Route, BrowserRouter as Router} from 'react-router-dom'
 
 import Home from './Pages/Home';
 import Login from './Pages/Login'
-import Record from './Pages/Recording'
+
+import Record from './Pages/Recording';
+
 
 function App() {
   return (
       <Router>
         <Routes>
-          <Route path='/' element={<Home />} />
+          <Route exact path='/' element={<Home />} />
           <Route path='/Login' element={<Login />} />
           <Route path='/Record' element={<Record />} />
         </Routes>
