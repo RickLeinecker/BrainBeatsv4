@@ -37,14 +37,13 @@ paths:
                 name:
                   type: string
 
-
 # Find user with userId
   /api/users/findUser:
     post:
       tags:
         - Users
       summary: Search a user by ID
-      operationId: searchUser
+      operationId: findUser
       description: Search a user in the database
       consumes: 
       - application/json
@@ -52,11 +51,13 @@ paths:
       - application/json
       parameters:
       - in: body
-        name: searchUser
+        name: findUser
         required: true
         description: userID
         schema:
-          $ref: '#/definitions/searchUser'
+          type: string
+          format: byte
+          $ref: '#/definitions/findUser'
       responses:
         200:
           description: OK
@@ -88,31 +89,26 @@ paths:
         404:
           description: URL Not Found
 
-  /api/users/authUser:
+  /api/users/checkLogin:
     post:
       tags:
       - Users
-      summary: Authenticates a user
+      summary: Checks if a user related to their password for login
       description: |
         Authenticates a user
       consumes:
-      - application/x-www-form-urlencoded
+      - application/json
       produces:
       - application/json
       parameters:
       - in: body
-        name: email
-        required: true
-        type: string
-      - in: body
-        name: password
-        type: string
+        name: checkLogin
         required: true
         schema:
-          $ref: '#/definitions/authUser'
+          $ref: '#/definitions/checkLogin'
       responses:
         200:
-          description: User authenticated successfully
+          description: User logged in successfully
         401:
           description: bad input parameter
 
@@ -180,9 +176,9 @@ paths:
       - application/json
       parameters:
       - in: body
-        name: User Deletion by ID
+        name: Create post
         required: true
-        description: User Creation
+        description: User Post
         schema:
           $ref: '#/definitions/createPost'
       responses:
@@ -303,11 +299,11 @@ definitions:
         type: string
         example: Post description
 
-  getPostsByID:
+  findUser:
     required: 
-    - userId
+    - id
     properties:
-      userId:
+      id:
         type: string
         example: 632961af-29ae-4c3a-8f3f-426763a4cf00
 
@@ -331,7 +327,7 @@ definitions:
         type: string
         example: JohnDoe96
   
-  authUser:
+  checkLogin:
     required: 
     - email
     - password
