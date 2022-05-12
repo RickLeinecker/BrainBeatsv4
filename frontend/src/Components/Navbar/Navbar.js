@@ -17,6 +17,11 @@ const Navbars = () => {
                             <Button> <a href='/Login'>Login</a></Button>
                         </Navbar.Text>
                     </Navbar.Collapse>
+                    <Navbar.Collapse className="justify-content-end">
+                        <Navbar.Text>
+                            <Button> <a href="/Test">Test</a></Button>
+                        </Navbar.Text>
+                    </Navbar.Collapse>
                 </Container>
             </Navbar>
         </>

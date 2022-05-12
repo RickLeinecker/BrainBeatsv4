@@ -7,7 +7,7 @@ const { user, post } = new PrismaClient();
 router.post('/createUser', async (req, res) => {
     try 
     {
-        const { name, email, username, password } = req.body;
+        const { firstName, lastName, email, username, password } = req.body;
         const userExists = await prisma.user.findUnique({
         where: { username },
             select: { username: true }
@@ -23,7 +23,8 @@ router.post('/createUser', async (req, res) => {
     //Create a single record
         const newUser = await prisma.user.create({
             data: {
-                name,
+                firstName,
+                lastName,
                 email,
                 username,
                 password: "hashedPassword",
@@ -31,7 +32,7 @@ router.post('/createUser', async (req, res) => {
             }
         });
         res.json(newUser)
-    } 
+    }
     catch(err) {
         console.log(err)
         res.status(500).json({msg: "Unable to create user"})

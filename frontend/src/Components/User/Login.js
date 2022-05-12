@@ -72,7 +72,7 @@ const Login = () => {
                     </div>
                 )}
 
-                {stage == 2 && (
+                {/* {stage == 2 && (
                     <div className="">
                         <form>
                             <h3>Verify Account</h3>
@@ -92,7 +92,7 @@ const Login = () => {
                         </form>
                     </div>
 
-                )}
+                )} */}
             </div>
         </div>
     );

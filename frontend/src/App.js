@@ -7,6 +7,7 @@ import Login from './Pages/Login'
 import Register from './Pages/Register'
 import Forgot from './Pages/Forgot'
 import Profile from './Pages/Profile';
+import Test from './Pages/Test';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path='/Register' element={<Register />} />
           <Route path='/Forgot' element={<Forgot />} />
           <Route path='/Profile' element={<Profile />} />
+          <Route path='/Test' element={<Test />} />
         </Routes>
       </Router>
   );
