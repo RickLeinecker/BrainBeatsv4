@@ -98,14 +98,19 @@ const Test = () => {
 
   return (
     <>
-    <h1>TEST</h1>
-    <hr />
+    <Navbar />
     <br />
+    <h1>Bluetooth Testing</h1>
+    <hr />
 
     <div id="buttons">
+      <p>Click connect and choose your Ganglion headset in the popup.</p>
       <button id="ganglion">Connect</button>
     </div>
-    <div id="graph"></div>
+    
+    <div id="graph">
+      <p>Graph of live EEG data:</p>
+    </div>
     </>
   )
 }
