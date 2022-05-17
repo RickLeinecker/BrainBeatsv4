@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import RecordButton from './RecordButton';
+import { Carousel } from "react-responsive-carousel";
 
 function Record() {
     //Set onLoad to link
@@ -24,30 +25,79 @@ function LinkThing(shown) {
 
     const [id, setId] = useState('');
     let correctLink = id.split('=');
-
+    let url = correctLink[1];
     if (shown.show) {
         return (
             <div>
                 <input placeholder='Youtube Link' onChange={(e) => setId(e.target.value)} /> <br />
-                <iframe
-                    width="853"
-                    height="480"
-                    src={`https://www.youtube.com/embed/${correctLink[1]}`}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    title="Embedded youtube"
-                />
+                <VidLink link={url} />
             </div>)
     }
     return <></>;
 }
 
+function VidLink(link) {
+
+    //https://www.youtube.com/watch?v=DSBBEDAGOTc
+    if (link.link != undefined) {
+        return (
+            <>
+
+                <iframe
+                    width="853"
+                    height="480"
+                    src={`https://www.youtube.com/embed/${link.link}`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    title="Embedded youtube"
+                />
+            </>
+        )
+    } else {
+        return (
+            <>
+                <div>Please provide a valid Link</div>
+            </>
+        )
+    }
+}
+
 function ScriptThing(shown) {
-    const [script, setScript] = useState();
+    const [script, setScript] = useState('');
+    let words = script.split(', ');
     if (shown.show) {
-        return <div>Script Stuff Here</div>
+        return <>
+        <br />
+            <input placeholder='Scripts' onChange={(e) => setScript(e.target.value)} /> <br />
+            <ValidScript scripts={words} />
+            </>
     }
     return <></>;
+}
+
+function ValidScript(scripts){
+    console.log(scripts);
+    let wordArray = scripts.scripts;
+    if(wordArray != ''){
+        return(
+            <>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Carousel autoPlay width={700} showThumbs={false} showIndicators={false}
+                    infiniteLoop={true} dynamicHeight={true} interval={1000}>
+                    {wordArray.map((word) => <div>{word}</div>)}
+                </Carousel>
+            </div>
+            </>
+        )
+        
+    }
+    else{
+        return(<>
+            <div>Please provide valid words</div>
+            </>)
+        
+    }
+
 }
 
 function Setting() {
@@ -63,10 +113,10 @@ function Setting() {
     return (
         <>
             <div style={st}>
-                <table style={{width: '100%', height: '100px' }}>
+                <table style={{ width: '100%', height: '100px' }}>
                     <tr>
-                        <td style={{ width: '25%',textAlign: 'center'}}>
-                            <div style={{color: 'white'}}>Key Signature</div>
+                        <td style={{ width: '25%', textAlign: 'center' }}>
+                            <div style={{ color: 'white' }}>Key Signature</div>
 
                             <select>
                                 <option>C</option>
@@ -81,20 +131,20 @@ function Setting() {
                                 <option>A</option>
                                 <option>B</option>
                             </select>
-                            <div style={{color: 'white'}}>Scale</div>
+                            <div style={{ color: 'white' }}>Scale</div>
                             <select>
                                 <option>Major</option>
                                 <option>Minor</option>
                             </select>
                         </td>
-                        <td style={{width: '22%', textAlign: 'left'}}>
-                            
+                        <td style={{ width: '22%', textAlign: 'left' }}>
+
                         </td>
                         <td>
                             <RecordButton />
                         </td>
-                        <td style={{width: '25%', textAlign: 'center'}}>
-                            <div style={{color: 'white'}}>Tempo</div>
+                        <td style={{ width: '25%', textAlign: 'center' }}>
+                            <div style={{ color: 'white' }}>Tempo</div>
                             <input type="text" defaultValue="120" />
                         </td>
                     </tr>
