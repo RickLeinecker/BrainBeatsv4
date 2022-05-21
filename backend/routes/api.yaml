@@ -52,11 +52,11 @@ paths:
       - application/json
       parameters:
       - in: body
-        name: searchUser
+        name: find user by ID
         required: true
         description: userID
         schema:
-          $ref: '#/definitions/searchUser'
+          $ref: '#/definitions/findUser'
       responses:
         200:
           description: OK
@@ -88,7 +88,7 @@ paths:
         404:
           description: URL Not Found
 
-  /api/users/authUser:
+  /api/users/loginUser:
     post:
       tags:
       - Users
@@ -101,15 +101,10 @@ paths:
       - application/json
       parameters:
       - in: body
-        name: email
-        required: true
-        type: string
-      - in: body
-        name: password
-        type: string
+        name: loginUser
         required: true
         schema:
-          $ref: '#/definitions/authUser'
+          $ref: '#/definitions/loginUser'
       responses:
         200:
           description: User authenticated successfully
@@ -180,7 +175,7 @@ paths:
       - application/json
       parameters:
       - in: body
-        name: User Deletion by ID
+        name: Create post 
         required: true
         description: User Creation
         schema:
@@ -248,10 +243,9 @@ paths:
         500:
           description: Internal Server Error
 
-
 definitions:
 
-  searchUser:
+  findUser:
     required: 
     - id
     properties:
@@ -261,14 +255,22 @@ definitions:
 
   createUser:
     required: 
-    - name
+    - firstName
+    - lastName
+    - dob
     - email
     - username
     - password
     properties:
-      name:
+      firstName:
         type: string
-        example: John Doe
+        example: John
+      lastName:
+        type: string
+        example: Doe
+      dob: 
+        type: date 
+        example: 1995-03-25
       email:
         type: string
         example: JohnDoe@gmail.com
@@ -279,13 +281,25 @@ definitions:
         type: string
         example: JohnDoePassword
 
-  deleteUser:
+  loginUser:
     required: 
+    - email
+    - password
+    properties:
+      email:
+        type: string
+        example: JohnDoe@gmail.com
+      password:
+        type: string
+        example: JohnDoePassword
+
+  deleteUser:
+    required:
     - id
     properties:
       id:
         type: string
-        example: 632961af-29ae-4c3a-8f3f-426763a4cf00
+        exmaple: 632961af-29ae-4c3a-8f3f-426763a4cf00
 
   createPost:
     required: 
@@ -314,32 +328,27 @@ definitions:
   updateUser:
     required: 
     - id
-    - name
+    - firstName
+    - lastName
     - email
     - username
     properties:
       id:
         type: string
         example: 632961af-29ae-4c3a-8f3f-426763a4cf00
-      name:
+      firstName:
         type: string
-        example: John Doe
+        example: John
+      lastName:
+        type: string
+        example: Doe
+      dob: 
+        type: date
+        exmaple: 1997-07-13T00:00:00.000Z
       email:
         type: string
         example: JohnDoe@gmail.com
       username:
         type: string
         example: JohnDoe96
-  
-  authUser:
-    required: 
-    - email
-    - password
-    properties:
-      email:
-        type: string
-        example: JohnDoe@gmail.com
-      password:
-        type: string
-        example: Secret_Password123
     

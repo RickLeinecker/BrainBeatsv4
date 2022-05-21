@@ -36,6 +36,7 @@ app.use(express.json())
 app.use('/api/users', require('./users/findUser')); 
 app.use('/api/users', require('./users/getAllUsers'));
 app.use('/api/users', require('./users/createUser'));
+app.use('/api/users', require('./users/loginUser')); 
 app.use('/api/users', require('./users/updateUser'));
 app.use('/api/users', require('./users/deleteUser'));
 app.use('/api/users', require('./users/createPost'));

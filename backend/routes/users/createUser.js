@@ -7,7 +7,7 @@ const { user, post } = new PrismaClient();
 router.post('/createUser', async (req, res) => {
     try 
     {
-        const { firstName, lastName, email, username, password } = req.body;
+        const { firstName, lastName, dob, email, username, password } = req.body;
         const userExists = await prisma.user.findUnique({
         where: { username },
             select: { username: true }
@@ -25,6 +25,7 @@ router.post('/createUser', async (req, res) => {
             data: {
                 firstName,
                 lastName,
+                dob: new Date(dob),
                 email,
                 username,
                 password: "hashedPassword",

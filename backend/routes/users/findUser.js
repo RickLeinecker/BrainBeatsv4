@@ -14,6 +14,7 @@ router.post('/findUser', async (req, res) => {
             select: {
                 firstName: true,
                 lastName: true,
+                dob: true,
                 email: true,
                 username: true,
             }
