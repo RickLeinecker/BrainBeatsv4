@@ -96,7 +96,7 @@ paths:
       description: |
         Authenticates a user
       consumes:
-      - application/x-www-form-urlencoded
+      - application/json
       produces:
       - application/json
       parameters:
