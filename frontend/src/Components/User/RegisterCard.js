@@ -9,7 +9,9 @@ const RegisterCard = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername ] = useState("");
-    const [name, setName ] = useState("");
+    const [firstName, setFirstName ] = useState("");
+    const [lastName, setLastName ] = useState("");
+    const [dob, setdob ] = useState("");
     
 
     const createAccount = (event) => {
@@ -21,7 +23,9 @@ const RegisterCard = () => {
         
         //put all input fields into a json object
         const newUser = {
-            "name": name,
+            "firstName": firstName,
+            "lastName": lastName,
+            "dob": dob + "T00:00:00.000Z",
             "email": email,
             "username": username,
             "password": password
@@ -63,13 +67,33 @@ const RegisterCard = () => {
             <form onSubmit={createAccount}>
                 <h3>Sign Up</h3>
                 <div className="form-group">
-                    <label>Full name</label>
+                    <label>First Name</label>
                     <input
                         type="text"
                         className="form-control"
-                        placeholder="Enter Name"
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
+                        placeholder="Enter first name"
+                        value={firstName}
+                        onChange={(event) => setFirstName(event.target.value)}
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Last Name</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter last name"
+                        value={lastName}
+                        onChange={(event) => setLastName(event.target.value)}
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Date of Birth</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter date of birth"
+                        value={dob}
+                        onChange={(event) => setdob(event.target.value)}
                     />
                 </div>
                 <div className="form-group">
