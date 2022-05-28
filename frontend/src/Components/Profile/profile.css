@@ -9,8 +9,14 @@ div{
     text-align: left;
     padding-bottom: 50px;
 }
+label{
+    padding-left: 5px;
+}
+.asterisk{
+    color: red;
+}
 .editCard .Title{
-    padding-left: 10px;
+    text-align: center;
 }
 .form-group {
     margin-bottom: 1rem;
@@ -25,6 +31,7 @@ div{
 }
 .col-md-3{
     padding-left: 25px;
+    padding-right: 25px;
 }
 .col-md-6{
     padding-left: 25px;
@@ -35,13 +42,13 @@ div{
     padding-right: 25px;
 }
 .pr-1, .px-1 {
-    padding-right: .25rem!important;
+    padding-right: 1.5em!important;
 }
 .pl-1, .px-1 {
-    padding-left: .25rem!important;
+    padding-left: 1.5em!important;
 }
 .pl-1, .px-1 {
-    padding-left: .25rem!important;
+    padding-left: 1.5em!important;
 }
 .form-control {
     border: 5px solid #e3e3e3;
@@ -90,4 +97,8 @@ img{
 }
 .userBody{
     padding: 10px;
+}
+.errMsg{
+    color: red;
+    text-align: center;
 }
