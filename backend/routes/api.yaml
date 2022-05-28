@@ -3,8 +3,6 @@ info:
   title: BrainBeatsWeb API 
   description: This is a BrainBeatsWeb API documentation form
   version: 1.0
-  contact:
-    email: seskirjeh@knights.ucf.edu
   licenses:
     name: Apache 2.0
     url: "http://www.apache.org/liscences/LIS"
@@ -92,7 +90,7 @@ paths:
     post:
       tags:
       - Users
-      summary: Authenticates a user
+      summary: User login
       description: |
         Authenticates a user
       consumes:
@@ -130,31 +128,6 @@ paths:
         description: UpdateUser
         schema:
           $ref: '#/definitions/updateUser'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
-
-# Delete a user by ID
-  /api/users/deleteUser:
-    delete:
-      tags:
-        - Users
-      summary: Delete user by ID
-      operationId: deleteUser
-      description: Delete a user from the database
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: User Deletion by ID
-        required: true
-        description: Delete
-        schema:
-          $ref: '#/definitions/deleteUser'
       responses:
         200:
           description: OK
@@ -210,6 +183,32 @@ paths:
           description: OK
         404:
           description: URL Not Found
+
+# Delete a user by ID
+  /api/users/deleteUser:
+    delete:
+      tags:
+        - Users
+      summary: Delete user by ID
+      operationId: deleteUser
+      description: Delete a user from the database
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: User Deletion by ID
+        required: true
+        description: Delete
+        schema:
+          $ref: '#/definitions/deleteUser'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
 
 # File Upload Multiform Data
   /upload:
@@ -293,14 +292,6 @@ definitions:
         type: string
         example: JohnDoePassword
 
-  deleteUser:
-    required:
-    - id
-    properties:
-      id:
-        type: string
-        exmaple: 632961af-29ae-4c3a-8f3f-426763a4cf00
-
   createPost:
     required: 
     - userId
@@ -324,6 +315,14 @@ definitions:
       userId:
         type: string
         example: 632961af-29ae-4c3a-8f3f-426763a4cf00
+
+  deleteUser:
+    required:
+    - id
+    properties:
+      id:
+        type: string
+        exmaple: 632961af-29ae-4c3a-8f3f-426763a4cf00
 
   updateUser:
     required: 

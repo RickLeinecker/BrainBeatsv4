@@ -33,7 +33,7 @@ const Test = () => {
         console.log(
         `Data from Electrode ${contentHintToIndex[contentHint]} (${contentHint})`,
         data,
-        timestamps
+        // timestamps
         );
     };
     
@@ -91,23 +91,32 @@ const Test = () => {
     
     const buttons = document.querySelector("#buttons");
     
-    console.log(buttons);
+    // console.log(buttons);
     
     for (let button of buttons.querySelectorAll("button"))
         button.onclick = () => startAcquisition(button.id);})
 
+    function disconnectDevice() {
+      if (this.device.gatt.connected) {
+        this.device.gatt.disconnect();
+        console.log('"' + this.device.name + '" bluetooth device disconnected');
+      }
+    }
+    
   return (
     <>
     <Navbar />
     <br />
     <h1>Bluetooth Testing</h1>
     <hr />
-
+    
     <div id="buttons">
       <p>Click connect and choose your Ganglion headset in the popup.</p>
       <button id="ganglion">Connect</button>
     </div>
-    
+
+    <button onclick="disconnectDevice()">Disconnect</button>
+
     <div id="graph">
       <p>Graph of live EEG data:</p>
     </div>

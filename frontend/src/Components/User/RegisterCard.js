@@ -25,7 +25,7 @@ const RegisterCard = () => {
         const newUser = {
             "firstName": firstName,
             "lastName": lastName,
-            "dob": dob + "T00:00:00.000Z",
+            "dob": dob,
             "email": email,
             "username": username,
             "password": password
@@ -39,6 +39,7 @@ const RegisterCard = () => {
             },
             data: newUser
         };
+        validateEmail();
         //axios command
         axios(config).then(function (res){
             console.log(res.data);
@@ -104,6 +105,7 @@ const RegisterCard = () => {
                         placeholder="Enter email"
                         value={email}
                         onChange={(event) => setEmail(event.target.value)}
+                        
                     />
                 </div>
                 <div className="form-group">
