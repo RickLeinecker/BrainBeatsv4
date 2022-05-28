@@ -29,10 +29,12 @@ router.post('/createUser', async (req, res) => {
             return res.status(400).json({
                 msg: "Email or username already exists. Please try again."
             })
-        }
+        } else {
 
     //Encrypt user password
     encryptedPassword = await bcrypt.hash(password, 10);
+
+    
 
     //Create a single record
         const newUser = await prisma.user.create({
@@ -59,11 +61,14 @@ router.post('/createUser', async (req, res) => {
     newUser.token = token;
 
     res.json(newUser)
+        }
     } 
+
     catch(err) {
         console.log(err)
         res.status(500).json({msg: "Unable to create user"})
     }
+
 });
 
 module.exports = router;

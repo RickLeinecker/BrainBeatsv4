@@ -113,9 +113,9 @@ const Test = () => {
     <div id="buttons">
       <p>Click connect and choose your Ganglion headset in the popup.</p>
       <button id="ganglion">Connect</button>
+      <button onClick={disconnectDevice}>Disconnect</button>
     </div>
 
-    <button onclick="disconnectDevice()">Disconnect</button>
 
     <div id="graph">
       <p>Graph of live EEG data:</p>

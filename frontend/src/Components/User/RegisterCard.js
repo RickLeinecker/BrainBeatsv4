@@ -25,7 +25,7 @@ const RegisterCard = () => {
         const newUser = {
             "firstName": firstName,
             "lastName": lastName,
-            "dob": dob,
+            "dob": dob + "T00:00:00.000Z",
             "email": email,
             "username": username,
             "password": password
@@ -39,7 +39,7 @@ const RegisterCard = () => {
             },
             data: newUser
         };
-        validateEmail();
+        // validateEmail();
         //axios command
         axios(config).then(function (res){
             console.log(res.data);
