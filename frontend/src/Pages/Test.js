@@ -18,6 +18,10 @@ var firstTickSkipped = 0;
 const MAX_AMPLITUDE = 0.000001;
 const MIN_AMPLITUDE = -0.000001;
 const MIN_MAX_AMPLITUDE_DIFFERENCE = 0.000002;
+const AMPLITUDE_OFFSET = 0.000001;
+const NUM_NOTES = 7;
+
+var incrementArr = new Array(NUM_NOTES);
 
 var maxFP1 = 0, minFP1 = 0;
 var maxFP2 = 0, minFP2 = 0;
@@ -77,69 +81,58 @@ const Test = () => {
         //console.log(i, arr);
         timeseries.draw(); // FORCE DRAW: Update happens too fast for UI
 
+        InitIncrementArr();
+
         // This entire function needs to run 4 times total, once for each channel, every tick.
         if (channelCounter < 3)
           channelCounter++;
         else if (channelCounter >= 3)
         {
           if (firstTickSkipped == 0)
-          {
             firstTickSkipped = 1;
-          }
           else
-          {
             waitForNextTick("whole");
-          }
           channelCounter = 0;
         }
 
         console.log(track.contentHint + ": " + data);
 
-        if (track.contentHint.localeCompare("C3") == 0)
-        {
-          if (data > maxC3) 
-            maxC3 = data;
-          if (data < minC3)
-            minC3 = data;
-        }
-        else if (track.contentHint.localeCompare("C4") == 0)
-        {
-          if (data > maxC4) 
-            maxC4 = data;
-          if (data < minC4)
-            minC4 = data;
-        }
-        else if (track.contentHint.localeCompare("FP1") == 0)
-        {
-          if (data > maxFP1) 
-            maxFP1 = data;
-          if (data < minFP1)
-            minFP1 = data;
-        }
-        else if (track.contentHint.localeCompare("FP2") == 0)
-        {
-          if (data > maxFP2) 
-            maxFP2 = data;
-          if (data < minFP2)
-            minFP2 = data;
-        }
+        NoteDeclaration(data[0]);
 
-        //console.log("MAXES: C3=" + maxC3 * 1000000 + ", C4=" + maxC4 * 1000000 + ", FP1=" + maxFP1 * 1000000 + ", FP2=" + maxFP2 * 1000000);
-        //console.log("MINS:  C3=" + minC3 * 1000000 + ", C4=" + minC4 * 1000000 + ", FP1=" + minFP1 * 1000000 + ", FP2=" + minFP2 * 1000000);
-
-        //If the data reading is negative
-        // if (data < 0)
+        // if (track.contentHint.localeCompare("C3") == 0)
         // {
-        //   if (data >= MIN_MAX_AMPLITUDE_DIFFERENCE / 21)
+        //   if (data > maxC3) 
+        //     maxC3 = data;
+        //   if (data < minC3)
+        //     minC3 = data;
         // }
-        // // If the data reading is positive
-        // if (data >= 0)
+        // else if (track.contentHint.localeCompare("C4") == 0)
         // {
-
+        //   if (data > maxC4) 
+        //     maxC4 = data;
+        //   if (data < minC4)
+        //     minC4 = data;
         // }
+        // else if (track.contentHint.localeCompare("FP1") == 0)
+        // {
+        //   if (data > maxFP1) 
+        //     maxFP1 = data;
+        //   if (data < minFP1)
+        //     minFP1 = data;
+        // }
+        // else if (track.contentHint.localeCompare("FP2") == 0)
+        // {
+        //   if (data > maxFP2) 
+        //     maxFP2 = data;
+        //   if (data < minFP2)
+        //     minFP2 = data;
+        // }
+
+        // console.log("MAXES: C3=" + maxC3 * 1000000 + ", C4=" + maxC4 * 1000000 + ", FP1=" + maxFP1 * 1000000 + ", FP2=" + maxFP2 * 1000000);
+        // console.log("MINS:  C3=" + minC3 * 1000000 + ", C4=" + minC4 * 1000000 + ", FP1=" + minFP1 * 1000000 + ", FP2=" + minFP2 * 1000000);
         
-        // Run ondata Callback
-        // ondata(data, timestamps, track.contentHint);
+        //Run ondata Callback
+        //ondata(data, timestamps, track.contentHint);
         });
     };
     
@@ -239,10 +232,47 @@ function waitForNextTick(noteType)
 
     if (math >= targetTime)
     {
-      console.log("----- It's been " + targetTime + "ms (" + BPM + "bpm), done. -----");
+      console.log("----- It's been " + targetTime + "ms (@" + BPM + "bpm), done. -----");
       break;
     }
   }
 }
+
+function InitIncrementArr()
+{
+  var incrementAmount = MIN_MAX_AMPLITUDE_DIFFERENCE / NUM_NOTES;
+
+  incrementArr[0] = 0;
+  incrementArr[NUM_NOTES - 1] = MAX_AMPLITUDE + AMPLITUDE_OFFSET;
+
+  for (var i = 1; i < NUM_NOTES - 1; i++)
+  {
+    incrementArr[i] = incrementAmount * i + AMPLITUDE_OFFSET;
+  }
+
+  //console.log("Shitter: " + incrementArr);
+}
+
+function NoteDeclaration(ampValue)
+{
+  ampValue += AMPLITUDE_OFFSET;
+  console.log ("ampValue: " + ampValue);
+
+  if (ampValue >= incrementArr[0] && ampValue <= incrementArr[1])
+    console.log("Note 1");
+  else if (ampValue >= incrementArr[1] && ampValue <= incrementArr[2])
+    console.log("Note 2");
+  else if (ampValue >= incrementArr[2] && ampValue <= incrementArr[3])
+    console.log("Note 3");
+  else if (ampValue >= incrementArr[3] && ampValue <= incrementArr[4])
+    console.log("Note 4");
+  else if (ampValue >= incrementArr[4] && ampValue <= incrementArr[5])
+    console.log("Note 5");
+  else if (ampValue >= incrementArr[5] && ampValue <= incrementArr[6])
+    console.log("Note 6");
+  else
+    console.log("Note 7 [Broken]");
+}
+
 
 export default Test
