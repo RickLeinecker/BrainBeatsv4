@@ -1,0 +1,386 @@
+swagger: "2.0"
+info:
+  title: BrainBeatsWeb API 
+  description: This is a BrainBeatsWeb API documentation form
+  version: 1.0
+  contact:
+    email: seskirjeh@knights.ucf.edu
+  licenses:
+    name: Apache 2.0
+    url: "http://www.apache.org/liscences/LIS"
+  servers:
+    -url: http://localhost:2000
+    description: Local server
+    -url: http://xyz.com/
+    description: Original URL
+schemes: [http]
+
+
+paths:
+
+#Returns an array of users
+  /api/users/getAllUsers:
+    get:
+      tags:
+        - Users
+      summary: Returns a list of all users.
+      responses:
+        200:    # status code
+          description: Successul Response
+          schema: 
+            type: array
+            items: 
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+
+
+# Find user with userId
+  /api/users/findUser:
+    post:
+      tags:
+        - Users
+      summary: Search a user by ID
+      operationId: searchUser
+      description: Search a user in the database
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: searchUser
+        required: true
+        description: userID
+        schema:
+          $ref: '#/definitions/searchUser'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
+# Create a new user
+  /api/users/createUser:
+    post:
+      tags:
+        - Users
+      summary: Create a user
+      operationId: createUser
+      description: Create a new user in the database
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Create
+        required: true
+        description: User Creation
+        schema:
+          $ref: '#/definitions/createUser'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
+  /api/users/authUser:
+    post:
+      tags:
+      - Users
+      summary: Authenticates a user
+      description: |
+        Authenticates a user
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: email
+        required: true
+        type: string
+      - in: body
+        name: password
+        type: string
+        required: true
+        schema:
+          $ref: '#/definitions/authUser'
+      responses:
+        200:
+          description: User authenticated successfully
+        401:
+          description: bad input parameter
+
+# Update user information
+  /api/users/updateUser:
+    put:
+      tags:
+        - Users
+      summary: Update user
+      operationId: updateUser
+      description: Update user information
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Update
+        required: true
+        description: UpdateUser
+        schema:
+          $ref: '#/definitions/updateUser'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
+# Delete a user by ID
+  /api/users/deleteUser:
+    delete:
+      tags:
+        - Users
+      summary: Delete user by ID
+      operationId: deleteUser
+      description: Delete a user from the database
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: User Deletion by ID
+        required: true
+        description: Delete
+        schema:
+          $ref: '#/definitions/deleteUser'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
+# Create user posts
+  /api/users/createPost:
+    post:
+      tags:
+        - Users
+      summary: Create post at user profile
+      operationId: createPost
+      description: Create a post for a user by ID
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: User Deletion by ID
+        required: true
+        description: User Creation
+        schema:
+          $ref: '#/definitions/createPost'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
+# Get user posts by userId
+  /api/users/getPostsByID:
+    post:
+      tags:
+        - Users
+      summary: Search a users posts by ID
+      operationId: getPostsByID
+      description: Get posts from user profile
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Posts
+        required: true
+        description: Get user posts by ID
+        schema:
+          $ref: '#/definitions/getPostsByID'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
+# Send a verification email to a user
+  /api/users/sendVerificationEmail:
+    post:
+      tags:
+        - Users
+      summary: Send a user a verification email
+      operationId: sendVerificationEmail
+      description: Sends a user a verification email to their account's email address
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Email
+        required: true
+        type: string
+        schema:
+          $ref: '#/definitions/sendVerificationEmail'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
+# File Upload Multiform Data
+  /upload:
+    post:
+      tags:
+        - Upload
+      summary: Upload file
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          required: true
+          description: A file to upload.
+        - in: formData
+          name: app
+          type: string
+          required: true
+          description: Name of the model.
+        - in: formData
+          name: id
+          type: string
+          required: true
+          description: Some random Id.
+      responses:
+        200:
+          description: Successful Response
+        400:
+          description: User Error
+        500:
+          description: Internal Server Error
+
+
+definitions:
+
+  searchUser:
+    required: 
+    - id
+    properties:
+      id:
+        type: string
+        example: 632961af-29ae-4c3a-8f3f-426763a4cf00
+
+  createUser:
+    required: 
+    - name
+    - email
+    - username
+    - password
+    properties:
+      name:
+        type: string
+        example: John Doe
+      email:
+        type: string
+        example: JohnDoe@gmail.com
+      username:
+        type: string
+        example: JohnDoe96
+      password:
+        type: string
+        example: JohnDoePassword
+
+  deleteUser:
+    required: 
+    - id
+    properties:
+      id:
+        type: string
+        example: 632961af-29ae-4c3a-8f3f-426763a4cf00
+
+  createPost:
+    required: 
+    - userId
+    - title
+    - content
+    properties:
+      userId:
+        type: string
+        example: 632961af-29ae-4c3a-8f3f-426763a4cf00
+      title:
+        type: string
+        example: Post title
+      content:
+        type: string
+        example: Post description
+
+  getPostsByID:
+    required: 
+    - userId
+    properties:
+      userId:
+        type: string
+        example: 632961af-29ae-4c3a-8f3f-426763a4cf00
+
+  updateUser:
+    required: 
+    - id
+    - name
+    - email
+    - username
+    properties:
+      id:
+        type: string
+        example: 632961af-29ae-4c3a-8f3f-426763a4cf00
+      name:
+        type: string
+        example: John Doe
+      email:
+        type: string
+        example: JohnDoe@gmail.com
+      username:
+        type: string
+        example: JohnDoe96
+  
+  authUser:
+    required: 
+    - email
+    - password
+    properties:
+      email:
+        type: string
+        example: JohnDoe@gmail.com
+      password:
+        type: string
+        example: Secret_Password123
+
+  sendVerificationEmail:
+    required:
+    - email
+    - subject
+    - text
+    properties:
+      email:
+        type: string
+        example: JohnDoe@gmail.com
+      subject:
+        type: string
+        example: Verification Email Alert
+      text:
+        type: string
+        example: Sending you a message in an e-mail!
+    
