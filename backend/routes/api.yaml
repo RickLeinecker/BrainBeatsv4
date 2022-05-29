@@ -87,7 +87,7 @@ paths:
         404:
           description: URL Not Found
 
-  /api/users/checkLogin:
+  /api/users/loginUser:
     post:
       tags:
       - Users
@@ -100,10 +100,10 @@ paths:
       - application/json
       parameters:
       - in: body
-        name: checkLogin
+        name: loginUser
         required: true
         schema:
-          $ref: '#/definitions/checkLogin'
+          $ref: '#/definitions/loginUser'
       responses:
         200:
           description: User logged in successfully
@@ -199,7 +199,7 @@ paths:
       - application/json
       parameters:
       - in: body
-      name: Email
+        name: Email
         required: true
         type: string
         schema:
@@ -218,12 +218,22 @@ paths:
       summary: Delete user by ID
       operationId: deleteUser
       description: Delete a user from the database
-      consumes: 
-        name: User Deletion by ID
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: id
         required: true
         description: Delete
         schema:
           $ref: '#/definitions/deleteUser'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
 
 # File Upload Multiform Data
   /upload:
@@ -365,8 +375,16 @@ definitions:
       username:
         type: string
         example: JohnDoe96
+
+  getPostsByID:
+    required:
+    - userId
+    properties:
+      userId:
+        type: string
+        exmaple: 632961af-29ae-4c3a-8f3f-426763a4cf00
   
-  checkLogin:
+  loginUser:
     required: 
     - email
     - password
