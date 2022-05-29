@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
+const { transformDocument } = require("@prisma/client/runtime");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 
@@ -11,7 +12,9 @@ router.post('/findUser', async (req, res) => {
         const findUserbyID =  await prisma.user.findUnique({
             where: { id: id },
             select: {
-                name: true,
+                firstName: true,
+                lastName: true,
+                dob: true,
                 email: true,
                 username: true,
                 posts: true

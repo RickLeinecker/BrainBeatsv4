@@ -7,6 +7,7 @@ import Login from './Pages/Login'
 import Register from './Pages/Register'
 import Forgot from './Pages/Forgot'
 import Profile from './Pages/Profile';
+import Test from './Pages/Test';
 
 import Record from './Pages/Recording';
 
@@ -15,17 +16,15 @@ function App() {
   return (
       <Router>
         <Routes>
-<<<<<<< HEAD
           <Route exact path='/' element={<Home />} />
           <Route path='/Login' element={<Login />} />
           <Route path='/Record' element={<Record />} />
-=======
           <Route path='/' element={<Home />} />
           <Route path='/Login' element={<Login />} />
           <Route path='/Register' element={<Register />} />
           <Route path='/Forgot' element={<Forgot />} />
           <Route path='/Profile' element={<Profile />} />
->>>>>>> dev
+          <Route path='/Test' element={<Test />} />
         </Routes>
       </Router>
   );

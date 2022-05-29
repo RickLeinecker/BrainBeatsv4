@@ -14,7 +14,9 @@ model User {
   @@map(name: "user")
   id      String      @id @default(uuid())
   email   String      @unique
-  name    String      @unique @db.VarChar(255)
+  firstName String    @db.VarChar(255)
+  lastName  String    @db.VarChar(255)
+  dob       DateTime  @db.Date
   username String     @unique @db.VarChar(20)
   password String
   profile Profile?

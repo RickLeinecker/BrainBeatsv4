@@ -5,9 +5,17 @@ const { user, post } = new PrismaClient();
 
 //Get user post information by ID
 router.get('/getPostsByID', async (req, res) => {
-    try 
-    {
+    try {
     const userId =  req.body.userId
+    const userExist = await prisma.user.findUnique({
+        where: { id: userId  },
+    });
+
+    if(!userExist) {
+        return res.status(400).json({
+            msg: "User not found"
+        })
+    }
     const posts = await prisma.post.findMany({
         where: { userId: userId }, 
         select: {
@@ -19,7 +27,7 @@ router.get('/getPostsByID', async (req, res) => {
         }
     });
     res.status(200).send({Object: posts});
-    } 
+    }
     catch(err) {
         res.status(500).send(err);
     }

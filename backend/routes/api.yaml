@@ -3,8 +3,6 @@ info:
   title: BrainBeatsWeb API 
   description: This is a BrainBeatsWeb API documentation form
   version: 1.0
-  contact:
-    email: seskirjeh@knights.ucf.edu
   licenses:
     name: Apache 2.0
     url: "http://www.apache.org/liscences/LIS"
@@ -137,31 +135,6 @@ paths:
         404:
           description: URL Not Found
 
-# Delete a user by ID
-  /api/users/deleteUser:
-    delete:
-      tags:
-        - Users
-      summary: Delete user by ID
-      operationId: deleteUser
-      description: Delete a user from the database
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: User Deletion by ID
-        required: true
-        description: Delete
-        schema:
-          $ref: '#/definitions/deleteUser'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
-
 # Create user posts
   /api/users/createPost:
     post:
@@ -226,7 +199,7 @@ paths:
       - application/json
       parameters:
       - in: body
-        name: Email
+      name: Email
         required: true
         type: string
         schema:
@@ -236,6 +209,21 @@ paths:
           description: OK
         404:
           description: URL Not Found
+
+# Delete a user by ID
+  /api/users/deleteUser:
+    delete:
+      tags:
+        - Users
+      summary: Delete user by ID
+      operationId: deleteUser
+      description: Delete a user from the database
+      consumes: 
+        name: User Deletion by ID
+        required: true
+        description: Delete
+        schema:
+          $ref: '#/definitions/deleteUser'
 
 # File Upload Multiform Data
   /upload:
@@ -269,10 +257,9 @@ paths:
         500:
           description: Internal Server Error
 
-
 definitions:
 
-  searchUser:
+  findUser:
     required: 
     - id
     properties:
@@ -282,14 +269,22 @@ definitions:
 
   createUser:
     required: 
-    - name
+    - firstName
+    - lastName
+    - dob
     - email
     - username
     - password
     properties:
-      name:
+      firstName:
         type: string
-        example: John Doe
+        example: John
+      lastName:
+        type: string
+        example: Doe
+      dob: 
+        type: date 
+        example: 1995-03-25
       email:
         type: string
         example: JohnDoe@gmail.com
@@ -300,13 +295,17 @@ definitions:
         type: string
         example: JohnDoePassword
 
-  deleteUser:
+  loginUser:
     required: 
-    - id
+    - email
+    - password
     properties:
-      id:
+      email:
         type: string
-        example: 632961af-29ae-4c3a-8f3f-426763a4cf00
+        example: JohnDoe@gmail.com
+      password:
+        type: string
+        example: JohnDoePassword
 
   createPost:
     required: 
@@ -332,19 +331,34 @@ definitions:
         type: string
         example: 632961af-29ae-4c3a-8f3f-426763a4cf00
 
+  deleteUser:
+    required:
+    - id
+    properties:
+      id:
+        type: string
+        exmaple: 632961af-29ae-4c3a-8f3f-426763a4cf00
+
   updateUser:
     required: 
     - id
-    - name
+    - firstName
+    - lastName
     - email
     - username
     properties:
       id:
         type: string
         example: 632961af-29ae-4c3a-8f3f-426763a4cf00
-      name:
+      firstName:
         type: string
-        example: John Doe
+        example: John
+      lastName:
+        type: string
+        example: Doe
+      dob: 
+        type: date
+        exmaple: 1997-07-13T00:00:00.000Z
       email:
         type: string
         example: JohnDoe@gmail.com
