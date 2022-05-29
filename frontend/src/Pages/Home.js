@@ -1,18 +1,18 @@
 import React from 'react'
 import Navbar from '../Components/Navbar/Navbar'
 import Cards from '../Components/Cards/Cards'
+import Carousel from '../Components/Carousel/Carousel'
+
+import "react-responsive-carousel/lib/styles/carousel.min.css"
 
 const Home = () => {
   return (
     <>
     <Navbar />
     <br />
-    <h1>Your Song</h1>
+    <Carousel />
     <br />
-    <Cards />
-    <br />
-    <h1>Favorite Song</h1>
-    <br />
+    <h1>Top Songs</h1>
     <Cards />
     </>
   )

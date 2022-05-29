@@ -35,14 +35,13 @@ paths:
                 name:
                   type: string
 
-
 # Find user with userId
   /api/users/findUser:
     post:
       tags:
         - Users
       summary: Search a user by ID
-      operationId: searchUser
+      operationId: findUser
       description: Search a user in the database
       consumes: 
       - application/json
@@ -50,10 +49,12 @@ paths:
       - application/json
       parameters:
       - in: body
-        name: find user by ID
+        name: findUser
         required: true
         description: userID
         schema:
+          type: string
+          format: byte
           $ref: '#/definitions/findUser'
       responses:
         200:
@@ -86,11 +87,11 @@ paths:
         404:
           description: URL Not Found
 
-  /api/users/loginUser:
+  /api/users/checkLogin:
     post:
       tags:
       - Users
-      summary: User login
+      summary: Checks if a user related to their password for login
       description: |
         Authenticates a user
       consumes:
@@ -99,13 +100,13 @@ paths:
       - application/json
       parameters:
       - in: body
-        name: loginUser
+        name: checkLogin
         required: true
         schema:
-          $ref: '#/definitions/loginUser'
+          $ref: '#/definitions/checkLogin'
       responses:
         200:
-          description: User authenticated successfully
+          description: User logged in successfully
         401:
           description: bad input parameter
 
@@ -148,9 +149,9 @@ paths:
       - application/json
       parameters:
       - in: body
-        name: Create post 
+        name: Create post
         required: true
-        description: User Creation
+        description: User Post
         schema:
           $ref: '#/definitions/createPost'
       responses:
@@ -184,6 +185,31 @@ paths:
         404:
           description: URL Not Found
 
+# Send a verification email to a user
+  /api/users/sendVerificationEmail:
+    post:
+      tags:
+        - Users
+      summary: Send a user a verification email
+      operationId: sendVerificationEmail
+      description: Sends a user a verification email to their account's email address
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+      name: Email
+        required: true
+        type: string
+        schema:
+          $ref: '#/definitions/sendVerificationEmail'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
 # Delete a user by ID
   /api/users/deleteUser:
     delete:
@@ -193,22 +219,11 @@ paths:
       operationId: deleteUser
       description: Delete a user from the database
       consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
         name: User Deletion by ID
         required: true
         description: Delete
         schema:
           $ref: '#/definitions/deleteUser'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
-
 
 # File Upload Multiform Data
   /upload:
@@ -308,11 +323,11 @@ definitions:
         type: string
         example: Post description
 
-  getPostsByID:
+  findUser:
     required: 
-    - userId
+    - id
     properties:
-      userId:
+      id:
         type: string
         example: 632961af-29ae-4c3a-8f3f-426763a4cf00
 
@@ -350,4 +365,32 @@ definitions:
       username:
         type: string
         example: JohnDoe96
+  
+  checkLogin:
+    required: 
+    - email
+    - password
+    properties:
+      email:
+        type: string
+        example: JohnDoe@gmail.com
+      password:
+        type: string
+        example: Secret_Password123
+
+  sendVerificationEmail:
+    required:
+    - email
+    - subject
+    - text
+    properties:
+      email:
+        type: string
+        example: JohnDoe@gmail.com
+      subject:
+        type: string
+        example: Verification Email Alert
+      text:
+        type: string
+        example: Sending you a message in an e-mail!
     

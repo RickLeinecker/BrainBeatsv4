@@ -17,6 +17,7 @@ router.post('/findUser', async (req, res) => {
                 dob: true,
                 email: true,
                 username: true,
+                posts: true
             }
         });
 

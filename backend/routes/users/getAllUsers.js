@@ -15,6 +15,7 @@ router.get('/getAllUsers', async (req, res) => {
                 dob: true,
                 email: true,
                 username: true,
+                password: true,
                 posts: true
             }
         });
