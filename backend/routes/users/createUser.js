@@ -49,16 +49,18 @@ router.post('/createUser', async (req, res) => {
         });
 
     // Create token
-    const token = jwt.sign(
-        { userId: newUser.id, email },
-        process.env.NEXT_PUBLIC_JWT_KEY,
-        {
-            expiresIn: "1h",
-        }
-        );
 
-    // save user token
-    newUser.token = token;
+    //----COMMENTED OUT TO CLOSE USER LOOP----\\ 
+    // const token = jwt.sign(
+    //     { userId: newUser.id, email },
+    //     process.env.NEXT_PUBLIC_JWT_KEY,
+    //     {
+    //         expiresIn: "1h",
+    //     }
+    //     );
+
+    // // save user token
+    // newUser.token = token;
 
     res.json(newUser)
     
