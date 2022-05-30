@@ -76,7 +76,7 @@ const RegisterCard = () => {
     return (
         <>
             <div className='center' style={{ marginLeft: '25%', marginTop: '5%'}}>
-                <div className='row'>
+                <div className='row-no-gutters'>
                     <div className='col-md-8'>
                         <div className='editCard'>
                             <div className="Title">

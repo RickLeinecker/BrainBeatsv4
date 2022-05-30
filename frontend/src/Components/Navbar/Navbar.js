@@ -23,12 +23,12 @@ const Navbars = () => {
                             <h1>BrainBeats</h1>
                         </Navbar.Text>
                     </Navbar.Collapse>
-                    <Navbar.Collapse className="justify-content-end">
+                    <Navbar.Collapse>
                         <Navbar.Text>
                             <Button> <a href='/Login'>Login</a></Button>
                         </Navbar.Text>
                     </Navbar.Collapse>
-                    <Navbar.Collapse className="justify-content-end">
+                    <Navbar.Collapse>
                         <Navbar.Text>
                             <Button> <a href="/Test">Test</a></Button>
                         </Navbar.Text>
