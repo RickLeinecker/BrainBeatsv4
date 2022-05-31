@@ -1,6 +1,6 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import {getUser} from './database/users';
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const {getUser} = require('./database/users');
 
 // Checks the local storage for an existing token and logs them in if one exists
 function verifyJWT(jwtToken) {
@@ -72,5 +72,3 @@ function getJWT() {
 function removeJWT() {
     return localStorage.removeItem('BrainBeatsToken');
 }
-
-export {verifyJWT, giveLoginJWT, giveSignUpJWT, saveJWT, getJWT, removeJWT};

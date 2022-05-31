@@ -1,5 +1,5 @@
-import {PrismaClient} from '@prisma/client'
-import bcrypt from 'bcryptjs';
+const {PrismaClient} = require('@prisma/client');
+const bcrypt = require('bcryptjs');
 
 // Get the user by using email or id (Feel free to change this)
 async function getUser({email, id} = {}) {
@@ -18,6 +18,3 @@ async function updateUser({email, id} = {}, data) {
     const prisma = new PrismaClient();
     // TODO: Add more stuff here
 }
-
-
-export {getUser, updateUser, createUser};

@@ -7,7 +7,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 
-import "../../utils/jwt";
+const jwtAPI = require("../../utils/jwt");
 
 // Create a new user
 router.post('/createUser', async (req, res) => {
@@ -49,7 +49,7 @@ router.post('/createUser', async (req, res) => {
 
             // Create token
 
-            const token = giveSignUpJWT(newUser.id);
+            const token = jwtAPI.giveSignUpJWT(newUser.id);
 
             //----COMMENTED OUT TO CLOSE USER LOOP----\\ 
             // const token = jwt.sign(
