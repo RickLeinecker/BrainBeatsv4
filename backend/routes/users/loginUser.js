@@ -6,6 +6,9 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 
+import "../../utils/jwt";
+import { giveLoginJWT } from "../../utils/jwt";
+
 // login an existing user
 router.post('/loginUser', async (req, res) => {
     try {
@@ -18,12 +21,20 @@ router.post('/loginUser', async (req, res) => {
           where: { email: email }
           });
         
+        if (verifyJWT()) {
+          console.log("User logged in via JWT");
+          return res.status(200).json(user, {
+              msg: "User authenticated via JWT."
+          });
+        }
+
         // If password is related to the email console log a successful login
         if (user && (await bcrypt.compare(password, user.password))) {
           console.log("Logged in!")
           res.status(200).json(user);
+          giveLoginJWT({id: user.id, email: user.email})
         } else {
-        return res.status(400).send("Invalid Credentials");
+          return res.status(400).send("Invalid Credentials");
         }
       } catch (err) {
         console.log(err)

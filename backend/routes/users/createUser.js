@@ -7,6 +7,8 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 
+import "../../utils/jwt";
+
 // Create a new user
 router.post('/createUser', async (req, res) => {
     try 
@@ -30,40 +32,38 @@ router.post('/createUser', async (req, res) => {
                 msg: "Email or username already exists. Please try again."
             })
         } else {
+            //Encrypt user password
+            encryptedPassword = await bcrypt.hash(password, 10);
 
-    //Encrypt user password
-    encryptedPassword = await bcrypt.hash(password, 10);
+            //Create a single record
+            const newUser = await prisma.user.create({
+                data: {
+                    firstName,
+                    lastName,
+                    dob,
+                    email,
+                    username,
+                    password: encryptedPassword,
+                }
+            });
 
-    
+            // Create token
 
-    //Create a single record
-        const newUser = await prisma.user.create({
-            data: {
-                firstName,
-                lastName,
-                dob,
-                email,
-                username,
-                password: encryptedPassword,
-            }
-        });
+            const token = giveSignUpJWT(newUser.id);
 
-    // Create token
+            //----COMMENTED OUT TO CLOSE USER LOOP----\\ 
+            // const token = jwt.sign(
+            //     { userId: newUser.id, email },
+            //     process.env.NEXT_PUBLIC_JWT_KEY,
+            //     {
+            //         expiresIn: "1h",
+            //     }
+            //     );
 
-    //----COMMENTED OUT TO CLOSE USER LOOP----\\ 
-    // const token = jwt.sign(
-    //     { userId: newUser.id, email },
-    //     process.env.NEXT_PUBLIC_JWT_KEY,
-    //     {
-    //         expiresIn: "1h",
-    //     }
-    //     );
+            // // save user token
+            // newUser.token = token;
 
-    // // save user token
-    // newUser.token = token;
-
-    res.json(newUser)
-    
+            res.json(newUser);
         }
     } 
 
