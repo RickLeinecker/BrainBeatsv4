@@ -72,3 +72,29 @@ function getJWT() {
 function removeJWT() {
     return localStorage.removeItem('BrainBeatsToken');
 }
+
+module.exports = (token) => {
+    return {
+        verifyJWT: verifyJWT(token),
+        saveJWT: saveJWT(token)
+    }
+}
+
+module.exports = (loginCred, password) => {
+    return {
+        giveLoginJWT: giveLoginJWT(loginCred, password)
+    }
+}
+
+module.exports = (id, email) => {
+    return {
+        giveSignUpJWT: giveSignUpJWT(id, email)
+    }
+}
+
+module.exports = () => {
+    return {
+        getJWT: getJWT(),
+        removeJWT: removeJWT()
+    }
+}
