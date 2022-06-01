@@ -57,6 +57,8 @@ async function giveSignUpJWT(id, email) {
     return token;
 }
 
+// TODO : Turn these into API calls for frontend to use so it's actually client side local storage
+
 // Save a JWT onto local storage
 function saveJWT(token) {
     localStorage.setItem('BrainBeatsToken', token);
@@ -73,28 +75,11 @@ function removeJWT() {
     return localStorage.removeItem('BrainBeatsToken');
 }
 
-module.exports = (token) => {
-    return {
-        verifyJWT: verifyJWT(token),
-        saveJWT: saveJWT(token)
-    }
-}
-
-module.exports = (loginCred, password) => {
-    return {
-        giveLoginJWT: giveLoginJWT(loginCred, password)
-    }
-}
-
-module.exports = (id, email) => {
-    return {
-        giveSignUpJWT: giveSignUpJWT(id, email)
-    }
-}
-
-module.exports = () => {
-    return {
-        getJWT: getJWT(),
-        removeJWT: removeJWT()
-    }
+module.exports = {
+    verifyJWT: verifyJWT,
+    saveJWT: saveJWT,
+    giveLoginJWT: giveLoginJWT,
+    giveSignUpJWT: giveSignUpJWT,
+    getJWT: getJWT,
+    removeJWT: removeJWT
 }
