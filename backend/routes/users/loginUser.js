@@ -20,18 +20,18 @@ router.post('/loginUser', async (req, res) => {
           where: { email: email }
           });
         
-        if (jwtAPI.verifyJWT()) {
-          console.log("User logged in via JWT");
-          return res.status(200).json(user, {
-              msg: "User authenticated via JWT."
-          });
-        }
+        // if (jwtAPI.verifyJWT()) {
+        //   console.log("User logged in via JWT");
+        //   return res.status(200).json(user, {
+        //       msg: "User authenticated via JWT."
+        //   });
+        // }
 
         // If password is related to the email console log a successful login
         if (user && (await bcrypt.compare(password, user.password))) {
           console.log("Logged in!")
           res.status(200).json(user);
-          jwtAPI.giveLoginJWT({id: user.id, email: user.email})
+          // jwtAPI.giveLoginJWT({id: user.id, email: user.email})
         } else {
           return res.status(400).send("Invalid Credentials");
         }

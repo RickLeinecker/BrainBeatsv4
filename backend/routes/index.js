@@ -40,6 +40,7 @@ app.use('/api/users', require('./users/updateUser'));
 app.use('/api/users', require('./users/deleteUser'));
 app.use('/api/users', require('./users/createPost'));
 app.use('/api/users', require('./users/getPostsByID'));
+// app.use('/api/users', require('./users/jwtStuff'));
 app.use('/api/users', require('./users/sendVerificationEmail'));
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

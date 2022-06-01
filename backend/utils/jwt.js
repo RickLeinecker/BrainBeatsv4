@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const {getUser} = require('./database/users');
+const router = require("express").Router();
 
 // Checks the local storage for an existing token and logs them in if one exists
 function verifyJWT(jwtToken) {

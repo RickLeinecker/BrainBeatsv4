@@ -32,6 +32,7 @@ router.post('/createUser', async (req, res) => {
                 msg: "Email or username already exists. Please try again."
             })
         } else {
+            
             //Encrypt user password
             encryptedPassword = await bcrypt.hash(password, 10);
 
@@ -49,7 +50,7 @@ router.post('/createUser', async (req, res) => {
 
             // Create token
 
-            const token = jwtAPI.giveSignUpJWT(newUser.id);
+            // const token = jwtAPI.giveSignUpJWT(newUser.id, newUser.email);
 
             //----COMMENTED OUT TO CLOSE USER LOOP----\\ 
             // const token = jwt.sign(
