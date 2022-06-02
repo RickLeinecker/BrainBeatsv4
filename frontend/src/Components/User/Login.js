@@ -73,6 +73,7 @@ const Login = () => {
                                 <label>Email address</label>
                                 <input
                                     type="email"
+                                    required
                                     className="form-control"
                                     placeholder="Enter email"
                                     value={email}

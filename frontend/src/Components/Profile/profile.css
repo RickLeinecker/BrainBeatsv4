@@ -42,13 +42,13 @@ label{
     padding-right: 25px;
 }
 .pr-1, .px-1 {
-    padding-right: 1.5em!important;
+    padding-right: .25em!important;
 }
 .pl-1, .px-1 {
-    padding-left: 1.5em!important;
+    padding-left: .25em!important;
 }
 .pl-1, .px-1 {
-    padding-left: 1.5em!important;
+    padding-left: .25em!important;
 }
 .form-control {
     border: 5px solid #e3e3e3;

@@ -1,5 +1,6 @@
 import React, { Component, useState } from "react";
 import axios from "axios";
+import { Button } from "react-bootstrap";
 
 
 
@@ -11,24 +12,26 @@ const RegisterCard = () => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [dob, setdob] = useState("");
+    const [stage, setStage] = useState(0);
     const [errorMsg, setErrorMsg] = useState('');
 
 
     const emptyField = () => {
-        return (!email || !password || !username || !firstName || !lastName || ! dob)   
+        return (!email || !password || !username || !firstName || !lastName || !dob)
     }
     const createAccount = (event) => {
         //allows form to work without problems on start and submit
         event.preventDefault();
-        if(emptyField()){
+        if (emptyField()) {
             setErrorMsg("Fill out all fields please");
             return;
         }
-        if (validateEmail()){
+        if (validateEmail()) {
             setErrorMsg("Invalid Email format");
+            setStage(0);
             return;
         }
-            
+
         //starting path for API endpoint
         const path = require('../Path');
 
@@ -71,69 +74,115 @@ const RegisterCard = () => {
         }
     }
 
-
+    const nextStage = (e) => {
+        e.preventDefault();
+        if (!email || !username || !password) {
+            setErrorMsg('Please Fill out all fields')
+        }
+        else {
+            setStage(1)
+            setErrorMsg('')
+        }
+    }
     //onSubmit={createAccount}
     return (
         <>
-            <div className='center' style={{ marginLeft: '25%', marginTop: '5%'}}>
-                <div className='row-no-gutters'>
-                    <div className='col-md-8'>
-                        <div className='editCard'>
-                            <div className="Title">
+            <div class="box">
+                <div class="form-box">
+                    <div>
+                        <form onSubmit={createAccount} style={{ textAlign: 'left' }}>
+                            <div style={{ textAlign: 'center' }}>
                                 <h2>Register</h2>
                             </div>
-                            <div className="body">
-                                <div className='row'>
-                                <div className="pr-1 col-md-6">
-                                        <div className="form-group">
-                                            <label>Username<span className='asterisk'>*</span></label>
-                                            <input placeholder="Username" type="text" className="form-control" onChange={(e) => setUsername(e.target.value)} />
-                                        </div>
+                            {stage == 0 && (
+                                <>
+                                    <div style={{ textAlign: 'center' }}>
+                                        <h3>Account Information</h3>
                                     </div>
-                                    <div className="pl-1 col-md-6">
-                                        <div className="form-group">
-                                            <label>Password<span className='asterisk'>*</span></label>
-                                            <input placeholder="Password" type="text" className="form-control" onChange={(e) => setPassword(e.target.value)} />
-                                        </div>
+                                    <div className="form-group">
+                                        <label>Email address<span className="asterisk">*</span></label>
+                                        <input
+                                            type="email"
+                                            required
+                                            className="form-control"
+                                            placeholder="Enter email"
+                                            value={email}
+                                            onChange={(event) => setEmail(event.target.value)}
+                                        />
                                     </div>
-                                    
-                                </div>
-                                <div className='row'>
-                                    <div className="pr-1 col-md-6">
-                                        <div className="form-group">
-                                            <label>First Name<span className='asterisk'>*</span></label>
-                                            <input placeholder="First Name" type="text" className="form-control" onChange={(e) => setFirstName(e.target.value)} />
-                                        </div>
+                                    <div className="form-group">
+                                        <label>Username<span className="asterisk">*</span></label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Enter Username"
+                                            value={username}
+                                            onChange={(event) => setUsername(event.target.value)}
+                                        />
                                     </div>
-                                    <div className="pl-1 col-md-6">
-                                        <div className="form-group">
-                                            <label>Last Name<span className='asterisk'>*</span></label>
-                                            <input placeholder="Last Name" type="text" className="form-control" onChange={(e) => setLastName(e.target.value)} />
-                                        </div>
+                                    <div className="form-group">
+                                        <label>Password<span className="asterisk">*</span></label>
+                                        <input
+                                            type="password"
+                                            className="form-control"
+                                            placeholder="Enter password"
+                                            value={password}
+                                            onChange={(event) => setPassword(event.target.value)}
+                                        />
                                     </div>
-                                </div>
-                                <div className='row'>
-                                <div className="pr-1 col-md-6">
-                                        <div className="form-group">
-                                            <label>Email<span className='asterisk'>*</span></label>
-                                            <input placeholder="Email" type="text" className="form-control" onChange={(e) => setEmail(e.target.value)} />
-                                        </div>
+                                    <p className="errMsg">{errorMsg}</p>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <Button type="button" className="" onClick={nextStage}>Next</Button>
                                     </div>
-                                    <div className="pl-1 col-md-6">
-                                        <div className="form-group">
-                                            <label>Date of Birth<span className='asterisk'>*</span></label>
-                                            <input placeholder="DOB" type="date" className="form-control" onChange={(e) => setdob(e.target.value)} />
-                                        </div>
+                                </>
+                            )}
+                            {stage == 1 && (
+                                <>
+                                    <div style={{ textAlign: 'center' }}>
+                                        <h3>Personal Information</h3>
                                     </div>
-                                </div>
-                                <p className="errMsg">{errorMsg}</p>
-                                <div className="cardButton">
-                                    <button type="submit" className="btn-fill pull-right btn btn-info" onClick={createAccount}>Register</button>
-                                </div>
+                                    <div className="form-group">
+                                        <label>First Name<span className="asterisk">*</span></label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Enter First Name"
+                                            value={firstName}
+                                            onChange={(event) => setFirstName(event.target.value)}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Last Name<span className="asterisk">*</span></label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Enter Last Name"
+                                            value={lastName}
+                                            onChange={(event) => setLastName(event.target.value)}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>DOB<span className="asterisk">*</span></label>
+                                        <input
+                                            type="date"
+                                            className="form-control"
+                                            placeholder="Enter DOB"
+                                            value={dob}
+                                            onChange={(event) => setdob(event.target.value)}
+                                        />
+                                    </div>
 
-                            </div>
-                        </div>
+                                    <p className="errMsg">{errorMsg}</p>
+
+                                    <div id="HASH">
+                                        <Button type="button" className='text-left' onClick={(e) => (e.preventDefault(), setStage(0))}>Prev</Button>
+                                        <Button type="submit" className='text-right' >Submit</Button>
+                                    </div></>
+                            )}
+
+                        </form>
                     </div>
+
                 </div>
             </div>
         </>
