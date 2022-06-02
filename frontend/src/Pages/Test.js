@@ -11,6 +11,8 @@ import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@lates
 // import ganglion from "./dist/index.esm.js"
 import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js";
 
+// I'd suggest collapsing these two objects. I'm not currently using them but I might in
+// the future and I don't feel like making them again (:
 const KEY_SIGNATURES_MAJOR_OBJ = {
   C_Major:  ["C", "D", "E", "F", "G", "A", "B"], 
   CS_Major: ["C#", "D#", "E#", "F#", "G#", "A#", "B#"], 
@@ -26,7 +28,6 @@ const KEY_SIGNATURES_MAJOR_OBJ = {
   AS_Major: ["A#", "C", "D", "D#", "F", "G", "A"],
   B_Major:  ["B", "C#", "D#", "E", "F#", "G#", "A#"]
 };
-
 const KEY_SIGNATURES_MINOR_OBJ = {
   C_Minor:  ["C", "D", "D#", "F", "G", "G#", "A#"],
   CS_Minor: ["C#", "D#", "E", "F#", "G#", "A", "B"],
@@ -43,6 +44,7 @@ const KEY_SIGNATURES_MINOR_OBJ = {
   B_Minor:  ["B", "C#", "D", "E", "F#", "G", "A"]
 };
 
+// 2D arrays that hold every note in each key signature, starting from C
 const KEY_SIGNATURES_MAJOR = [
   ["C", "D", "E", "F", "G", "A", "B"], // 0
   ["C#", "D#", "E#", "F#", "G#", "A#", "B#"], // 1
@@ -58,7 +60,6 @@ const KEY_SIGNATURES_MAJOR = [
   ["A#", "C", "D", "D#", "F", "G", "A"], // 11
   ["B", "C#", "D#", "E", "F#", "G#", "A#"] // 12
 ];
-
 const KEY_SIGNATURES_MINOR = [
   ["C", "D", "D#", "F", "G", "G#", "A#"], // 0
   ["C#", "D#", "E", "F#", "G#", "A", "B"], // 1
@@ -76,6 +77,7 @@ const KEY_SIGNATURES_MINOR = [
 ];
 
 var BPM = 120; // BPM of the track
+var quickNoteType = "quarter";
 var channelCounter = 0; // I forgor 💀
 var firstTickSkipped = 0; // Kinda useless will prob remove
 var keySignature = KEY_SIGNATURES_MAJOR[2];
@@ -96,7 +98,7 @@ const AMPLITUDE_OFFSET = 0.001;
 
 // Number of total notes that are able to be assigned. 7 is one octave, 14 is two octaves, 21 is three octaves.
 // Going above 21 is NOT recommended and has NOT been tested, but should theoretically work. DO NOT use values 
-// that aren't multiples of 7. Works best with 7, 14, and 21. If you must go above 21, use 28, 35, 42, etc.
+// that aren't multiples of 7. Works best with 7, 14, and 21. Do not ever exceed 63.
 // NOTE: This software works using 7-note octaves, meaning that the root note's octave jump is not included in
 //       the scale. For example, C major is C, D, E, F, G, A, B. It does NOT include the C of the next octave.
 const NUM_NOTES = 21;
@@ -112,23 +114,12 @@ const NUM_NOTES = 21;
 // between incrementArr[1] and [2], it will be assigned to note 1, the floor of the indexes it fell between.
 var incrementArr = new Array(NUM_NOTES);
 
-// These will likely be deleted so I'm not gonna comment them LOLLLLLLLLLLLLLLLL
-var maxFP1 = 0, minFP1 = 0;
-var maxFP2 = 0, minFP2 = 0;
-var maxC3 = 0, minC3 = 0;
-var maxC4 = 0, minC4 = 0;
-
-// This is temporary. Will be replaced with the 2D arrays below.
-var CMajor = ["C", "D", "E", "F", "G", "A", "B"];
-
-
-
-// A counter that is incremented every time a new piece of data is recieved from the headset.
-var numTicksFromHeadset = 0;
-
+// We should probably rename this file lol
 const Test = () => {
 
-  useEffect(()=>{
+  // I have absolutely no idea what this useEffect() function is, but Quan added it
+  // and it made everything work, so don't touch. Things WILL break if removed.
+  useEffect(()=> {
     const dataDevices = new datastreams.DataDevices();
     dataDevices.load(ganglion);
     
@@ -138,19 +129,20 @@ const Test = () => {
     const timeseries = new components.streams.data.TimeSeries();
     graphDiv.insertAdjacentElement("beforeend", timeseries);
     
-    // ------------- Declare Global Variables -------------
+    // ------------- Global Variables -------------
     const allData = [];
     let channels = 0;
     let trackMap = new Map();
     let contentHintToIndex = {};
-    
-    {/* // ------------- Declare Track Handler ------------- */}
+
+    // ------------- Track Handler -------------
     const handleTrack = (track) => {
         // ------------- Map Track Information (e.g. 10-20 Coordinate) to Index -------------
-        if (!trackMap.has(track.contentHint)) {
-        const index = trackMap.size;
-        contentHintToIndex[track.contentHint] = index;
-        trackMap.set(index, track);
+        if (!trackMap.has(track.contentHint)) 
+        {
+          const index = trackMap.size;
+          contentHintToIndex[track.contentHint] = index;
+          trackMap.set(index, track);
         }
     
         // ------------- Grab Index -------------
@@ -159,44 +151,20 @@ const Test = () => {
     
         // ------------- Subscribe to New Data -------------
         track.subscribe((data, timestamps) => {
-        // Organize New Data
-        let arr = [];
-        for (let j = 0; j <= channels; j++)
-            i === j ? arr.push(data) : arr.push([]);
-    
-        // Add Data to Timeseries Graph
-        timeseries.data = arr;
-        timeseries.draw(); // FORCE DRAW: Update happens too fast for UI
+          // Organize New Data
+          let arr = [];
+          for (let j = 0; j <= channels; j++)
+              i === j ? arr.push(data) : arr.push([]);
+      
+          // Add Data to Timeseries Graph
+          timeseries.data = arr;
+          timeseries.draw(); // FORCE DRAW: Update happens too fast for UI
 
-        InitIncrementArr();
-
-        // This entire function needs to run 4 times total, once for each channel, every tick.
-        if (channelCounter < 3)
-          channelCounter++;
-        else if (channelCounter >= 3)
-        {
-          if (firstTickSkipped == 0)
-            firstTickSkipped = 1;
-          else
-            waitForNextTick("quarter");
-          channelCounter = 0;
-        }
-
-        numTicksFromHeadset++;
-
-        var declaredNote = NoteDeclarationRaw(data[0], track.contentHint); // Get note increment
-        var noteAndOctave = GetNoteWRTKey(declaredNote); // Get the actual note and the octave
-        var floorOctave = GetFloorOctave(); // Get the lowest octave that will be used
-
-        if (noteAndOctave.note == -1) // If no note was declared, it's a rest.
-          console.log(track.contentHint + ": Rest");
-        else 
-          console.log(track.contentHint + ": " + noteAndOctave.note + "" + (noteAndOctave.octave + floorOctave));
+          thisIsATest(track, data);
         });
     };
     
-    // // ------------- Declare Acquisition Function -------------
-    
+    // ------------- Acquisition Function -------------
     const startAcquisition = async (label) => {
 
         // ------------- Get Device Stream -------------
@@ -209,9 +177,36 @@ const Test = () => {
         stream.tracks.forEach(handleTrack);
         stream.onaddtrack = (e) => handleTrack(e.track);
     };
+
+    const thisIsATest = async (tracky, datay) => {
+
+      // Initialize the array [this comment needs work, ik]
+      InitIncrementArr();
+
+      // This entire handleTrack section needs to run 4 times total, once for each channel, every tick.
+      if (channelCounter < 3)
+        channelCounter++;
+      else if (channelCounter >= 3)
+      {
+        if (firstTickSkipped == 0)
+          firstTickSkipped = 1;
+        else
+          waitForNextTick(quickNoteType);
+        channelCounter = 0;
+      }
+
+      var declaredNote = NoteDeclarationRaw(datay, tracky.contentHint); // Get note increment
+      var noteAndOctave = GetNoteWRTKey(declaredNote); // Get the actual note and its octave
+      var floorOctave = GetFloorOctave(); // Get the lowest octave that will be used in the song
+      //console.log("declaredNote: " + declaredNote + ", noteAndOctave: " + noteAndOctave + ", floorOctave: " + floorOctave);
+
+      if (noteAndOctave.note == -1) // If no note was declared, it's a rest.
+        console.log(tracky.contentHint + ": Rest [" + (datay - -AMPLITUDE_OFFSET) + "]");
+      else 
+        console.log(tracky.contentHint + ": " + noteAndOctave.note + "" + (noteAndOctave.octave + floorOctave) + " [" + (datay - -AMPLITUDE_OFFSET)+ "]");
+  };
     
     // ------------- Set Button Functionality -------------
-    
     const buttons = document.querySelector("#buttons");
     
     for (let button of buttons.querySelectorAll("button"))
@@ -277,7 +272,7 @@ function waitForNextTick(noteType)
   // Total amount of time that this function will wait for before completing.
   var targetTime = getMilliecondsFromBPM(BPM) * noteLengthMultiplier;
   
-  // Infinite loop; hoping to make this an async function in the future so this will not be necessary.
+  // Infinite loop; hoping to make this an async function so this will not be necessary.
   while (1 == 1)
   {
     var currentTime = new Date(); // Get the time right now
@@ -285,7 +280,7 @@ function waitForNextTick(noteType)
     
     if (timeDifference >= targetTime) // If the elapsed time is >= the amount of time to wait, stop the function.
     {
-      console.log("----- It's been " + targetTime + "ms (one " + noteType + " note at " + BPM + "bpm), done. -----");
+      console.log("----- It's been " + targetTime + "ms (one " + noteType + " note at " + BPM + "bpm) -----");
       return;
     }
   }
@@ -308,13 +303,14 @@ function InitIncrementArr()
 // Takes in the raw value from the headset and the sensor it came from and assigns a note.
 function NoteDeclarationRaw(ampValue, sensor)
 {
-  ampValue += AMPLITUDE_OFFSET; // Applies the offset to the headset's raw data
+  let ampValue2 = 0;
+  ampValue2 = (ampValue - -AMPLITUDE_OFFSET); // Applies the offset to the headset's raw data
 
   // For every possible note, check to see if ampValue falls between two array positions. If so, return that position.
   // If not, it will be treated as a rest (returning -1).
   for (var i = 0; i <= NUM_NOTES - 1; i++) 
   {
-    if (ampValue >= incrementArr[i] && ampValue <= incrementArr[i + 1])
+    if (ampValue2 >= incrementArr[i] && ampValue2 <= incrementArr[i + 1])
       return i;
   }
   return -1;
@@ -338,8 +334,8 @@ function GetNoteWRTKey(note)
   }
 }
 
-// Returns the lowest necessary octave necessary, using NUM_NOTES to determine.
-// Octave 5 is used as the "center", used by default.
+// Returns the lowest necessary octave necessary for this song, using NUM_NOTES to determine.
+// Octave 5 is used as the center/default octave.
 function GetFloorOctave()
 {
   if (NUM_NOTES == 7 || NUM_NOTES == 14)
