@@ -11,15 +11,80 @@ import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@lates
 // import ganglion from "./dist/index.esm.js"
 import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js";
 
+const KEY_SIGNATURES_MAJOR_OBJ = {
+  C_Major:  ["C", "D", "E", "F", "G", "A", "B"], 
+  CS_Major: ["C#", "D#", "E#", "F#", "G#", "A#", "B#"], 
+  D_Major:  ["D", "E", "F#", "G", "A", "B", "C#"], 
+  DS_Major: ["D#", "E#", "F", "G#", "A#", "B#", "C"], 
+  E_Major:  ["E", "F#", "G", "A", "B", "C#", "D#"], 
+  ES_Major: ["E#", "F", "G", "A#", "B#", "C", "D"], 
+  F_Major:  ["F", "G", "A", "A#", "C", "D", "E"], 
+  FS_Major: ["F#", "G#", "A#", "B", "C#", "D#", "E#"], 
+  G_Major:  ["G", "A", "B", "C", "D", "E", "F#"], 
+  GS_Major: ["G#", "A#", "B#", "C#", "D#", "E#", "F"], 
+  A_Major:  ["A", "B", "C#", "D", "E", "F#", "G#"],
+  AS_Major: ["A#", "C", "D", "D#", "F", "G", "A"],
+  B_Major:  ["B", "C#", "D#", "E", "F#", "G#", "A#"]
+};
+
+const KEY_SIGNATURES_MINOR_OBJ = {
+  C_Minor:  ["C", "D", "D#", "F", "G", "G#", "A#"],
+  CS_Minor: ["C#", "D#", "E", "F#", "G#", "A", "B"],
+  D_Minor:  ["D", "E", "F", "G", "A", "A#", "C"],
+  DS_Minor: ["D#", "E#", "F#", "G#", "A#", "B", "C#"],
+  E_Minor:  ["E", "F#", "G", "A", "B", "C", "D"],
+  ES_Minor: ["E#", "F", "G#", "A#", "B#", "C#", "D#"],
+  F_Minor:  ["F", "G", "G#", "A#", "C", "C#", "D#"],
+  FS_Minor: ["F#", "G#", "A", "B", "C#", "D", "E"],
+  G_Minor:  ["G", "A", "A#", "C", "D", "D#", "F"],
+  GS_Minor: ["G#", "A#", "B", "C#", "D#", "E", "F#"],
+  A_Minor:  ["A", "B", "C", "D", "E", "F", "G"],
+  AS_Minor: ["A#", "C", "C#", "D#", "F", "F#", "G#"],
+  B_Minor:  ["B", "C#", "D", "E", "F#", "G", "A"]
+};
+
+const KEY_SIGNATURES_MAJOR = [
+  ["C", "D", "E", "F", "G", "A", "B"], // 0
+  ["C#", "D#", "E#", "F#", "G#", "A#", "B#"], // 1
+  ["D", "E", "F#", "G", "A", "B", "C#"], // 2
+  ["D#", "E#", "F", "G#", "A#", "B#", "C"], // 3
+  ["E", "F#", "G", "A", "B", "C#", "D#"], // 4
+  ["E#", "F", "G", "A#", "B#", "C", "D"], // 5
+  ["F", "G", "A", "A#", "C", "D", "E"], // 6
+  ["F#", "G#", "A#", "B", "C#", "D#", "E#"], // 7
+  ["G", "A", "B", "C", "D", "E", "F#"], // 8
+  ["G#", "A#", "B#", "C#", "D#", "E#", "F"], // 9
+  ["A", "B", "C#", "D", "E", "F#", "G#"], // 10
+  ["A#", "C", "D", "D#", "F", "G", "A"], // 11
+  ["B", "C#", "D#", "E", "F#", "G#", "A#"] // 12
+];
+
+const KEY_SIGNATURES_MINOR = [
+  ["C", "D", "D#", "F", "G", "G#", "A#"], // 0
+  ["C#", "D#", "E", "F#", "G#", "A", "B"], // 1
+  ["D", "E", "F", "G", "A", "A#", "C"], // 2
+  ["D#", "E#", "F#", "G#", "A#", "B", "C#"], // 3
+  ["E", "F#", "G", "A", "B", "C", "D"], // 4
+  ["E#", "F", "G#", "A#", "B#", "C#", "D#"], // 5
+  ["F", "G", "G#", "A#", "C", "C#", "D#"], // 6
+  ["F#", "G#", "A", "B", "C#", "D", "E"], // 7
+  ["G", "A", "A#", "C", "D", "D#", "F"], // 8
+  ["G#", "A#", "B", "C#", "D#", "E", "F#"], // 9 
+  ["A", "B", "C", "D", "E", "F", "G"], // 10
+  ["A#", "C", "C#", "D#", "F", "F#", "G#"], // 11
+  ["B", "C#", "D", "E", "F#", "G", "A"] // 12
+];
+
 var BPM = 120; // BPM of the track
 var channelCounter = 0; // I forgor 💀
 var firstTickSkipped = 0; // Kinda useless will prob remove
+var keySignature = KEY_SIGNATURES_MAJOR[2];
 
 // The highest and lowest possible values of the headset's data that we will actually use and parse into musical data.
 // Anything under the maximum and above the minimum will be sorted into respective notes, but anything above the maximum
 // or below the minimum will be treated as rests. 
-const MAX_AMPLITUDE = 0.0001;
-const MIN_AMPLITUDE = -0.0001;
+const MAX_AMPLITUDE = 0.001;
+const MIN_AMPLITUDE = -0.001;
 
 // The distance between the ceiling amplitude and the floor amplitude.
 const MIN_MAX_AMPLITUDE_DIFFERENCE = MAX_AMPLITUDE - MIN_AMPLITUDE;
@@ -27,7 +92,7 @@ const MIN_MAX_AMPLITUDE_DIFFERENCE = MAX_AMPLITUDE - MIN_AMPLITUDE;
 // An offset that is equal to the absolute value of MIN_AMPLITUDE. This offset is used to turn the negative MIN value 
 // into effectively zero, and the MAX value into itself plus this offset. This just removes negative numbers from all
 // of the calculation, making it simpler for humans to both read and write the code.
-const AMPLITUDE_OFFSET = 0.0001;
+const AMPLITUDE_OFFSET = 0.001;
 
 // Number of total notes that are able to be assigned. 7 is one octave, 14 is two octaves, 21 is three octaves.
 // Going above 21 is NOT recommended and has NOT been tested, but should theoretically work. DO NOT use values 
@@ -56,16 +121,7 @@ var maxC4 = 0, minC4 = 0;
 // This is temporary. Will be replaced with the 2D arrays below.
 var CMajor = ["C", "D", "E", "F", "G", "A", "B"];
 
-/* TODO: 2D array for ALL major and minor keys
-Basically this. This is the first few entries in major.
-| C | C# | D | 
-| D | D# | E | 
-| E | E# | F#|
-| F | F# | G | 
-| G | G# | A | 
-| A | A# | B | 
-| B | B# | C |
-*/
+
 
 // A counter that is incremented every time a new piece of data is recieved from the headset.
 var numTicksFromHeadset = 0;
@@ -122,60 +178,20 @@ const Test = () => {
           if (firstTickSkipped == 0)
             firstTickSkipped = 1;
           else
-            waitForNextTick("whole");
+            waitForNextTick("quarter");
           channelCounter = 0;
         }
 
         numTicksFromHeadset++;
 
-        var declaredNote = NoteDeclaration(data[0], track.contentHint);
+        var declaredNote = NoteDeclarationRaw(data[0], track.contentHint); // Get note increment
+        var noteAndOctave = GetNoteWRTKey(declaredNote); // Get the actual note and the octave
+        var floorOctave = GetFloorOctave(); // Get the lowest octave that will be used
 
-        if (declaredNote == 0 || declaredNote % 7 == 0)
-          console.log("Note is \"" + CMajor[0] + "\" [1st] from sensor " + track.contentHint); 
-        else if (declaredNote == 1 || declaredNote % 7 == 1)
-          console.log("Note is \"" + CMajor[1] + "\" [2nd] from sensor " + track.contentHint); 
-        else if (declaredNote == 2 || declaredNote % 7 == 2)
-          console.log("Note is \"" + CMajor[2] + "\" [3rd] from sensor " + track.contentHint); 
-        else if (declaredNote == 3 || declaredNote % 7 == 3)
-          console.log("Note is \"" + CMajor[3] + "\" [4th] from sensor " + track.contentHint); 
-        else if (declaredNote == 4 || declaredNote % 7 == 4)
-          console.log("Note is \"" + CMajor[4] + "\" [5th] from sensor " + track.contentHint); 
-        else if (declaredNote == 5 || declaredNote % 7 == 5)
-          console.log("Note is \"" + CMajor[5] + "\" [6th] from sensor " + track.contentHint); 
-        else if (declaredNote == 6 || declaredNote % 7 == 6)
-          console.log("Note is \"" + CMajor[6] + "\" [7th] from sensor " + track.contentHint); 
-
-        // Useful for debugging, but will likely be deleted before the final product.
-        // if (track.contentHint.localeCompare("C3") == 0)
-        // {
-        //   if (data[0] > maxC3) 
-        //     maxC3 = data[0];
-        //   if (data[0] < minC3)
-        //     minC3 = data[0];
-        // }
-        // else if (track.contentHint.localeCompare("C4") == 0)
-        // {
-        //   if (data[0] > maxC4) 
-        //     maxC4 = data[0];
-        //   if (data[0] < minC4)
-        //     minC4 = data[0];
-        // }
-        // else if (track.contentHint.localeCompare("FP1") == 0)
-        // { 
-        //   if (data[0] > maxFP1) 
-        //     maxFP1 = data[0];
-        //   if (data[0] < minFP1)
-        //     minFP1 = data[0];
-        // }
-        // else if (track.contentHint.localeCompare("FP2") == 0)
-        // {
-        //   if (data[0] > maxFP2) 
-        //     maxFP2 = data[0];
-        //   if (data[0] < minFP2)
-        //     minFP2 = data[0];
-        // }
-        //console.log("MAXES AS OF TICK " + numTicksFromHeadset + ": C3=" + maxC3 + ", C4=" + maxC4 + ", FP1=" + maxFP1 + ", FP2=" + maxFP2);
-        //console.log("MINS AS OF TICK  " + numTicksFromHeadset + ": C3=" + minC3 + ", C4=" + minC4 + ", FP1=" + minFP1 + ", FP2=" + minFP2);
+        if (noteAndOctave.note == -1) // If no note was declared, it's a rest.
+          console.log(track.contentHint + ": Rest");
+        else 
+          console.log(track.contentHint + ": " + noteAndOctave.note + "" + (noteAndOctave.octave + floorOctave));
         });
     };
     
@@ -290,18 +306,46 @@ function InitIncrementArr()
 }
 
 // Takes in the raw value from the headset and the sensor it came from and assigns a note.
-function NoteDeclaration(ampValue, sensor)
+function NoteDeclarationRaw(ampValue, sensor)
 {
   ampValue += AMPLITUDE_OFFSET; // Applies the offset to the headset's raw data
 
   // For every possible note, check to see if ampValue falls between two array positions. If so, return that position.
-  // If not, it will be treated as a rest.
+  // If not, it will be treated as a rest (returning -1).
   for (var i = 0; i <= NUM_NOTES - 1; i++) 
   {
     if (ampValue >= incrementArr[i] && ampValue <= incrementArr[i + 1])
       return i;
   }
-  console.log("Sensor " + sensor + " did not provide a note");
+  return -1;
+}
+
+// Gets the actual note from the previously-obtained note increment (see NoteDeclarationRaw())
+function GetNoteWRTKey(note)
+{
+  // If the note increment is between 1 and 7, simply return that index in the key array with octave being zero.
+  if (note <= 7 && note >= 1) 
+    return {note: keySignature[note - 1], octave: 0};
+  // If the note increment is less than zero, return *something* so it doesn't break [WIP]
+  else if (note <= 0)
+    return {note: -1, octave: 0};
+  // If the note is valid and greater than 7
+  else
+  {
+    var noteMod = note % 7; // Mod by 7 to find note increment
+    var noteDiv = Math.floor(note / 7); // Divide by 7 to find octave WRT NUM_NOTES/3.
+    return {note: keySignature[noteMod], octave: noteDiv};
+  }
+}
+
+// Returns the lowest necessary octave necessary, using NUM_NOTES to determine.
+// Octave 5 is used as the "center", used by default.
+function GetFloorOctave()
+{
+  if (NUM_NOTES == 7 || NUM_NOTES == 14)
+    return 5;
+  if (NUM_NOTES == 21)
+    return 4;
 }
 
 export default Test
