@@ -1,6 +1,7 @@
-import React, { Component, useState } from "react";
+import React, { Component, useContext, useState } from "react";
 import './Login.css'
-import axios from "axios";
+import { loginCall } from '../apiCall';
+import {AuthContext} from '../context/AuthContext'
 
 const Login = () => {
 
@@ -9,6 +10,7 @@ const Login = () => {
     const [stage, setStage] = useState(1);
     const [code, setCode] = useState("");
     const [confirmPassword, setconfirmPassword] = useState("");
+    const {user, isFetching, error, dispatch} = useContext(AuthContext);
 
     // const onSubmit = (event) => {
     //     alert(email + " " + password);
@@ -28,24 +30,8 @@ const Login = () => {
             "email": email,
             "password": password
         };
-        //create a json to pass into axois
-        let config = {
-            method: "post",
-            url: path.buildPath('/users/loginUser'),
-            headers:{
-                "Content-Type": "application/json"
-            },
-            data: loginCheck
-        };
-        //axios command
-        axios(config).then(function (res){
-            console.log(res.data);
-        })
-        .catch(function (err){
-            console.error(err.response.data);
-        })
-
-
+        loginCall(loginCheck, dispatch);
+        console.log(user)
     }
     
 
@@ -104,28 +90,6 @@ const Login = () => {
                             </div>
                         </form>
                     </div>
-
-                {/* {stage == 2 && (
-                    <div className="">
-                        <form>
-                            <h3>Verify Account</h3>
-                            <div className="form-group">
-                                <label>Enter Code</label>
-                                <input
-                                    type="email"
-                                    className="form-control"
-                                    placeholder="Enter Code"
-                                    value={code}
-                                    onChange={(event) => setCode(event.target.value)}
-                                />
-                            </div>
-
-
-                            <button type="submit" className="btn btn-primary btn-block" onClick={onSubmit}>Submit</button>
-                        </form>
-                    </div>
-
-                )} */}
             </div>
         </div>
     );

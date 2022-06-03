@@ -1,19 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Card, Button, Container } from 'react-bootstrap';
 import { CardList } from './CardList';
 import { FaHeart, FaPlayCircle } from 'react-icons/fa';
 import MidiPlayer from 'react-midi-player';
 import './MiniPlayer.css';
+import { AuthContext } from '../context/AuthContext';
 
 const Cards = () => {
     const [data, setData] = useState('');
     const [showMedia, setShowMedia] = useState(false);
-
+    const {user} = useContext(AuthContext);
     //Load data to be sent to MidiPlayer
     let _data = atob(data);
 
+    const handleDefault = (e) =>{
+        e.preventDefault();
+        console.log(user);
+    }
+
     return (
         <>
+            <button onClick={handleDefault}>HI</button>
             <Container style={{ overflowX: 'auto', overflowY: 'hidden' }}>
                 <div style={{ display: 'inline-flex' }}>
                     {CardList.map((item, index) => {
