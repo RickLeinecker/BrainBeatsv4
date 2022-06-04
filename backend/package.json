@@ -17,6 +17,7 @@
     "hbs": "^4.2.0",
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^8.5.1",
+    "midi-writer-js": "^2.1.0",
     "morgan": "~1.9.1",
     "mysql-server": "^0.0.5",
     "mysql2": "^2.3.3",

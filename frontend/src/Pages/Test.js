@@ -28,6 +28,7 @@ const KEY_SIGNATURES_MAJOR_OBJ = {
   AS_Major: ["A#", "C", "D", "D#", "F", "G", "A"],
   B_Major:  ["B", "C#", "D#", "E", "F#", "G#", "A#"]
 };
+
 const KEY_SIGNATURES_MINOR_OBJ = {
   C_Minor:  ["C", "D", "D#", "F", "G", "G#", "A#"],
   CS_Minor: ["C#", "D#", "E", "F#", "G#", "A", "B"],
@@ -60,6 +61,7 @@ const KEY_SIGNATURES_MAJOR = [
   ["A#", "C", "D", "D#", "F", "G", "A"], // 11
   ["B", "C#", "D#", "E", "F#", "G#", "A#"] // 12
 ];
+
 const KEY_SIGNATURES_MINOR = [
   ["C", "D", "D#", "F", "G", "G#", "A#"], // 0
   ["C#", "D#", "E", "F#", "G#", "A", "B"], // 1

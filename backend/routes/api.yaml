@@ -234,6 +234,31 @@ paths:
           description: OK
         404:
           description: URL Not Found
+  
+  # Delete a user by ID
+  /api/users/midi:
+    post:
+      tags:
+        - Users
+      summary: Set up a MIDI file
+      operationId: midi
+      description: Creates midi at db
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Create midi
+        required: true
+        description: User MIDI
+        schema:
+          $ref: '#/definitions/midi'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
 
 # File Upload Multiform Data
   /upload:
@@ -329,9 +354,9 @@ definitions:
       title:
         type: string
         example: Post title
-      content:
-        type: string
-        example: Post description
+      # content:
+      #   type: string
+      #   example: Post description
 
   findUser:
     required: 
@@ -395,6 +420,30 @@ definitions:
       password:
         type: string
         example: Secret_Password123
+
+  midi:
+    required: 
+    - userId
+    - title
+    - targetTime
+    - noteAndOctave
+    - floorOctave
+    properties:
+      id:
+        type: string
+        example: 632961af-29ae-4c3a-8f3f-426763a4cf00
+      title:
+        type: string
+        example: "This is my new track!"
+      targetTime:
+        type: int
+        example: 200
+      noteAndOctave:
+        type: int
+        example: 5 
+      floorOctave:
+        type: int
+        example: 8 
 
   sendVerificationEmail:
     required:
