@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 
 //Get user post information by ID
-router.get('/getPostsByID', async (req, res) => {
+router.get('/findMidi', async (req, res) => {
     const userId =  req.body.userId
     // const userExist = await prisma.user.findUnique({
     //     where: { id: userId  },
@@ -18,15 +18,8 @@ router.get('/getPostsByID', async (req, res) => {
     const posts = await prisma.post.findMany({
         where: { userId: userId }, 
         select: {
-            user: true,
-            title: true,
-            bpm: true,
-            key: true,
-            midi: true,
             data: true,
-            createdAt: true,
-            updatedAt: true,
-            // post: true
+            midi: true
         }
     });
     res.status(200).send({Object: posts});

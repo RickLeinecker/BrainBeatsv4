@@ -8,8 +8,8 @@ const fs = require('fs');
 var MidiWriter = require('midi-writer-js')
 
 router.post('/midi', async (req, res) => {  
-    try {    
-        const { userId, title, targetTime, noteAndOctave, floorOctave} =  req.body
+  
+        const { userId, bpm, key} =  req.body
         const userExists = await prisma.user.findUnique({
             where: { id: userId  },
         });
@@ -21,24 +21,15 @@ router.post('/midi', async (req, res) => {
 
         } else {
     
-        const newMidi = await prisma.post.create({
+        const newMidi = await prisma.post.updateMany({
             data: {
                 userId,
-                title,
-                // targetTime,
-                // noteAndOctave,
-                // floorOctave
+                bpm, // TODO
+                key, // C#M - C sharp major
             }
             
         })
         res.json(newMidi)
-        res.status(200).json({
-            msg: "MIDI uploaded successfully!"
-        });
      }
-    }
-    catch(err) {
-        res.status(500).send(err);
-    }
 })
 module.exports = router;

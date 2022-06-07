@@ -36,6 +36,8 @@ app.use('/api/users', require('./users/findUser'));
 app.use('/api/users', require('./users/getAllUsers'));
 app.use('/api/users', require('./users/createUser'));
 app.use('/api/users', require('./users/loginUser')); 
+app.use('/api/users', require('./users/logOut')); 
+app.use('/api/users', require('./users/findMidi')); 
 app.use('/api/users', require('./users/updateUser'));
 app.use('/api/users', require('./users/deleteUser'));
 app.use('/api/users', require('./users/createPost'));
