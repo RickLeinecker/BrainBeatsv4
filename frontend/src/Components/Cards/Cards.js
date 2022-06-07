@@ -40,7 +40,7 @@ const Cards = () => {
             </Container>
             <div className={`${showMedia ? 'mediaPlayerAct':'mediaPlayer' }`}>
                 <div>
-                <MidiPlayer data={_data} loop={0} onStop={()=> setShowMedia(false)} onEnd={()=> setShowMedia(false)}/>
+                <MidiPlayer data={_data} loop={false} autoplay={true}/>
                 </div>
             </div>
 

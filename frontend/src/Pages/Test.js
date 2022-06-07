@@ -200,6 +200,10 @@ const Test = () => {
       var declaredNote = NoteDeclarationRaw(datay, tracky.contentHint); // Get note increment
       var noteAndOctave = GetNoteWRTKey(declaredNote); // Get the actual note and its octave
       var floorOctave = GetFloorOctave(); // Get the lowest octave that will be used in the song
+
+      var thisisanumber = 36;
+      var hexString = thisisanumber.toString(16);
+      console.log("This should be 24: " + hexString);
       //console.log("declaredNote: " + declaredNote + ", noteAndOctave: " + noteAndOctave + ", floorOctave: " + floorOctave);
 
       if (noteAndOctave.note == -1) // If no note was declared, it's a rest.
@@ -236,6 +240,11 @@ const Test = () => {
 
     <div id="graph">
       <p>Graph of live EEG data:</p>
+    </div>
+
+    <div>
+      {//<MidiPlayer data={_data} loop={false} autoplay={true}/>
+      }
     </div>
     </>
   )
