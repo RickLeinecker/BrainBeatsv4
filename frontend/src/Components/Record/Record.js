@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import RecordButton from './RecordButton';
 import { Carousel } from "react-responsive-carousel";
 import { SliderPicker } from 'react-color'
+import './record.css'
+import { FaAngleRight } from "react-icons/fa";
 
 function Record() {
     //Set onLoad to link
-    const [type, setType] = useState('link');
+    const [type, setType] = useState('script');
 
     return (
         <div>
@@ -69,33 +71,66 @@ function ScriptThing(shown) {
     const [speed, setSpeed] = useState(1000);
     const [background, setBackground] = useState('#fff')
     const [textColor, setTextColor] = useState('#000')
+    const [stage, setStage] = useState(0)
 
     let words = script.split(' ');
+
+    const handleScript = (e) => {
+        e.preventDefault()
+        setStage(1)
+        
+    }
     if (shown.show) {
         return <>
-            <br />
-            <div className='container'>
-                <div className='row'>
-                    <div className='col'>
-                        <ValidScript scripts={[words, speed, background, textColor]} />
-                    </div>
-                    <div className='col'>
-                        <div>Script Setting</div>
+            {stage == 0 && (
+                <>
+                <div className='container scriptBox'>
+                
+                    <p className='textColor'>Script Setting</p>
                         <br />
                         <textarea rows='5' cols='50' placeholder='Wordbox (seperate words by space)' onChange={(e) => setScript(e.target.value)} />
                         <br />
-                        <label>Slideshow Speed</label>
+                        <label className='textColor'>Slideshow Speed</label> <br />
                         <input value={speed / 1000} type='number' placeholder='(seconds)' onChange={(e) => setSpeed(e.target.value * 1000)} />
                         <br />
+                        <button className='nextButton' onClick={handleScript}>RECORD {<FaAngleRight />}</button>
+                        
+                </div>
+
+                <br />
+            
+                </>
+            )}
+            {stage == 1 && (
+                <>
+                <div className='container'>
+                    <div className='row'>
+                        <div className='col'>
+                        <div>
+                    To start click left or right side of slideshow
+                </div>
+                <Carousel autoPlay width={700} showThumbs={false} showIndicators={false}
+                    infiniteLoop={true} dynamicHeight={true} interval={speed}>
+                    {words.map(
+                        (word) =>
+                            <div style={{ background: `${background}`, color: `${textColor}`, padding: '250px' }}>
+                                {word}
+                            </div>)}
+                </Carousel>
+
+                        </div>
+                        <div className='col scriptBox'>
                         <label>Slideshow Background</label>
                         <SliderPicker color={background} onChangeComplete={(e) => setBackground(e.hex)} />
                         <label>Text color</label>
                         <SliderPicker color={textColor} onChangeComplete={(e) => setTextColor(e.hex)} />
+                        <button className='nextButton' onClick={handleScript}>POST {<FaAngleRight />}</button>
+                        
+                        </div>
                     </div>
                 </div>
-
-                <br />
-            </div>
+                </>
+            )}
 
         </>
     }
@@ -111,27 +146,13 @@ function ValidScript(scripts) {
     if (wordArray != '') {
         return (
             <>
-                <div>
-                    To start click left or right side of slideshow
-                </div>
-                <Carousel autoPlay width={700} showThumbs={false} showIndicators={false}
-                    infiniteLoop={true} dynamicHeight={true} interval={speed}>
-                    {wordArray.map(
-                        (word) =>
-                            <div style={{ background: `${backgroundCol}`, color: `${textColor}`, padding: '250px' }}>
-                                {word}
-                            </div>)}
-                </Carousel>
+                
             </>
         )
 
     }
     else {
         return (<>
-            <Carousel autoPlay width={700} showThumbs={false} showIndicators={false}
-                infiniteLoop={true} dynamicHeight={true}>
-                <div style={{ padding: '200px' }}>Please enter some words in the textbox seperated by space.</div>
-            </Carousel>
         </>)
 
     }

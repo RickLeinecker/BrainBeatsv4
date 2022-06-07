@@ -1,0 +1,34 @@
+.scriptBox {
+    background: #36393f; 
+    height: 40%;
+    width:60%; 
+    padding: 15px; 
+    margin-top: 20px; 
+    border-radius: 70px; 
+    border: 4px solid #9c3b7f;
+}
+
+.colorBox {
+    background: #36393f; 
+    height: 40%;
+    width:60%; 
+    padding: 15px; 
+    margin-top: 20px; 
+    border-radius: 70px; 
+    border: 4px solid #9c3b7f;
+}
+.scriptTextBox {
+    border-radius: 20px; 
+    padding: 5px;
+}
+.nextButton {
+    padding-top: 20px;
+    background:none;
+    border: none;
+    color: white;
+    opacity: 40%;
+}
+.textColor{
+    color: white;
+    font-size: 25px;
+}

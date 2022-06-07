@@ -23,7 +23,7 @@ function App() {
         <Routes>
           <Route exact path='/' element={<Home />} />
           <Route path='/Login' element={user? <Navigate to ='/' /> : <Login />}/>
-          <Route path='/Record' element={user ? <Record /> : <Navigate to='/Login' />} />
+          <Route path='/Record' element={<Record />} />
           <Route path='/' element={<Home />} />
           <Route path='/Login' element={<Login />} />
           <Route path='/Register' element={<Register />} />
