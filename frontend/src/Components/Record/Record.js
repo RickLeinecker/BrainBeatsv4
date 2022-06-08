@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import RecordButton from './RecordButton';
 import { Carousel } from "react-responsive-carousel";
 import { SliderPicker } from 'react-color'
 import './record.css'
 import { FaAngleRight } from "react-icons/fa";
+import { AuthContext } from '../context/AuthContext';
 
 function Record() {
     //Set onLoad to link
     const [type, setType] = useState('script');
-
+    const {user} = useContext(AuthContext);
+    const handleDefault = (e) =>{
+        e.preventDefault();
+        console.log(user);
+    }
     return (
         <div>
+            <button onClick={handleDefault}>HI</button>
             <select onChange={e => { setType(e.target.value) }}>
                 <option value={"link"}>Youtube</option>
                 <option value={"script"}>Script</option>
@@ -88,7 +94,7 @@ function ScriptThing(shown) {
                 
                     <p className='textColor'>Script Setting</p>
                         <br />
-                        <textarea rows='5' cols='50' placeholder='Wordbox (seperate words by space)' onChange={(e) => setScript(e.target.value)} />
+                        <textarea className='scriptTextBox' rows='5' cols='50' placeholder='Wordbox (seperate words by space)' onChange={(e) => setScript(e.target.value)} />
                         <br />
                         <label className='textColor'>Slideshow Speed</label> <br />
                         <input value={speed / 1000} type='number' placeholder='(seconds)' onChange={(e) => setSpeed(e.target.value * 1000)} />

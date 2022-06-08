@@ -22,13 +22,12 @@ function App() {
       <Router>
         <Routes>
           <Route exact path='/' element={<Home />} />
-          <Route path='/Login' element={user? <Navigate to ='/' /> : <Login />}/>
-          <Route path='/Record' element={<Record />} />
-          <Route path='/' element={<Home />} />
-          <Route path='/Login' element={<Login />} />
+          <Route path='/Login' element={user ? <Navigate to ='/' /> : <Login />}/>
+          <Route path='/Record' element={user? <Record /> : <Navigate to='/Login' />} />
+          <Route path='/Profile' element={user ? <Profile /> : <Navigate to='/Login' />} />
           <Route path='/Register' element={<Register />} />
           <Route path='/Forgot' element={<Forgot />} />
-          <Route path='/Profile' element={<Profile />} />
+          
           <Route path='/Test' element={<Test />} />
         </Routes>
       </Router>

@@ -19,7 +19,9 @@
 }
 .scriptTextBox {
     border-radius: 20px; 
-    padding: 5px;
+    padding: 10px;
+    color:white;
+    background: none;
 }
 .nextButton {
     padding-top: 20px;

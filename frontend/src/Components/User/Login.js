@@ -31,7 +31,6 @@ const Login = () => {
             "password": password
         };
         loginCall(loginCheck, dispatch);
-        console.log(user)
     }
     
 
