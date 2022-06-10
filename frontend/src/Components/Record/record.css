@@ -1,5 +1,6 @@
 .scriptBox {
     background: #36393f; 
+    overflow: hidden;
     height: 40%;
     width:60%; 
     padding: 15px; 
@@ -33,4 +34,10 @@
 .textColor{
     color: white;
     font-size: 25px;
+}
+
+.YtVideo {
+    width: 90%;
+    height: 400px;
+    border-radius: 10px;
 }
