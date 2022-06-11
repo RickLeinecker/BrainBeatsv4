@@ -11,20 +11,19 @@ const jwtAPI = require("../../utils/jwt");
 
 // Create a new user
 router.post('/createUser', async (req, res) => {
+
     try 
     {
-        const { firstName, lastName, dob, email, username, password } = req.body;
+        const { firstName, lastName, dob, email, username, password, bio } = req.body;
 
         // Check if the email already exists in db
         const userEmailExists = await prisma.user.findUnique({
         where: { email },
-            select: { email: true }
         });
 
         // Check if the username already exists in db
         const userNameExists = await prisma.user.findUnique({
         where: { username },
-            select: { username: true }
         });
 
         if(userEmailExists || userNameExists) {
@@ -45,6 +44,7 @@ router.post('/createUser', async (req, res) => {
                     email,
                     username,
                     password: encryptedPassword,
+                    bio
                 }
             });
 
@@ -66,8 +66,8 @@ router.post('/createUser', async (req, res) => {
 
             res.json(newUser);
         }
-    } 
 
+    } 
     catch(err) {
         console.log(err)
         res.status(500).json({msg: "Unable to create user"})

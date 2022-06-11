@@ -5,10 +5,38 @@ import { AuthContext } from '../context/AuthContext';
 import './profile.css'
 const Profile = () => {
 
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [stage, setStage] = useState(1);
+    const [code, setCode] = useState("");
+    const [confirmPassword, setconfirmPassword] = useState("");
+    const {user, isFetching, error, dispatch} = useContext(AuthContext);
+
+    const updateAccount = (event) => {
+
+        //allows form to work without problems on start and submit
+        event.preventDefault();
+
+        //starting path for API endpoint
+        const path = require('../Path');
+        
+        //put all input fields into a json object
+        const updatedUser = {
+            "firstName": firstName,
+            "lastName": lastName,
+            "username": username,
+            "dob": dob + 'T00:00:00.000Z',
+            "email": email,
+            "password": password,
+            "bio": bio,
+        };
+        updateAccount(updatedUser, dispatch);
+    }
+
 
     let editProfile = false;
 
-    let user = useContext(AuthContext);
+    // let user = useContext(AuthContext);
     user = user.user;
 
     const editTrue = () => {
@@ -68,7 +96,7 @@ const Profile = () => {
                                 <div className="col-md-12">
                                     <div className="form-group">
                                         <label>About Me</label>
-                                        <textarea cols="80" placeholder="Here can be your description" rows="5" className="form-control"></textarea>
+                                        <textarea cols="80" placeholder={user ? user.bio : 'User bio'} rows="5" className="form-control"></textarea>
                                     </div>
                                 </div>
                             </div>

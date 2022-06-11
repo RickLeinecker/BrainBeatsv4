@@ -18,17 +18,18 @@ model User {
   dob       DateTime  @db.Date
   username  String    @unique @db.VarChar(20)
   password  String
-  createdAt DateTime @default(now())
+  bio       String?   @db.LongText
+  createdAt DateTime  @default(now())
   posts Post[]
 }
 
 model Post {
-  id       Int  @id @default(autoincrement())
+  id       Int       @id @default(autoincrement())
   title    String?
   bpm      Int?      @db.Int
   key      String?   @db.VarChar(255)
   midi     Bytes?    @db.Blob
-  data     String? @db.LongText
-  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  data     String?   @db.LongText
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId String // relation scalar field  (used in the `@relation` attribute above)
 }

@@ -6,32 +6,33 @@ const { user, post } = new PrismaClient();
 
 // Get user by username
 router.get('/findUser', async (req, res) => {
+
     try 
     {
-        const username =  req.body.username
-        const findUserbyUsername =  await prisma.user.findUnique({
-            where: { username: username },
+        const findUser =  await prisma.user.findUnique({
+            where: { username: req.body.username },
             select: {
                 firstName: true,
                 lastName: true,
                 dob: true,
                 email: true,
                 username: true,
+                bio: true,
                 posts: true
             }
         });
 
-        if(!findUserbyUsername) {
+        if(!findUser) {
             return res.status(400).json({
                 msg: "Username does not exist"
             })
         }
-        
-        res.status(200).send({Object: findUserbyUsername});
+        res.json(findUser)
     } 
     catch(err) {
         res.status(500).send({msg: err})
     }
+
 });
 
 module.exports = router;

@@ -10,6 +10,7 @@ const jwtAPI =  require("../../utils/jwt");
 
 // login an existing user
 router.post('/loginUser', async (req, res) => {
+  
     try {
 
         // Get user input
@@ -29,8 +30,8 @@ router.post('/loginUser', async (req, res) => {
 
         // If password is related to the email console log a successful login
         if (user && (await bcrypt.compare(password, user.password))) {
-          console.log("Logged in!")
-          res.status(200).json(user);
+          // res.json("Logged In!")
+          res.json(user)
           // jwtAPI.giveLoginJWT({id: user.id, email: user.email})
         } else {
           return res.status(400).send("Invalid Credentials");

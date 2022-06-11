@@ -22,7 +22,7 @@ router.get('/findMidi', async (req, res) => {
             midi: true
         }
     });
-    res.status(200).send({Object: posts});
+    res.json(posts);
 })
 
 module.exports = router;

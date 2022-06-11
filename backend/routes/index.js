@@ -42,7 +42,7 @@ app.use('/api/users', require('./users/updateUser'));
 app.use('/api/users', require('./users/deleteUser'));
 app.use('/api/users', require('./users/createPost'));
 app.use('/api/users', require('./users/midi'));
-app.use('/api/users', require('./users/getPostsByUsername'));
+app.use('/api/users', require('./users/findUserPosts'));
 app.use('/api/users', require('./users/jwtStuff'));
 app.use('/api/users', require('./users/sendVerificationEmail'));
 
