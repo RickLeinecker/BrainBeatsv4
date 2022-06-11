@@ -16,3 +16,5 @@ router.post('/jwtStuff', async (req, res) => {
         res.status(500).json({msg: "Unable to create JWT token"})
     }
 })
+
+module.exports = router;

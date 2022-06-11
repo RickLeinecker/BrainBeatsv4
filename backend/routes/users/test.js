@@ -1,24 +1,32 @@
+
+require("dotenv").config();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 
-//Post at user account
-router.post('/createPost', async (req, res) => {
+const jwtAPI = require("../../utils/jwt");
 
-    const { id, title, bpm, key} =  req.body
-    const userExists = await prisma.user.findUnique({
-        where: { id: id  },
+// Create a new user
+router.post('/test', async (req, res) => {
+
+    // const { firstName, lastName, username, email , dob, password } = req.body;
+
+    //Create a single record
+    const newUser = await prisma.user.create({
+        data: req.body        
     });
 
-    if(!userExists) {
-        return res.status(400).json({
-            msg: "User not found"
-        })
-    } else {
+    res.json(newUser);
 
-    // TEST IF YOU CAN SAVE THIS NEWLY UPDATED POST FOR USER OPTION FOR MUSIC CREATION REQUEST
-    //TODO: ADD MORE FIELDS AND CHANGE THIS FILE TO MIDI.JS OR OTHER WAY AROUND. NEED TO CHECK WITH NOAH ABOUT MORE PARAMTERS NEEDED
+});
+
+router.post('/test2', async (req, res) => {
+
+    const { id, title, bpm, key} = req.body;
+
     //Create a single record
     const newPost = await prisma.user.update({
         where: { id: id },
@@ -47,8 +55,38 @@ router.post('/createPost', async (req, res) => {
             posts: true
         }
     });
-    res.json(newPost)
-  }
+
+    res.json(newPost);
+
+});
+
+router.get('/test3', async (req, res) => {
+
+    const { id } = req.body;
+
+    //Create a single record
+    const user = await prisma.user.findUnique({
+        where: { id: id },
+        include: {
+            posts: true
+        }
+    })
+
+    res.json(user?.posts);
+
+});
+
+router.delete('/test4', async (req, res) => {
+
+    const { id } = req.body;
+
+    //Create a single record
+    const users = await prisma.user.delete({
+        where: { id: id },
+    })
+
+    res.json(users);
+
 });
 
 module.exports = router;

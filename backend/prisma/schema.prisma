@@ -11,34 +11,24 @@ datasource db {
 }
 
 model User {
-  @@map(name: "user")
-  id      String      @id @default(uuid())
-  email   String      @unique
+  id        String    @id @default(uuid())
   firstName String    @db.VarChar(255)
-  lastName  String    @db.VarChar(255)
+  lastName  String    @db.VarChar(255) 
+  email     String    @unique @db.VarChar(255)
   dob       DateTime  @db.Date
-  username String     @unique @db.VarChar(20)
-  password String
-  profile Profile?
-  posts   Post[]
-}
-
-model Profile {
-  id     String    @unique
-  bio    String?
-  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String     @id @default(uuid())
+  username  String    @unique @db.VarChar(20)
+  password  String
+  createdAt DateTime @default(now())
+  posts Post[]
 }
 
 model Post {
-  @@map(name: "post")
-  userId String     @id @default(uuid())
-  title String?
-  midi Bytes?   @db.Blob // MIDI FILE
-  data String?   @db.LongText // RAW DATA OF MIDI
-  bpm Int?       @db.Int //USER CHOICE OF BPM
-  key String?    @db.VarChar(255) // USER CHOICE OF KEYS
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id       Int  @id @default(autoincrement())
+  title    String?
+  bpm      Int?      @db.Int
+  key      String?   @db.VarChar(255)
+  midi     Bytes?    @db.Blob
+  data     String? @db.LongText
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String // relation scalar field  (used in the `@relation` attribute above)
 }

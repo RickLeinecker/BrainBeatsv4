@@ -35,12 +35,12 @@ paths:
                 name:
                   type: string
 
-# Find user with userId
+# Find user with username
   /api/users/findUser:
     post:
       tags:
         - Users
-      summary: Search a user by ID
+      summary: Search a user by with their username
       operationId: findUser
       description: Search a user in the database
       consumes: 
@@ -51,10 +51,9 @@ paths:
       - in: body
         name: findUser
         required: true
-        description: userID
+        description: Find a user by their username
         schema:
           type: string
-          format: byte
           $ref: '#/definitions/findUser'
       responses:
         200:
@@ -142,7 +141,7 @@ paths:
         - Users
       summary: Create post at user profile
       operationId: createPost
-      description: Create a post for a user by ID
+      description: Create a post for a user by username
       consumes: 
       - application/json
       produces:
@@ -160,13 +159,38 @@ paths:
         404:
           description: URL Not Found
 
-# Get user posts by userId
-  /api/users/getPostsByID:
+# New user post
+  /api/users/newPost:
     post:
       tags:
         - Users
-      summary: Search a users posts by ID
-      operationId: getPostsByID
+      summary: Create post at user profile
+      operationId: newPost
+      description: Create a post for a user by username
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Create a new post
+        required: true
+        description: User Post
+        schema:
+          $ref: '#/definitions/newPost'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
+# Get user posts by username
+  /api/users/getPostsByUsername:
+    post:
+      tags:
+        - Users
+      summary: Search a users posts by username
+      operationId: getPostsByUsername
       description: Get posts from user profile
       consumes: 
       - application/json
@@ -176,9 +200,9 @@ paths:
       - in: body
         name: Posts
         required: true
-        description: Get user posts by ID
+        description: Get user posts by username
         schema:
-          $ref: '#/definitions/getPostsByID'
+          $ref: '#/definitions/getPostsByUsername'
       responses:
         200:
           description: OK
@@ -215,7 +239,7 @@ paths:
     delete:
       tags:
         - Users
-      summary: Delete user by ID
+      summary: Delete user by username
       operationId: deleteUser
       description: Delete a user from the database
       consumes:
@@ -319,14 +343,6 @@ paths:
 
 definitions:
 
-  findUser:
-    required: 
-    - id
-    properties:
-      id:
-        type: string
-        example: 632961af-29ae-4c3a-8f3f-426763a4cf00
-
   createUser:
     required: 
     - firstName
@@ -369,31 +385,51 @@ definitions:
 
   createPost:
     required: 
-    - userId
+    - username
     - title
     - bpm
     - key
     properties:
-      userId:
+      username:
         type: string
-        example: 632961af-29ae-4c3a-8f3f-426763a4cf00
+        example: JohnDoe96
       title:
         type: string
         example: Post title
       bpm:
         type: int
-        example: 50-150
+        example: 50
       key:
         type: string
-        example: C
+        example: C#
+
+  newPost:
+    required: 
+    - username
+    - title
+    - bpm
+    - key
+    properties:
+      username:
+        type: string
+        example: JohnDoe96
+      title:
+        type: string
+        example: New Post title
+      bpm:
+        type: int
+        example: 50
+      key:
+        type: string
+        example: C#
 
   findUser:
     required: 
-    - id
+    - username
     properties:
-      id:
+      username:
         type: string
-        example: 632961af-29ae-4c3a-8f3f-426763a4cf00
+        example: JohnDoe96
 
   deleteUser:
     required:
@@ -430,13 +466,13 @@ definitions:
         type: string
         example: JohnDoe96
 
-  getPostsByID:
+  getPostsByUsername:
     required:
-    - userId
+    - username
     properties:
-      userId:
+      username:
         type: string
-        exmaple: 632961af-29ae-4c3a-8f3f-426763a4cf00
+        example: JohnDoe96
   
   loginUser:
     required: 

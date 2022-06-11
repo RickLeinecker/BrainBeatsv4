@@ -4,13 +4,13 @@ const { transformDocument } = require("@prisma/client/runtime");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 
-// Get user by ID
-router.post('/findUser', async (req, res) => {
+// Get user by username
+router.get('/findUser', async (req, res) => {
     try 
     {
-        const id =  req.body.id
-        const findUserbyID =  await prisma.user.findUnique({
-            where: { id: id },
+        const username =  req.body.username
+        const findUserbyUsername =  await prisma.user.findUnique({
+            where: { username: username },
             select: {
                 firstName: true,
                 lastName: true,
@@ -21,13 +21,13 @@ router.post('/findUser', async (req, res) => {
             }
         });
 
-        if(!findUserbyID) {
+        if(!findUserbyUsername) {
             return res.status(400).json({
-                msg: "User ID does not exist"
+                msg: "Username does not exist"
             })
         }
         
-        res.status(200).send({Object: findUserbyID});
+        res.status(200).send({Object: findUserbyUsername});
     } 
     catch(err) {
         res.status(500).send({msg: err})
