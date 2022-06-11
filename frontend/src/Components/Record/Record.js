@@ -3,14 +3,14 @@ import RecordButton from './RecordButton';
 import { Carousel } from "react-responsive-carousel";
 import { SliderPicker } from 'react-color'
 import './record.css'
-import { FaAngleRight } from "react-icons/fa";
+import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
 import { AuthContext } from '../context/AuthContext';
 
 function Record() {
     //Set onLoad to link
-    const [type, setType] = useState('script');
-    const {user} = useContext(AuthContext);
-    const handleDefault = (e) =>{
+    const [type, setType] = useState('link');
+    const { user } = useContext(AuthContext);
+    const handleDefault = (e) => {
         e.preventDefault();
         console.log(user);
     }
@@ -33,14 +33,65 @@ function LinkThing(shown) {
     //https://www.youtube.com/watch?v=l0jJGlalLh8
 
     const [id, setId] = useState('');
+    const [stage, setStage] = useState(0)
+
     let correctLink = id.split('=');
     let url = correctLink[1];
+    const goNext = (e) => {
+        e.preventDefault()
+        setStage(stage + 1)
+    }
+    const goBack = (e) => {
+        e.preventDefault()
+        setStage(stage - 1)
+
+    }
     if (shown.show) {
-        return (
-            <div>
-                <input placeholder='Youtube Link' onChange={(e) => setId(e.target.value)} /> <br />
-                <VidLink link={url} />
-            </div>)
+        return <>
+            {stage == 0 && (
+                <>
+                    <div className='container scriptBox'>
+
+                        <p className='textColor'>Script Setting</p>
+                        <br />
+                        <label className='textColor'>Youtube LInk</label>
+                        <br />
+                        <input placeholder='Youtube Link' onChange={(e) => setId(e.target.value)} />
+                        <br />
+                        <button className='nextButton' onClick={goNext}>RECORD {<FaAngleRight />}</button>
+
+                    </div>
+
+                    <br />
+
+                </>
+            )}
+            {stage == 1 && url == undefined && (
+                <>
+                    <br />
+                    <div className='container scriptBox'>
+
+                        <p className='textColor'>Invalid Link Please go back</p>
+
+                        <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
+                    </div>
+                </>
+            )}
+            {stage == 1 && url != undefined && (
+                <>
+                    <br />
+                    <div className='container scriptBox'>
+                        <VidLink link={url} />
+                        <br />
+                        <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
+
+                        <button className='nextButton' onClick={goNext}>POST {<FaAngleRight />}</button>
+
+                    </div>
+                </>
+            )}
+
+        </>
     }
     return <></>;
 }
@@ -49,27 +100,19 @@ function VidLink(link) {
 
     //https://www.youtube.com/watch?v=DSBBEDAGOTc
     let id = link.link;
-    if (id!= undefined) {
-        return (
-            <>
+    return (
+        <>
 
-                <iframe
-                    width="853"
-                    height="480"
-                    src={`https://www.youtube.com/embed/${id}`}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    title="Embedded youtube"
-                />
-            </>
-        )
-    } else {
-        return (
-            <>
-                <div style={{padding: '250px'}}>Please provide a valid Link</div>
-            </>
-        )
-    }
+            <iframe
+                src={`https://www.youtube.com/embed/${id}`}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                title="Embedded youtube"
+                className='YtVideo'
+            />
+
+        </>
+    )
 }
 
 function ScriptThing(shown) {
@@ -79,62 +122,65 @@ function ScriptThing(shown) {
     const [textColor, setTextColor] = useState('#000')
     const [stage, setStage] = useState(0)
 
-    let words = script.split(' ');
+    let words = script.split(', ');
 
-    const handleScript = (e) => {
+    const goNext = (e) => {
         e.preventDefault()
-        setStage(1)
-        
+        setStage(stage + 1)
+    }
+    const goBack = (e) => {
+        e.preventDefault()
+        setStage(stage - 1)
+
     }
     if (shown.show) {
         return <>
             {stage == 0 && (
                 <>
-                <div className='container scriptBox'>
-                
-                    <p className='textColor'>Script Setting</p>
+                    <div className='container scriptBox'>
+
+                        <p className='textColor'>Script Setting</p>
                         <br />
-                        <textarea className='scriptTextBox' rows='5' cols='50' placeholder='Wordbox (seperate words by space)' onChange={(e) => setScript(e.target.value)} />
+                        <textarea className='scriptTextBox' rows='5' cols='50' placeholder='Wordbox (seperate words by commas and spaces)' onChange={(e) => setScript(e.target.value)} />
                         <br />
                         <label className='textColor'>Slideshow Speed</label> <br />
                         <input value={speed / 1000} type='number' placeholder='(seconds)' onChange={(e) => setSpeed(e.target.value * 1000)} />
                         <br />
-                        <button className='nextButton' onClick={handleScript}>RECORD {<FaAngleRight />}</button>
-                        
-                </div>
+                        <button className='nextButton' onClick={goNext}>RECORD {<FaAngleRight />}</button>
 
-                <br />
-            
+                    </div>
+
+                    <br />
+
                 </>
             )}
-            {stage == 1 && (
-                <>
-                <div className='container'>
-                    <div className='row'>
-                        <div className='col'>
-                        <div>
-                    To start click left or right side of slideshow
-                </div>
-                <Carousel autoPlay width={700} showThumbs={false} showIndicators={false}
-                    infiniteLoop={true} dynamicHeight={true} interval={speed}>
-                    {words.map(
-                        (word) =>
-                            <div style={{ background: `${background}`, color: `${textColor}`, padding: '250px' }}>
-                                {word}
-                            </div>)}
-                </Carousel>
+            {stage == 1 && words == '' && (
+                <div className='container scriptBox'>
 
-                        </div>
-                        <div className='col scriptBox'>
-                        <label>Slideshow Background</label>
-                        <SliderPicker color={background} onChangeComplete={(e) => setBackground(e.hex)} />
-                        <label>Text color</label>
-                        <SliderPicker color={textColor} onChangeComplete={(e) => setTextColor(e.hex)} />
-                        <button className='nextButton' onClick={handleScript}>POST {<FaAngleRight />}</button>
-                        
+                    <p className='textColor'>Invalid Script Please go back</p>
+
+                    <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
+
+                </div>
+            )}
+            {stage == 1 && words != '' && (
+                <>
+                    <div className='container'>
+                        <div className='row'>
+                            <div className='col'>
+                                <ValidScript scripts={[words, speed, background, textColor]} />
+                            </div>
+                            <div className='col scriptBox'>
+                                <label>Slideshow Background</label>
+                                <SliderPicker color={background} onChangeComplete={(e) => setBackground(e.hex)} />
+                                <label>Text color</label>
+                                <SliderPicker color={textColor} onChangeComplete={(e) => setTextColor(e.hex)} />
+                                <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
+                                <button className='nextButton' onClick={goNext}>POST {<FaAngleRight />}</button>
+
+                            </div>
                         </div>
                     </div>
-                </div>
                 </>
             )}
 
@@ -149,19 +195,25 @@ function ValidScript(scripts) {
     let speed = scripts.scripts[1];
     let backgroundCol = scripts.scripts[2];
     let textColor = scripts.scripts[3];
-    if (wordArray != '') {
-        return (
-            <>
-                
-            </>
-        )
 
-    }
-    else {
-        return (<>
-        </>)
 
-    }
+    return (
+        <>
+            <div>
+                To start click left or right side of slideshow
+            </div>
+            <Carousel autoPlay width={700} showThumbs={false} showIndicators={false}
+                infiniteLoop={true} dynamicHeight={true} interval={speed}>
+                {wordArray.map(
+                    (word) =>
+                        <div style={{ background: `${backgroundCol}`, color: `${textColor}`, padding: '250px' }}>
+                            {word}
+                        </div>)}
+            </Carousel>
+
+        </>
+    )
+
 
 }
 
