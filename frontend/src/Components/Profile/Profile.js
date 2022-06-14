@@ -1,43 +1,74 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { Card } from 'react-bootstrap'
 import { AuthContext } from '../context/AuthContext';
-
+import axios from "axios";
 import './profile.css'
+
 const Profile = () => {
 
+    let user = useContext(AuthContext);
+    user = user.user;
+
+    // //useStates to get required fields
     const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [password, setPassword] = useState("");
-    const [stage, setStage] = useState(1);
-    const [code, setCode] = useState("");
-    const [confirmPassword, setconfirmPassword] = useState("");
-    const {user, isFetching, error, dispatch} = useContext(AuthContext);
+    const [stage, setStage] = useState(0);
+    const [bio, setBio] = useState("");
+    const [errorMsg, setErrorMsg] = useState('');
 
-    const updateAccount = (event) => {
-
-        //allows form to work without problems on start and submit
-        event.preventDefault();
-
-        //starting path for API endpoint
-        const path = require('../Path');
-        
-        //put all input fields into a json object
-        const updatedUser = {
-            "firstName": firstName,
-            "lastName": lastName,
-            "username": username,
-            "dob": dob + 'T00:00:00.000Z',
-            "email": email,
-            "password": password,
-            "bio": bio,
-        };
-        updateAccount(updatedUser, dispatch);
+    const emptyField = () => {
+        return (!email || !username || !firstName || !lastName || !bio)
     }
 
+    const UpdateProfile = (event) => {
+        event.preventDefault();
+        if (emptyField()) {
+            setErrorMsg("Fill out all fields please");
+            return;
+        }
+        if (validateEmail()) {
+            setErrorMsg("Invalid Email format");
+            setStage(0);
+            return;
+        }
+
+        const path = require('../Path');
+
+        //put all input fields into a json object
+        const newUser = {
+            "id": user.id,
+            "firstName": firstName,
+            "lastName": lastName,
+            "email": email,
+            "username": username,
+            "bio": bio
+        };
+
+        console.log(newUser);
+
+        //create a json to pass into axois
+        let config = {
+            method: "put",
+            url: path.buildPath('/users/updateUser'),
+            headers: {
+                "Content-Type": "application/json"
+            },
+            data: newUser
+        };
+
+        //axios command
+        axios(config).then(function (res) {
+            console.log(res.data);
+        })
+            .catch(function (err) {
+                setErrorMsg(err.response.data.msg);
+            })
+    }
 
     let editProfile = false;
-
-    // let user = useContext(AuthContext);
-    user = user.user;
 
     const editTrue = () => {
         editProfile = true;
@@ -46,6 +77,17 @@ const Profile = () => {
         e.preventDefault();
         console.log(user);
         
+    }
+
+    //Validates email field
+    const validateEmail = (event) => {
+        const regexp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (regexp.test(email)) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     return (
@@ -62,19 +104,19 @@ const Profile = () => {
                                 <div className="pr-1 col-md-3">
                                     <div className="form-group">
                                         <label>Username</label>
-                                        <input placeholder={user ? user.username : 'username'} type="text" className="form-control" />
+                                        <input placeholder={user ? user.username : 'username'} onChange = {(event) => setUsername(event.target.value)} type="text" className="form-control" />
                                     </div>
                                 </div>
                                 <div className="px-1 col-md-3">
                                     <div className="form-group">
                                         <label>Password</label>
-                                        <input placeholder={user ? '**********' : 'password'} type="password" className="form-control" />
+                                        <input placeholder={user ? '**********' : 'password'} disabled type="password" className="form-control" />
                                     </div>
                                 </div>
                                 <div className="pl-1 col-md-6">
                                     <div className="form-group">
                                         <label>Email address</label>
-                                        <input placeholder={user ? user.email : 'email'} type="text" className="form-control" />
+                                        <input placeholder={user ? user.email : 'email'} onChange = {(event) => setEmail(event.target.value)} type="text" className="form-control" />
                                     </div>
                                 </div>
                             </div>
@@ -82,13 +124,13 @@ const Profile = () => {
                                 <div className="pr-1 col-md-6">
                                     <div className="form-group">
                                         <label>First Name</label>
-                                        <input placeholder={user ? user.firstName : 'First Name'} type="text" className="form-control" />
+                                        <input placeholder={user ? user.firstName : 'First Name'} onChange = {(event) => setFirstName(event.target.value)} type="text" className="form-control" />
                                     </div>
                                 </div>
                                 <div className="pl-1 col-md-6">
                                     <div className="form-group">
                                         <label>Last Name </label>
-                                        <input placeholder={user ? user.lastName : 'Last Name'} type="text" className="form-control" />
+                                        <input placeholder={user ? user.lastName : 'Last Name'} onChange = {(event) => setLastName(event.target.value)} type="text" className="form-control" />
                                     </div>
                                 </div>
                             </div>
@@ -96,12 +138,12 @@ const Profile = () => {
                                 <div className="col-md-12">
                                     <div className="form-group">
                                         <label>About Me</label>
-                                        <textarea cols="80" placeholder={user ? user.bio : 'User bio'} rows="5" className="form-control"></textarea>
+                                        <textarea cols="80" placeholder={user ? user.bio : 'User bio'} onChange = {(event) => setBio(event.target.value)} rows="5" className="form-control"></textarea>
                                     </div>
                                 </div>
                             </div>
                             <div className="cardButton">
-                                <button type="button" class="btn-fill pull-right btn btn-info">Update Profile</button>
+                                <button type="button" onClick = {UpdateProfile} class="btn-fill pull-right btn btn-info">Update Profile</button>
                             </div>
                            
                         </div>

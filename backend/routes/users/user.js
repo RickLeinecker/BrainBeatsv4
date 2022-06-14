@@ -75,7 +75,7 @@ router.post('/createUser', async (req, res) => {
 
 });
 
-//Get all users with all records
+// Get all users with all records
 router.get('/getAllUsers', async (req, res) => {
 
     try 
@@ -94,6 +94,24 @@ router.get('/getAllUsers', async (req, res) => {
             }
         });
         res.json(users)
+    } 
+    catch(err) {
+        res.status(500).send({msg: err})
+    }
+    
+});
+
+// Get all users with all records
+router.get('/getAllUsersPosts', async (req, res) => {
+
+    try 
+    {
+        const allUsersPosts =  await prisma.user.findMany({
+            select: {
+                posts: true
+            }
+        });
+        res.json(allUsersPosts)
     } 
     catch(err) {
         res.status(500).send({msg: err})
@@ -156,7 +174,7 @@ router.post('/createPost', async (req, res) => {
 
 });
 
-//Get user post information by username
+// Get user post information by username
 router.get('/findUserPosts', async (req, res) => {
 
     try {
@@ -212,7 +230,7 @@ router.get('/findUser', async (req, res) => {
 
 });
 
-//Update user info 
+// Update user info 
 router.put('/updateUser', async (req, res) => {
 
     try 
@@ -223,15 +241,15 @@ router.put('/updateUser', async (req, res) => {
             data: {
                     firstName: firstName,
                     lastName: lastName,
-                    dob: new Date(dob),
                     email: email,
                     username: username,
-                    bio,
+                    bio: bio
             }
           })
         //   res.status(200).send({msg: "Updated OK"});
           res.json(updateUser);
     } 
+
     catch(err) {
         res.status(500).send(err);
     }
@@ -312,7 +330,7 @@ router.post('/jwtStuff', async (req, res) => {
     }
 })
 
-// login an existing user
+// Login an existing user
 router.post('/loginUser', async (req, res) => {
   
     try {
@@ -346,11 +364,12 @@ router.post('/loginUser', async (req, res) => {
 
 });
 
-//Get user midi information by ID
+// Get user midi information by ID
 router.get('/findMidi', async (req, res) => {
 
+    const { username } = req.body;
     const userExist = await prisma.user.findUnique({
-        where: { id: userId  },
+        where: { username },
     });
 
     if(!userExist) {
@@ -358,15 +377,21 @@ router.get('/findMidi', async (req, res) => {
             msg: "User not found"
         })
     } else {
-        const posts = await prisma.post.findMany({
-            where: { id: req.body.id }, 
+
+        const posts = await prisma.user.findUnique({
+            where: { username: username }, 
             select: {
-                data: true,
-                midi: true
+                posts: {
+                    select: {
+                        midi: true,
+                        data: true
+                    }
+                }
             }
         });
     res.json(posts);
     }
+
 })
 
 module.exports = router;

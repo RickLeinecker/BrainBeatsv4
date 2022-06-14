@@ -33,19 +33,6 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJSDocs));
 
 app.use(express.json())
 app.use('/api/users', require('./users/user')); 
-// app.use('/api/users', require('./users/findUser')); 
-// app.use('/api/users', require('./users/getAllUsers'));
-// app.use('/api/users', require('./users/createUser'));
-// app.use('/api/users', require('./users/loginUser')); 
-// app.use('/api/users', require('./users/logOut')); 
-// app.use('/api/users', require('./users/findMidi')); 
-// app.use('/api/users', require('./users/updateUser'));
-// app.use('/api/users', require('./users/deleteUser'));
-// app.use('/api/users', require('./users/createPost'));
-// app.use('/api/users', require('./users/midi'));
-// app.use('/api/users', require('./users/findUserPosts'));
-app.use('/api/users', require('./users/jwtStuff'));
-// app.use('/api/users', require('./users/sendVerificationEmail'));
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

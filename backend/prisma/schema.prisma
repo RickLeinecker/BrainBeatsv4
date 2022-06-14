@@ -32,4 +32,5 @@ model Post {
   data     String?   @db.LongText
   author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId String // relation scalar field  (used in the `@relation` attribute above)
+  createdAt DateTime  @default(now())
 }
