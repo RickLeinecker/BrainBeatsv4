@@ -94,6 +94,8 @@ router.get('/getAllUsers', async (req, res) => {
             }
         });
         res.json(users)
+        // FIND THE LENGTH OF USERS IN MYSQL USER TABLE
+        // res.json(users.length)
     } 
     catch(err) {
         res.status(500).send({msg: err})
@@ -199,6 +201,7 @@ router.get('/findUserPosts', async (req, res) => {
 
 })
 
+
 // Get user by username
 router.get('/findUser', async (req, res) => {
 
@@ -229,6 +232,14 @@ router.get('/findUser', async (req, res) => {
     }
 
 });
+
+
+// for (let i = 0; i <= user.length; i++) {
+//     title: 'Song ' + i;
+//     artist: user.lastName + user.lastName;
+//     time: user.createdAt;
+//     data: user.data;
+//   };
 
 // Update user info 
 router.put('/updateUser', async (req, res) => {

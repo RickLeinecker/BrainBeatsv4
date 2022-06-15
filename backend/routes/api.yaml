@@ -35,6 +35,25 @@ paths:
                 name:
                   type: string
 
+#Returns an array of all user posts
+  /api/users/getAllUsersPosts:
+    get:
+      tags:
+        - Users
+      summary: Returns a list of all users.
+      responses:
+        200:    # status code
+          description: Successul Response
+          schema: 
+            type: array
+            items: 
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+
 # Find user with username
   /api/users/findUser:
     post:
