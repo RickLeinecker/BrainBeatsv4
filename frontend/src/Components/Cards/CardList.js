@@ -76,14 +76,14 @@ export const CardList = [
         0404 0218 0800 ff2f 004d 5472 6b00 0000
         1900 ff03 0946 4c20 4b65 7973 2031 0090
         3c64 3080 3c40 00ff 2f00 
-        ^    ^    ^ These 3 numbers control note and length, this is for an C5 eigth note.
+        ^    ^    ^ These 3 numbers control note and length, this is for a C5 eigth note.
 
         4d54 6864 0000 0006 0001 0002 0060 4d54
         726b 0000 0013 00ff 5103 0744 1e00 ff58
         0404 0218 0800 ff2f 004d 5472 6b00 0000
         1900 ff03 0946 4c20 4b65 7973 2031 0090
         3c64 1880 3c40 00ff 2f00 
-        ^    ^    ^ These 3 numbers control note and length, this is for an C5 sixteenth note.
+        ^    ^    ^ These 3 numbers control note and length, this is for a C5 sixteenth note.
 
         4d54 6864 0000 0006 0001 0002 0060 4d54
         726b 0000 0013 00ff 5103 0744 1e00 ff58
