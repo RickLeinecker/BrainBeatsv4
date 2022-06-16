@@ -10,13 +10,9 @@ function Record() {
     //Set onLoad to link
     const [type, setType] = useState('link');
     const { user } = useContext(AuthContext);
-    const handleDefault = (e) => {
-        e.preventDefault();
-        console.log(user);
-    }
+
     return (
         <div>
-            <button onClick={handleDefault}>HI</button>
             <select onChange={e => { setType(e.target.value) }}>
                 <option value={"link"}>Youtube</option>
                 <option value={"script"}>Script</option>

@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export const loginCall = async (userCredential, dispatch)=>{
+    
     dispatch({type: 'LOGIN_START'});
 
     const path = require('./Path');
@@ -14,5 +15,6 @@ export const loginCall = async (userCredential, dispatch)=>{
         localStorage.setItem('user', JSON.stringify(res.data));
     }catch(err){
         dispatch({type:'LOGIN_FAILURE', payload: err});
+        console.log(err)
     }
 }

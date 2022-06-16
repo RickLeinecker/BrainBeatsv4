@@ -92,7 +92,6 @@ const Profile = () => {
 
     return (
         <div className='content-fluid'>
-            <button onClick={handle}>He</button>
             <div className='row'>
                 <div className='col-md-8'>
                     <div className='editCard'>
@@ -138,7 +137,7 @@ const Profile = () => {
                                 <div className="col-md-12">
                                     <div className="form-group">
                                         <label>About Me</label>
-                                        <textarea cols="80" placeholder={user ? user.bio : 'User bio'} onChange = {(event) => setBio(event.target.value)} rows="5" className="form-control"></textarea>
+                                        <textarea cols="80" placeholder={user.bio ? user.bio : 'User bio'} onChange = {(event) => setBio(event.target.value)} rows="5" className="form-control"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -156,7 +155,7 @@ const Profile = () => {
                             <p>{user ? user.firstName + " " + user.lastName : "First Name Last Name"}</p>
                         </div>
                         <div className='userBody'>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                            <p>{user.bio ? user.bio : 'Please fill in your bio'}</p>
                         </div>
                     </div>
                     
