@@ -239,7 +239,7 @@ const Test = () => {
       else 
         console.log(tracky.contentHint + ": " + noteAndOctave.note + "" + (noteAndOctave.octave + floorOctave) + " [" + (datay - -AMPLITUDE_OFFSET)+ "]");
 
-      playMidiNote(554.365, .1, instrumentEnums.SineWave, quickNoteType);
+      playMidiNote(554.365, .1, instrumentEnums.SquareWave, quickNoteType);
     };
     
     // ------------- Set Button Functionality -------------
@@ -261,16 +261,6 @@ const Test = () => {
     <br />
     <h1>Bluetooth Testing</h1>
     <hr />
-
-    <script src="../Microtonality/mapping.js"></script>
-    <script src="../Microtonality/keyboard.js"></script>
-    <script src="../Microtonality/midi.js"></script>
-    <script src="../Microtonality/ui.js"></script>
-    <script src="../Microtonality/soundFiles.js"></script>
-    <script src="../Microtonality/instrumentData.js"></script>
-    <script src="../Microtonality/scales.js"></script>
-    <script src="../Microtonality/canvasEvents.js"></script>
-    <script src="../Microtonality/code.js"></script>
     
     <div id="buttons">
       <p>Click connect and choose your Ganglion headset in the popup.</p>
@@ -409,7 +399,30 @@ function getNoteType(noteType)
     return 4;
 }
 
-// ------------------------------------------------------------------------------ STOLEN FROM MICROTONALITY.NET ------------------------------------------------------------------------------
+function findNumSamples(ms)
+{
+  // Sample rate is number of samples every second
+  // numSamples is the number of total samples played
+  // ms is how many milliseconds we want something to play for
+  let relationToSecond = 1000 / ms;
+  let numSamples = SAMPLE_RATE / relationToSecond;
+  return numSamples;
+}
+
+// ------------------------------------------------------------------------------ FUNCTIONS STOLEN FROM MICROTONALITY.NET ------------------------------------------------------------------------------
+
+function setupInstrumentList()
+{
+  instrList = [];
+	instrList.push( flute );
+	instrList.push( oboe );
+	instrList.push( clarinet );
+	instrList.push( bassoon );
+	instrList.push( trumpet );
+	instrList.push( frenchhorn );
+	instrList.push( trombone );
+	instrList.push( tuba );
+}
 
 function playMidiNote( frequency, amplitude, soundType, noteLength)
 {
@@ -446,16 +459,6 @@ function playMidiNote( frequency, amplitude, soundType, noteLength)
 	return true;
 }
 
-function findNumSamples(ms)
-{
-  // Sample rate is number of samples every second
-  // numSamples is the number of total samples played
-  // ms is how many milliseconds we want something to play for
-  let relationToSecond = 1000 / ms;
-  let numSamples = SAMPLE_RATE / relationToSecond;
-  return numSamples;
-}
-
 function getNoteData(soundType,freq,amplitude,ctx, noteLength)
 {
 	// Local buffer variable.
@@ -464,12 +467,63 @@ function getNoteData(soundType,freq,amplitude,ctx, noteLength)
 	// For each supported sound type we call the correct function.
 	if( soundType == instrumentEnums.SineWave )
 		buffer = sineWave(findNumSamples(timeForEachNoteARRAY[getNoteType(noteLength)]),freq,amplitude,ctx);
+  else if ( soundType == instrumentEnums.TriangleWave )
+    buffer = triangleWave(findNumSamples(timeForEachNoteARRAY[getNoteType(noteLength)]),freq,amplitude,ctx);
+  else if ( soundType == instrumentEnums.SquareWave )
+    buffer = squareWave(findNumSamples(timeForEachNoteARRAY[getNoteType(noteLength)]),freq,amplitude,ctx);
   else
 		buffer = instrumentWave(findNumSamples(timeForEachNoteARRAY[getNoteType(noteLength)]),freq,ctx, soundType);
 	
 	return buffer;
 }
 
+// This function used to be called "getAmplitude", which I believe to be incorrect; it does math to determine overtone FREQUENCIES, not amplitudes.
+function getOvertoneFrequencies( instrumentIndex, frequency ) 
+{
+	// Get the list of note amplitude values for this instrument.
+	let list = instrList[instrumentIndex];
+	
+	// We will start with a default value.
+	let index = 0;
+	let diff = Math.abs( frequency - list[0][0] );
+
+	// Loop through the list of frequencies/amplitudes and find the closest match.
+	for( let i=1; i<list.length; i++ )
+	{
+		// Get the difference between incoming frequency value and the
+		//	the frequeny of this list element.
+		let td = Math.abs( frequency - list[i][0] );
+		
+		// If this is less (we are closer to the specified frequency)
+		//	then we record the index and remember the new difference.
+		if( td < diff )
+		{
+			diff = td;
+			index = i;
+		}
+	}
+
+	// Here we take the current array and make a new array to
+	//	return. This reflects code that we previously developed.
+	//	This could be eliminated if the "using" code was rewritten.
+	let retList = [];
+	for( let i=1; i<list[index].length; i++ )
+	{
+		// Push the harmonic number.
+		retList.push( i );
+		// Push the amplitude.
+		retList.push( list[index][i] );
+	}
+	
+	return retList;
+}
+
+// ------------------------------------------------------------------------------ INSTRUMENT DATA STOLEN FROM MICROTONALITY.NET ------------------------------------------------------------------------------
+
+// We are using a somewhat standard sample rate of 44100hz
+var sampleRate = 44100;
+
+// Sine wave
 function sineWave(numSamples,frequency,amplitude,ctx)
 {
 	// Precalculate 2PI
@@ -492,23 +546,132 @@ function sineWave(numSamples,frequency,amplitude,ctx)
 	return buffer;
 }
 
-function setupInstrumentList()
+// Triangle wave
+function triangleWave(numSamples,frequency,amplitude,ctx)
 {
-  instrList = [];
-	instrList.push( flute );
-	instrList.push( oboe );
-	instrList.push( clarinet );
-	instrList.push( bassoon );
-	instrList.push( trumpet );
-	instrList.push( frenchhorn );
-	instrList.push( trombone );
-	instrList.push( tuba );
+	
+	// Here we calculate the number of samples for each wave oscillation.
+	var samplesPerOscillation = sampleRate / frequency;
+	// This is the first quarter of the oscillation. 0 - 1/4
+	var first = samplesPerOscillation / 4;
+	// This is the second quarter of the oscillation. 1/4 - 1/2
+	var second = samplesPerOscillation / 2;
+	// This is the third quarter of the oscillation. 1/2 - 3/4
+	var third = ( samplesPerOscillation / 2 ) + ( samplesPerOscillation / 4 );
+	// We will count the samples as we go.
+	var counter = 0;
+
+	// Step value. This is how much the sample value changes per sample.
+	var step = 1 / first;
+
+	// Create the buffer for the node.
+	var buffer = ctx.createBuffer(1, numSamples, sampleRate);
+	
+	// Create the buffer into which the audio data will be placed.
+	var buf = buffer.getChannelData(0);
+	
+	// Loop numSamples times -- that's how many samples we will calculate and store.
+	for (var i = 0; i < numSamples; i++) 
+	{
+		// Increment the counter.
+		counter++;
+		
+		// See if this is the first quarter.
+		if( counter <= first )
+		{
+			// Store the value.
+			buf[i] = step * counter * amplitude;
+		}
+		// See if this is the second quarter.
+		else if( counter <= second )
+		{
+			// We want the count relative to this quarter.
+			var cnt = counter - first;
+			
+			// Store the value.
+			buf[i] = 1 - step * cnt * amplitude;
+		}
+		// See if this is the third quarter.
+		else if( counter <= third )
+		{
+			// We want the count relative to this quarter.
+			var cnt = counter - second;
+			
+			// Store the value.
+			buf[i] = -( step * cnt ) * amplitude;
+		}
+		// This is the fourth quarter.
+		else
+		{
+			// We want the count relative to this quarter.
+			var cnt = counter - third;
+			
+			// Store the value.
+			buf[i] = -1 + ( step * cnt ) * amplitude;
+			
+			// See if we are done with this cycle.
+			if( counter >= samplesPerOscillation )
+			{
+				// Set to zero so we are ready for another cycle.
+				counter = 0;
+			}
+		}
+	}
+  return buffer;
 }
 
+// Square wave
+function squareWave(numSamples,frequency,amplitude,ctx)
+{
+	
+	// Here we calculate the number of samples for each wave oscillation.
+	var samplesPerOscillation = sampleRate / frequency;
+	// Create the value for the first oscillation change.
+	var first = samplesPerOscillation / 2;
+	// We will count the samples as we go.
+	var counter = 0;
+
+	// Create the buffer for the node.
+	var buffer = ctx.createBuffer(1, numSamples, sampleRate);
+	
+	// Create the buffer into which the audio data will be placed.
+	var buf = buffer.getChannelData(0);
+	
+	// Loop numSamples times -- that's how many samples we will calculate and store.
+	for (var i = 0; i < numSamples; i++) 
+	{
+		// Increment the counter.
+		counter++;
+		
+		// This is the first half of the oscillation. it should be 1.
+		if( counter <= first )
+		{
+			// Store the value.
+			buf[i] = 1 * amplitude;
+		}
+		// This is the second half of the oscillation. It should be -1.
+		else
+		{
+			// Store the value.
+			buf[i] = -1 * amplitude;
+			
+			// See if we are done with this cycle.
+			if( counter >= samplesPerOscillation )
+			{
+				// Set to zero so we are ready for another cycle.
+				counter = 0;
+			}
+		}
+	}
+
+	// Return the channel buffer.
+	return buffer;
+}
+
+// "Real" instrument additive synthesis
 function instrumentWave(numSamples,frequency,ctx,soundType)
 {
 	setupInstrumentList();
-  let sampleRate = 44100;
 
 	// Get the instrument specs.
 	let inst = getOvertoneFrequencies( soundType, frequency );
@@ -552,14 +715,16 @@ function instrumentWave(numSamples,frequency,ctx,soundType)
 	return buffer;
 }
 
-// fluteRange = "Range: c4 (261.62) to c7 (2093.0)";
-// oboeRange = "Range: a#3 (233.08) to f6 (1396.91)";
-// clarinetRange = "Range: d3 (146.83) to d6 (1174.66)";
-// bassoonRange = "Range: a#1 (58.27) to f4 (349.22)";
-// trumpetRange = "Range: f#3 (184.99) to d#6 (1244.51)";
-// frenchhornRange = "Range: d2 (73.41) to d5 (587.33)";
-// tromboneRange = "Range: e2 (82.4) to d#5 (622.25)";
-// tubaRange = "Range: c2 (65.4) to g4 (91.99)";
+/*
+fluteRange = "Range: c4 (261.62) to c7 (2093.0)";
+oboeRange = "Range: a#3 (233.08) to f6 (1396.91)";
+clarinetRange = "Range: d3 (146.83) to d6 (1174.66)";
+bassoonRange = "Range: a#1 (58.27) to f4 (349.22)";
+trumpetRange = "Range: f#3 (184.99) to d#6 (1244.51)";
+frenchhornRange = "Range: d2 (73.41) to d5 (587.33)";
+tromboneRange = "Range: e2 (82.4) to d#5 (622.25)";
+tubaRange = "Range: c2 (65.4) to g4 (91.99)";
+*/
 
 // Flute note amplitudes.
 {
@@ -880,47 +1045,6 @@ var tuba_note29 = [369.994,0.1843,0.017982,0.004516,0.000659,0.000195,0.000261,4
 var tuba_note30 = [391.995,0.2552,0.014882,0.002343,0.000552,0.00016,0.000145,0.000221];
 // Aggregate tuba notes
 var tuba = [tuba_note0,tuba_note1,tuba_note2,tuba_note3,tuba_note4,tuba_note5,tuba_note6,tuba_note7,tuba_note8,tuba_note9,tuba_note10,tuba_note11,tuba_note12,tuba_note13,tuba_note14,tuba_note15,tuba_note16,tuba_note17,tuba_note18,tuba_note19,tuba_note20,tuba_note21,tuba_note22,tuba_note23,tuba_note24,tuba_note25,tuba_note26,tuba_note27,tuba_note28,tuba_note29,tuba_note30];
-}
-
-function getOvertoneFrequencies( instrumentIndex, frequency )
-{
-	// Get the list of note amplitude values for this instrument.
-	let list = instrList[instrumentIndex];
-	
-	// We will start with a default value.
-	let index = 0;
-	let diff = Math.abs( frequency - list[0][0] );
-
-	// Loop through the list of frequencies/amplitudes and find the closest match.
-	for( let i=1; i<list.length; i++ )
-	{
-		// Get the difference between incoming frequency value and the
-		//	the frequeny of this list element.
-		let td = Math.abs( frequency - list[i][0] );
-		
-		// If this is less (we are closer to the specified frequency)
-		//	then we record the index and remember the new difference.
-		if( td < diff )
-		{
-			diff = td;
-			index = i;
-		}
-	}
-
-	// Here we take the current array and make a new array to
-	//	return. This reflects code that we previously developed.
-	//	This could be eliminated if the "using" code was rewritten.
-	let retList = [];
-	for( let i=1; i<list[index].length; i++ )
-	{
-		// Push the harmonic number.
-		retList.push( i );
-		// Push the amplitude.
-		retList.push( list[index][i] );
-	}
-	
-  //console.log(retList);
-	return retList;
 }
 
 export default Test
