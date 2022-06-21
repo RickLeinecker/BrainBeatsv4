@@ -404,14 +404,14 @@ definitions:
 
   createPost:
     required: 
-    - username
+    - id
     - title
     - bpm
     - key
     properties:
-      username:
+      id:
         type: string
-        example: JohnDoe96
+        example: 227d4d04-927b-421e-8d95-6eb91f05af05
       title:
         type: string
         example: Post title

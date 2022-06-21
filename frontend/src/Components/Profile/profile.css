@@ -87,7 +87,7 @@ label{
     margin-left: auto;
 }
 
-img{
+.profileImg{
     width: 124px;
     height: 124px;
     border: 5px solid #fff;

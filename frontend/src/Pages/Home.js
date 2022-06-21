@@ -10,9 +10,10 @@ const Home = () => {
     <>
     <Navbar />
     <br />
+    <div style={{width: '50%', marginLeft: '25%'}}>
     <Carousel />
+    </div>
     <br />
-    <h1>Top Songs</h1>
     <Cards />
     </>
   )
