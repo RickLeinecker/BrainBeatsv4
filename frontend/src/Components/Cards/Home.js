@@ -6,6 +6,7 @@ import MidiPlayer from 'react-midi-player';
 import './homepage.css';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
+import Carousel from '../Carousel/Carousel';
 
 const Cards = () => {
     //post array
@@ -39,7 +40,13 @@ const Cards = () => {
     }
     return (
         <>
-            <h1>Top Songs</h1>
+        {//if user is logged in dont display carousel
+        !user ? <div style={{width: '50%', marginLeft: '25%'}}>
+                <Carousel />
+            </div> : <></>
+        }
+            
+            <h1>RECENT SONGS</h1>
             <div style={{ overflowX: 'hidden' }}>
                 <div className='row'>
                     <Container className='containerOverflow'>
@@ -48,7 +55,7 @@ const Cards = () => {
                                 return (
                                     <div key={index}>
                                         <Card className='cardStyle'>
-                                            <Card.Img variant="top" className='playhover' src='https://i1.sndcdn.com/artworks-8ey2S5z8Dt36-0-t500x500.jpg' />
+                                            <Card.Img variant="top" className='playhover' src='https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png' />
                                             <Card.Body>
 
                                                 <Card.Title className='cardText'>{item.title}</Card.Title>
@@ -71,14 +78,14 @@ const Cards = () => {
                     {//Only appears if user is signed in
                         user ?
                             <>
-                                <div> YOUR SONG </div>
+                                <h1> YOUR SONG </h1>
                                 <Container className='containerOverflow'>
                                     <div style={{ display: 'inline-flex' }}>
                                         {CardList.map((item, index) => {
                                             return (
                                                 <div key={index}>
                                                     <Card className='cardStyle'>
-                                                        <Card.Img variant="top" className='playhover' src='https://i1.sndcdn.com/artworks-8ey2S5z8Dt36-0-t500x500.jpg' />
+                                                        <Card.Img variant="top" className='playhover' src='https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png' />
                                                         <Card.Body>
 
                                                             <Card.Title className='cardText'>{item.title}</Card.Title>

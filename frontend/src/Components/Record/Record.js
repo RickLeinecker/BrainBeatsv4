@@ -31,7 +31,8 @@ function LinkThing(shown) {
     const [id, setId] = useState('');
     const [stage, setStage] = useState(0)
 
-    let correctLink = id.split('=');
+    let correctLink = id.split('='); //return the string with youtube id
+    
     let url = correctLink[1];
     const goNext = (e) => {
         e.preventDefault()
@@ -93,9 +94,16 @@ function LinkThing(shown) {
 }
 
 function VidLink(link) {
-
+    //two type of YT URLS
     //https://www.youtube.com/watch?v=DSBBEDAGOTc
-    let id = link.link;
+    //https://www.youtube.com/watch?v=ScMzIvxBSi4&ab_channel=BenMarquezTX
+
+    
+    let tempID = link.link;
+    //this discards discards everything after the & sign giving the correct URL if the URL
+    //in the second form
+    tempID = tempID.split('&')
+    let id = tempID[0];
     return (
         <>
 
