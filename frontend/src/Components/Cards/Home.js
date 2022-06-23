@@ -10,7 +10,8 @@ import Carousel from '../Carousel/Carousel';
 
 const Cards = () => {
     //post array
-    const [post, setPost] = useState();
+    const [allPost, setAllPost] = useState([]);
+    const [userPost, setUserPost] = useState([]);
     //midi data which is a sting
     const [data, setData] = useState('');
     //boolean for botton nav
@@ -21,22 +22,28 @@ const Cards = () => {
 
     const path = require('../Path');
 
-    // useEffect(() => {
-    //     let config = {
-    //         method: 'get',
-    //         url: path.buildPath('/users/getAllUsersPosts'),
-    //     }
-    //     axios(config)
-    //         .then((response) => {
-    //             setPost(response.data);
-    //         })
-    // })
+    useEffect(() => {
+        let config = {
+            method: 'get',
+            url: path.buildPath('/users/getAllUsersPosts'),
+        }
+        axios(config)
+            .then((response) => {
+                setAllPost(response.data);
+            })
+    }, [allPost])
+
+    // if(user){
+    //     setUserPost(user.post);
+    // }
 
     const endPlay = () => {
         setData('');
         setShowMedia(false);
-
-
+    }
+    const checkData = () => {
+        console.log(allPost);
+        console.log(user);
     }
     return (
         <>
@@ -45,13 +52,13 @@ const Cards = () => {
                 <Carousel />
             </div> : <></>
         }
-            
+            <button onClick={checkData}>HE</button>
             <h1>RECENT SONGS</h1>
             <div style={{ overflowX: 'hidden' }}>
                 <div className='row'>
                     <Container className='containerOverflow'>
                         <div style={{ display: 'inline-flex' }}>
-                            {CardList.map((item, index) => {
+                            {allPost.map((item, index) => {
                                 return (
                                     <div key={index}>
                                         <Card className='cardStyle'>
@@ -59,7 +66,7 @@ const Cards = () => {
                                             <Card.Body>
 
                                                 <Card.Title className='cardText'>{item.title}</Card.Title>
-                                                <Card.Subtitle className='cardText'>{item.artist}</Card.Subtitle>
+                                                <Card.Subtitle className='cardText'>Name</Card.Subtitle>
                                                 <button className='cardPlayButton' onClick={(e) => {
                                                     e.preventDefault();
                                                     setData(item.data); //store this items midi string to Data
@@ -81,7 +88,7 @@ const Cards = () => {
                                 <h1> YOUR SONG </h1>
                                 <Container className='containerOverflow'>
                                     <div style={{ display: 'inline-flex' }}>
-                                        {CardList.map((item, index) => {
+                                        {userPost.map((item, index) => {
                                             return (
                                                 <div key={index}>
                                                     <Card className='cardStyle'>

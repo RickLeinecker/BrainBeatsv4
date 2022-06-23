@@ -108,11 +108,7 @@ router.get('/getAllUsersPosts', async (req, res) => {
 
     try 
     {
-        const allUsersPosts =  await prisma.user.findMany({
-            select: {
-                posts: true
-            }
-        });
+        const allUsersPosts =  await prisma.post.findMany();
         res.json(allUsersPosts)
     } 
     catch(err) {
