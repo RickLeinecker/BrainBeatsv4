@@ -202,7 +202,7 @@ router.get('/findUserPostsByID', async (req, res) => {
 
     try {
         const userPosts = await prisma.user.findUnique({
-            where: { authorId: req.body.authorId  },
+            where: { id : req.body.id  },
             select: {
                 posts: true
             }
