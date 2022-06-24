@@ -1,10 +1,10 @@
-var nodemailer = require('nodemailer');
+import { createTransport } from 'nodemailer';
 
 // TODO : Update this to be modularized and replace sendVerificationEmail.js with methods from here.
 
 // Email Verification
 // Create reusable transporter object using the default SMTP transport
-const transporter = nodemailer.createTransport({
+const transporter = createTransport({
     port: 465,               // true for 465, false for other ports
     host: "gmail",
        auth: {

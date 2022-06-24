@@ -173,7 +173,7 @@ router.post('/createPost', async (req, res) => {
 });
 
 // Get user post information by username
-router.get('/findUserPosts', async (req, res) => {
+router.get('/findUserPostsByUsername', async (req, res) => {
 
     try {
         const userPosts = await prisma.user.findUnique({
@@ -186,6 +186,31 @@ router.get('/findUserPosts', async (req, res) => {
         if(!userPosts) {
             return res.status(400).json({
                 msg: "Username not found"
+            })
+        }
+        
+        res.json(userPosts)
+    } 
+    catch(err) {
+        res.status(500).send({msg: err})
+    }
+
+})
+
+// Get user post information by user id
+router.get('/findUserPostsByID', async (req, res) => {
+
+    try {
+        const userPosts = await prisma.user.findUnique({
+            where: { authorId: req.body.authorId  },
+            select: {
+                posts: true
+            }
+        });
+
+        if(!userPosts) {
+            return res.status(400).json({
+                msg: "Author ID not found"
             })
         }
         

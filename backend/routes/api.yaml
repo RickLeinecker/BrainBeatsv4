@@ -204,12 +204,12 @@ paths:
           description: URL Not Found
 
 # Get user posts by username
-  /api/users/getPostsByUsername:
+  /api/users/findUserPostsByUsername:
     post:
       tags:
         - Users
       summary: Search a users posts by username
-      operationId: getPostsByUsername
+      operationId: findUserPostsByUsername
       description: Get posts from user profile
       consumes: 
       - application/json
@@ -221,7 +221,32 @@ paths:
         required: true
         description: Get user posts by username
         schema:
-          $ref: '#/definitions/getPostsByUsername'
+          $ref: '#/definitions/findUserPostsByUsername'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
+# Get user posts by author ID
+  /api/users/findUserPostsByID:
+    post:
+      tags:
+        - Users
+      summary: Search a users posts by user ID
+      operationId: findUserPostsByID
+      description: Get posts from user profile
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Posts
+        required: true
+        description: Get user posts by user ID
+        schema:
+          $ref: '#/definitions/findUserPostsByID'
       responses:
         200:
           description: OK
@@ -485,9 +510,17 @@ definitions:
         type: string
         example: JohnDoe96
 
-  getPostsByUsername:
+  findUserPostsByUsername:
     required:
     - username
+    properties:
+      username:
+        type: string
+        example: JohnDoe96
+
+  findUserPostsByUserID:
+    required:
+    - authorId
     properties:
       username:
         type: string
