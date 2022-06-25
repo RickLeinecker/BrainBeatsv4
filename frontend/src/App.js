@@ -8,6 +8,7 @@ import Register from './Pages/Register'
 import Forgot from './Pages/Forgot'
 import Profile from './Pages/Profile';
 import Test from './Pages/Test';
+import Test1 from './Pages/Test1';
 
 import Record from './Pages/Recording';
 import { useContext } from 'react';
@@ -27,7 +28,7 @@ function App() {
           <Route path='/Profile' element={user ? <Profile /> : <Navigate to='/Login' />} />
           <Route path='/Register' element={<Register />} />
           <Route path='/Forgot' element={<Forgot />} />
-          
+          <Route path='/Test1' element={<Test1 />} />
           <Route path='/Test' element={<Test />} />
         </Routes>
       </Router>

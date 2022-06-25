@@ -37,6 +37,13 @@ const Navbars = () => {
                             <Button> <a href="/Test">Test</a></Button>
                         </Navbar.Text>
                     </Navbar.Collapse>
+
+                    <Navbar.Collapse>
+                        <Navbar.Text>
+                            <Button> <a href="/Test1">Test1</a></Button>
+                        </Navbar.Text>
+                    </Navbar.Collapse>
+                    
                     <Navbar.Collapse className="justify-content-end">
                         {user ?
                             <NavDropdown title={user.username}>
