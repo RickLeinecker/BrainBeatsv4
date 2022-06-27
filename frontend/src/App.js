@@ -8,6 +8,7 @@ import Register from './Pages/Register'
 import Forgot from './Pages/Forgot'
 import Profile from './Pages/Profile';
 import Test from './Pages/Test';
+import Test1 from './Pages/Test1';
 
 import Record from './Pages/Recording';
 import { useContext } from 'react';
@@ -22,13 +23,12 @@ function App() {
       <Router>
         <Routes>
           <Route exact path='/' element={<Home />} />
-          <Route path='/Login' element={user? <Navigate to ='/' /> : <Login />}/>
-          <Route path='/Record' element={user ? <Record /> : <Navigate to='/Login' />} />
-          <Route path='/' element={<Home />} />
-          <Route path='/Login' element={<Login />} />
+          <Route path='/Login' element={user ? <Navigate to ='/' /> : <Login />}/>
+          <Route path='/Record' element={user? <Record /> : <Navigate to='/Login' />} />
+          <Route path='/Profile' element={user ? <Profile /> : <Navigate to='/Login' />} />
           <Route path='/Register' element={<Register />} />
           <Route path='/Forgot' element={<Forgot />} />
-          <Route path='/Profile' element={<Profile />} />
+          <Route path='/Test1' element={<Test1 />} />
           <Route path='/Test' element={<Test />} />
         </Routes>
       </Router>

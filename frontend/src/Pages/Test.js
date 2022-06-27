@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 import Navbar from '../Components/Navbar/Navbar'
-import Cards from '../Components/Cards/Cards'
+import Cards from '../Components/Cards/Home'
 
 // User Interface
 import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/dist/index.esm.js";
