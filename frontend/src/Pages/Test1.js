@@ -1,16 +1,19 @@
 // ------------- Import Libraries -------------
 import React, { useEffect } from 'react'
 import Navbar from '../Components/Navbar/Navbar'
-import Cards from '../Components/Cards/Cards'
+import * as XLSX from 'xlsx';
+
 // User Interface
 import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/dist/index.esm.js";
 
 // Data Acquisition
-// import * as datastreams from "./src/frontend/dist/index.esm.js"
 import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js";
 
 // Device Drivers
 import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js";
+// import * as ganglion from "../src/js/ganglion.esm.js";      // TODO
+// import * as datastreams from "../src/js/datastreams.esm.js"; // TODO
+// import * as components from "../src/js/components.esm.js";   // TODO
 
 
 const Test1 = () => {
@@ -31,22 +34,22 @@ const Test1 = () => {
     let trackMap = new Map();
     let contentHintToIndex = {};
 
-    const fastcsv = require('fast-csv');
-    const fs = require('fs');
-    const ws = fs.createWriteStream("./out.csv");
-
     // ------------- Declare Data Handler -------------
     const ondata = (data, timestamps, contentHint) => {
       console.log(
         `Data from Electrode ${contentHintToIndex[contentHint]} (${contentHint})`,
         data,
         timestamps,
-      );   
-      // fastcsv
-      // .write(`Data from Electrode ${contentHintToIndex[contentHint]} (${contentHint})`,
-      // data,
-      // timestamps, { headers: true })
-      // .pipe(ws);
+      );
+      if(data[0] != null) {
+        allData.push(
+          [
+            contentHint,
+            `${data[0]}`,
+            `${timestamps[0]}`
+          ]
+        );
+      }
     };
 
     // ------------- Declare Track Handler -------------
@@ -79,6 +82,19 @@ const Test1 = () => {
         ondata(data, timestamps, track.contentHint);
       });
     };
+    
+
+    const downloadData = () => 
+    {
+      console.log("device disconnected");
+      // dataDevices.disconnect();
+      console.log(JSON.stringify(allData));
+      var workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.json_to_sheet(allData);
+      XLSX.utils.sheet_add_aoa(worksheet, [["channel", "signal", "timestamp"]]);
+      XLSX.utils.book_append_sheet(workbook, worksheet, "SheetJS");
+      XLSX.writeFile(workbook, "sheetjs.xlsx");
+    }
 
     // ------------- Declare Acquisition Function -------------
 
@@ -104,8 +120,19 @@ const Test1 = () => {
     // ------------- Set Button Functionality -------------
     const buttons = document.querySelector("#buttons");
     for (let button of buttons.querySelectorAll("button"))
-      button.onclick = () => startAcquisition(button.id);
+      if(button.id === "ganglion")
+      {
+        button.onclick = () => startAcquisition(button.id);
+
+      } 
+      else if(button.id === "downloadBtn"){
+        button.onclick = () => downloadData();
+      }
+
     })
+
+
+    
     
   return (
     <>
@@ -117,10 +144,11 @@ const Test1 = () => {
     <div id="buttons">
       <p>Click connect and choose your Ganglion headset in the popup.</p>
       <button id="ganglion">Connect</button>
+      <button id="downloadBtn">Download your raw data</button>
     </div>
 
     {/* <div id="buttons">
-    <button onClick={disconnectDevice}>Disconnect</button>
+    <button id="disconnectBtn">Disconnect</button>
     </div> */}
 
 

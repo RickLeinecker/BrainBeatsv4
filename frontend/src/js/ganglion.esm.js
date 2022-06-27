@@ -3621,7 +3621,7 @@ var Tt = function() {
         writable: !1
     }), e
 }();
-const Rt = ["FP1", "FP2", "C3", "C4"],
+const Rt = ["FP1", "FP2", "T3", "T4"],
     Ft = {
         label: "ganglion",
         device: Tt,

@@ -10,6 +10,7 @@ const jwtAPI = require("../../utils/jwt");
 // const { JSON } = require("express");
 
 
+
 // Create a new user
 router.post('/createUser', async (req, res) => {
 
@@ -76,6 +77,7 @@ router.post('/createUser', async (req, res) => {
 
 });
 
+
 // Get all users with all records
 router.get('/getAllUsers', async (req, res) => {
 
@@ -104,6 +106,7 @@ router.get('/getAllUsers', async (req, res) => {
     
 });
 
+
 // Get all users with all records
 router.get('/getAllUsersPosts', async (req, res) => {
 
@@ -118,12 +121,13 @@ router.get('/getAllUsersPosts', async (req, res) => {
     
 });
 
+
 // Post at user account
 router.post('/createPost', async (req, res) => {
 
     try 
     {
-        const { id, title, bpm, key} =  req.body
+        const { id, title, bpm, key, midi} =  req.body
         const userExists = await prisma.user.findUnique({
             where: { id },
         });
@@ -133,6 +137,12 @@ router.post('/createPost', async (req, res) => {
                 msg: "User not found"
             })
         } else {
+                
+                
+            // file reader to read sheetjs.xnxx
+            // some way to (string) encode the sheetjs.xlsx file to a blob
+            // actualMidi = blob
+            // clean -- use file reader to delete the sheetjs.xlsx file
 
             // TEST IF YOU CAN SAVE THIS NEWLY UPDATED POST FOR USER OPTION FOR MUSIC CREATION REQUEST
             // TODO: ADD MORE FIELDS AND CHANGE THIS FILE TO MIDI.JS OR OTHER WAY AROUND. NEED TO CHECK WITH NOAH ABOUT MORE PARAMTERS NEEDED
@@ -145,7 +155,7 @@ router.post('/createPost', async (req, res) => {
                         create: 
                             {
                                 title,
-                                // midi,
+                                // midi: actualMidi ,
                                 data: JSON.stringify('\TVRoZAAAAAYAAQADAGRNVHJrAAAAGgD/AwtMaXR0bGUgTGFtZQD/UQMKLCsA/y8ATVRyawAAAPMA/wMG\
                                         THlyaWNzAP8BGEBUTWFyeSBXYXMgQSBMaXR0bGUgTGFtZWT/AQNcTWFL/wEDcnkgGf8BBHdhcyAy/wEC\
                                         YSAy/wEDbGl0Mv8BBHRsZSAy/wEFbGFtZSxk/wEEL0xpdDL/AQR0bGUgMv8BBWxhbWUsZP8BBC9MaXQy\
@@ -173,14 +183,18 @@ router.post('/createPost', async (req, res) => {
 
 });
 
+
 // Get user post information by username HERE
 router.get('/findUserPostsByUsername', async (req, res) => {
 
     try {
-        const userPosts = await prisma.post.findMany({
-            where: {author: req.query.author},
-    });
-            res.json(userPosts)
+        const userPosts = await prisma.user.findUnique({
+            where: {username: req.body.username},
+            select: {
+                posts: true,
+            }
+        });
+            // res.json(userPosts)
     
         if(!userPosts) {
             return res.status(400).json({
@@ -188,7 +202,7 @@ router.get('/findUserPostsByUsername', async (req, res) => {
             })
         }
         
-        // res.json(userPosts)
+        res.json(userPosts)
     } 
     catch(err) {
         res.status(500).send({msg: err})
@@ -196,14 +210,19 @@ router.get('/findUserPostsByUsername', async (req, res) => {
 
 })
 
+
 // Get user post information by user id HERE
 router.get('/findUserPostsByID', async (req, res) => {
 
     try {
         const userPosts = await prisma.post.findMany({
             where: {authorId: req.query.authorId},
+            select: {
+                    post: true,                
+
+            }
         });
-        res.json(userPosts)
+        // res.json(userPosts)
 
 
         if(!userPosts) {
@@ -286,6 +305,7 @@ router.put('/updateUser', async (req, res) => {
     
 });
 
+
 // Delete user by ID
 router.delete('/deleteUser', async (req, res) => {
 
@@ -302,6 +322,7 @@ router.delete('/deleteUser', async (req, res) => {
     
 });
 
+
 const transporter = nodemailer.createTransport({
     port: 465,               // true for 465, false for other ports
     host: "smtp.gmail.com",
@@ -311,6 +332,7 @@ const transporter = nodemailer.createTransport({
          },
     secure: true,
 });
+
 
 // Send Email to user to verify login
 router.post('/sendVerificationEmail', async (req, res) => {
@@ -348,6 +370,7 @@ router.post('/sendVerificationEmail', async (req, res) => {
         res.status(500).json({msg: "User does not exist."})
     }
 });
+
 
 router.post('/jwtStuff', async (req, res) => {
     try {
