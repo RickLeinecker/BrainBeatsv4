@@ -1,3 +1,4 @@
+// ------------------------------------------------------------------------------ IMPORTS ------------------------------------------------------------------------------
 import React, { useEffect } from 'react'
 import Navbar from '../Components/Navbar/Navbar'
 
@@ -5,47 +6,58 @@ import Navbar from '../Components/Navbar/Navbar'
 import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/dist/index.esm.js";
 
 // Data Acquisition
-// import * as datastreams from "./src/frontend/dist/index.esm.js"
 import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js";
 
 // Device Drivers
-// import ganglion from "./dist/index.esm.js"
 import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js";
 
-// I'd suggest collapsing these two objects. I'm not currently using them but I might in
-// the future and I don't feel like making them again (:
-const KEY_SIGNATURES_MAJOR_OBJ = 
-{
-	C_Major: ["C", "D", "E", "F", "G", "A", "B"],
-	CS_Major: ["C#", "D#", "E#", "F#", "G#", "A#", "B#"],
-	D_Major: ["D", "E", "F#", "G", "A", "B", "C#"],
-	DS_Major: ["D#", "E#", "F", "G#", "A#", "B#", "C"],
-	E_Major: ["E", "F#", "G", "A", "B", "C#", "D#"],
-	ES_Major: ["E#", "F", "G", "A#", "B#", "C", "D"],
-	F_Major: ["F", "G", "A", "A#", "C", "D", "E"],
-	FS_Major: ["F#", "G#", "A#", "B", "C#", "D#", "E#"],
-	G_Major: ["G", "A", "B", "C", "D", "E", "F#"],
-	GS_Major: ["G#", "A#", "B#", "C#", "D#", "E#", "F"],
-	A_Major: ["A", "B", "C#", "D", "E", "F#", "G#"],
-	AS_Major: ["A#", "C", "D", "D#", "F", "G", "A"],
-	B_Major: ["B", "C#", "D#", "E", "F#", "G#", "A#"]
-};
-const KEY_SIGNATURES_MINOR_OBJ = 
-{
-	C_Minor: ["C", "D", "D#", "F", "G", "G#", "A#"],
-	CS_Minor: ["C#", "D#", "E", "F#", "G#", "A", "B"],
-	D_Minor: ["D", "E", "F", "G", "A", "A#", "C"],
-	DS_Minor: ["D#", "E#", "F#", "G#", "A#", "B", "C#"],
-	E_Minor: ["E", "F#", "G", "A", "B", "C", "D"],
-	ES_Minor: ["E#", "F", "G#", "A#", "B#", "C#", "D#"],
-	F_Minor: ["F", "G", "G#", "A#", "C", "C#", "D#"],
-	FS_Minor: ["F#", "G#", "A", "B", "C#", "D", "E"],
-	G_Minor: ["G", "A", "A#", "C", "D", "D#", "F"],
-	GS_Minor: ["G#", "A#", "B", "C#", "D#", "E", "F#"],
-	A_Minor: ["A", "B", "C", "D", "E", "F", "G"],
-	AS_Minor: ["A#", "C", "C#", "D#", "F", "F#", "G#"],
-	B_Minor: ["B", "C#", "D", "E", "F#", "G", "A"]
-};
+
+// ------------------------------------------------------------------------------ USER-DEFINED VARIABLES ------------------------------------------------------------------------------
+
+
+// Feel free to change these! That's their purpose!
+var BPM = 120; // Beats Per Minute of the track [aka tempo]
+var quickNoteType = "quarter"; // sixteenth, eighth, quarter, half, or whole. Don't forget the ""! This will be replaced by the 4 below variables.
+var noteTypeSensorOne, noteTypeSensorTwo, noteTypeSensorThree, noteTypeSensorFour; // These will be used later; not implemented yet.
+var keySignature = KEY_SIGNATURES_MAJOR[0]; // Default hard coded to C major for now
+
+
+// ------------------------------------------------------------------------------ CONSTANTS AND GLOBAL VARIABLES ------------------------------------------------------------------------------
+
+
+// Constant to hold the sample rate in hz. May remove. Not sure if we need it. We'll see...
+const SAMPLE_RATE = 44100
+
+// The amount of time (in milliseconds) that each of the supported notes would take at the specified BPM.
+const timeForEachNoteARRAY = 
+[
+	getMilliecondsFromBPM(BPM) / 4, 
+	getMilliecondsFromBPM(BPM) / 2, 
+	getMilliecondsFromBPM(BPM), 
+	getMilliecondsFromBPM(BPM) * 2, 
+	getMilliecondsFromBPM(BPM) * 4
+];
+
+// The highest and lowest possible values of the headset's data that we will actually use and parse into musical data.
+// Anything under the maximum and above the minimum will be sorted into respective notes, but anything above the maximum
+// or below the minimum will be treated as rests. 
+const MAX_AMPLITUDE = 0.001;
+const MIN_AMPLITUDE = -0.001;
+
+// The distance between the ceiling amplitude and the floor amplitude.
+const MIN_MAX_AMPLITUDE_DIFFERENCE = MAX_AMPLITUDE - MIN_AMPLITUDE;
+
+// An offset that is equal to the absolute value of MIN_AMPLITUDE. This offset is used to turn the negative MIN value 
+// into effectively zero, and the MAX value into itself plus this offset. This just removes negative numbers from all
+// of the calculation, making it simpler for humans to both read and write the code.
+const AMPLITUDE_OFFSET = 0.001;
+
+// Number of total notes that are able to be assigned. 7 is one octave, 14 is two octaves, 21 is three octaves.
+// Going above 21 is NOT recommended and has NOT been tested, but should theoretically work. DO NOT use values 
+// that aren't multiples of 7. Works best with 7, 14, and 21. Do not ever exceed 63.
+// NOTE: This software works using 7-note octaves, meaning that the root note's octave jump is not included in
+//       the scale. For example, C major is C, D, E, F, G, A, B. It does NOT include the C of the next octave.
+const NUM_NOTES = 21;
 
 // 2D arrays that hold every note in each key signature, starting from C
 const KEY_SIGNATURES_MAJOR = 
@@ -64,7 +76,6 @@ const KEY_SIGNATURES_MAJOR =
 	["A#", "C", "D", "D#", "F", "G", "A"], // 11
 	["B", "C#", "D#", "E", "F#", "G#", "A#"] // 12
 ];
-
 const KEY_SIGNATURES_MINOR = 
 [
 	["C", "D", "D#", "F", "G", "G#", "A#"], // 0
@@ -97,53 +108,6 @@ const instrumentEnums =
 	Tuba: 7
 }
 
-var BPM = 120; // BPM of the track
-var quickNoteType = "quarter"; // sixteenth, eighth, quarter, half, or whole. Don't forget the ""!
-var channelCounter = 0; // I forgor 💀
-var firstTickSkipped = 0; // Kinda useless will prob remove
-var keySignature = KEY_SIGNATURES_MAJOR[2];
-
-const SAMPLE_RATE = 44100
-
-const timeForEachNote = 
-{
-	sixteenth: getMilliecondsFromBPM(BPM) / 4,
-	eighth: getMilliecondsFromBPM(BPM) / 2,
-	quarter: getMilliecondsFromBPM(BPM),
-	half: getMilliecondsFromBPM(BPM) * 2,
-	whole: getMilliecondsFromBPM(BPM) * 4
-}
-
-const timeForEachNoteARRAY = 
-[
-	getMilliecondsFromBPM(BPM) / 4, 
-	getMilliecondsFromBPM(BPM) / 2, 
-	getMilliecondsFromBPM(BPM), 
-	getMilliecondsFromBPM(BPM) * 2, 
-	getMilliecondsFromBPM(BPM) * 4
-];
-
-// The highest and lowest possible values of the headset's data that we will actually use and parse into musical data.
-// Anything under the maximum and above the minimum will be sorted into respective notes, but anything above the maximum
-// or below the minimum will be treated as rests. 
-const MAX_AMPLITUDE = 0.001;
-const MIN_AMPLITUDE = -0.001;
-
-// The distance between the ceiling amplitude and the floor amplitude.
-const MIN_MAX_AMPLITUDE_DIFFERENCE = MAX_AMPLITUDE - MIN_AMPLITUDE;
-
-// An offset that is equal to the absolute value of MIN_AMPLITUDE. This offset is used to turn the negative MIN value 
-// into effectively zero, and the MAX value into itself plus this offset. This just removes negative numbers from all
-// of the calculation, making it simpler for humans to both read and write the code.
-const AMPLITUDE_OFFSET = 0.001;
-
-// Number of total notes that are able to be assigned. 7 is one octave, 14 is two octaves, 21 is three octaves.
-// Going above 21 is NOT recommended and has NOT been tested, but should theoretically work. DO NOT use values 
-// that aren't multiples of 7. Works best with 7, 14, and 21. Do not ever exceed 63.
-// NOTE: This software works using 7-note octaves, meaning that the root note's octave jump is not included in
-//       the scale. For example, C major is C, D, E, F, G, A, B. It does NOT include the C of the next octave.
-const NUM_NOTES = 21;
-
 // The array of size NUM_NOTES that is used to house the cutoffs for each of the NUM_NOTES incremements. 
 // The value of MIN_MAX_AMPLITUDE_DIFFERENCE is divided by NUM_NOTES, and the result (let's call this X) is then used to 
 // create evenly-spaced "sections" in the array. 
@@ -158,10 +122,16 @@ var incrementArr = new Array(NUM_NOTES);
 // Array used to house all of the overtone information for each instrument, used by getOvertoneFrequencies()
 var instrList;
 
+// Variables that will likely be removed
+var channelCounter = 0; // I forgor 💀
+var firstTickSkipped = 0; // Kinda useless will prob remove
+
+
+// ------------------------------------------------------------------------------ THE MAIN CHUNK OF THE PROGRAM ------------------------------------------------------------------------------
+
+
 // We should probably rename this file lol
 const Test = () => {
-
-	initAudioQueue();
 
 	// I have absolutely no idea what this useEffect() function is, but Quan added it
 	// and it made everything work, so don't touch. Things WILL break if removed.
@@ -229,7 +199,6 @@ const Test = () => {
 
 		const thisIsATest = async (tracky, datay) => 
 		{
-			// Initialize the array [this comment needs work, ik]
 			InitIncrementArr();
 
 			// This entire handleTrack section needs to run 4 times total, once for each channel, every tick.
@@ -248,11 +217,6 @@ const Test = () => {
 			var noteAndOctave = GetNoteWRTKey(declaredNote); // Get the actual note and its octave
 			var floorOctave = GetFloorOctave(); // Get the lowest octave that will be used in the song
 
-			var thisisanumber = 36;
-			var hexString = thisisanumber.toString(16);
-			//console.log("This should be 24: " + hexString);
-			//console.log("declaredNote: " + declaredNote + ", noteAndOctave: " + noteAndOctave + ", floorOctave: " + floorOctave);
-
 			if (noteAndOctave.note == -1) // If no note was declared, it's a rest.
 			{
 				//console.log(tracky.contentHint + ": Rest [" + (datay - -AMPLITUDE_OFFSET) + "]");
@@ -264,6 +228,7 @@ const Test = () => {
 				let noteFrequency = getFrequencyFromNoteOctaveString(noteOctaveString);
 				console.log(tracky.contentHint + ": " + noteOctaveString);
 				//console.log(tracky.contentHint + ": " + noteAndOctave.note + "" + (noteAndOctave.octave + floorOctave) + " [" + (datay - -AMPLITUDE_OFFSET) + "]");
+
 				playMidiNote(noteFrequency, .1, instrumentEnums.Clarinet, quickNoteType);
 			}
 		};
@@ -284,7 +249,9 @@ const Test = () => {
 		}
 	}
 
+
 // ------------------------------------------------------------------------------ HTML INFORMATION ------------------------------------------------------------------------------
+
 
 	return (
 		<>
@@ -306,9 +273,30 @@ const Test = () => {
 	)
 }
 
-// ------------------------------------------------------------------------------ PROPRIETARY HELPER FUNCTIONS ------------------------------------------------------------------------------
 
-// Takes in a BPM and returns the length of one quarter note in milliseconds.
+// ------------------------------------------------------------------------------ CUSTOM HELPER FUNCTIONS ------------------------------------------------------------------------------
+
+
+// This if/else stack returns a note length multiplier based off input. Quarter notes are used as the baseline (x1.0 multiplier).
+// Input should just be a lowercase string of the note type. Ex: "quarter", "half"
+function getNoteLengthMultiplier(noteType)
+{
+	var noteLengthMultiplier = 1;
+	if (noteType.localeCompare("sixteenth") == 0) // A sixteenth note is 1/4 the length of a quarter note.
+		noteLengthMultiplier = 0.25;
+	else if (noteType.localeCompare("eighth") == 0)
+		noteLengthMultiplier = 0.5;
+	else if (noteType.localeCompare("quarter") == 0)
+		noteLengthMultiplier = 1;
+	else if (noteType.localeCompare("half") == 0)
+		noteLengthMultiplier = 2;
+	else if (noteType.localeCompare("whole") == 0) // A whole note is 4x the length of a quarter note
+		noteLengthMultiplier = 4;
+	
+	return noteLengthMultiplier;
+}
+
+// Takes in a BPM and returns the length of one QUARTER NOTE in milliseconds.
 function getMilliecondsFromBPM(bpm) 
 {
 	return 60000 / bpm;
@@ -323,23 +311,8 @@ function waitForNextTick(noteType)
 	var startTime = new Date();
 	var ms = startTime.getTime(); // Retrieve the milliseconds component from startTime
 
-	// This if/else stack assigns a multiplier so that the function can correctly scale wait time based 
-	// off of what note length is being played (quarter, whole, etc). 
-	// Quarter notes are used as the baseline (x1.0 multiplier).
-	var noteLengthMultiplier = 1;
-	if (noteType.localeCompare("sixteenth") == 0) // A sixteenth note is 1/4 the length of a quarter note.
-		noteLengthMultiplier = 0.25;
-	else if (noteType.localeCompare("eighth") == 0)
-		noteLengthMultiplier = 0.5;
-	else if (noteType.localeCompare("quarter") == 0)
-		noteLengthMultiplier = 1;
-	else if (noteType.localeCompare("half") == 0)
-		noteLengthMultiplier = 2;
-	else if (noteType.localeCompare("whole") == 0) // A whole note is 4x the length of a quarter note
-		noteLengthMultiplier = 4;
-
 	// Total amount of time that this function will wait for before completing.
-	var targetTime = getMilliecondsFromBPM(BPM) * noteLengthMultiplier;
+	var targetTime = getMilliecondsFromBPM(BPM) * getNoteLengthMultiplier(noteType);
 
 	// Infinite loop; hoping to make this an async function so this will not be necessary.
 	while (1 == 1) 
@@ -355,7 +328,7 @@ function waitForNextTick(noteType)
 	}
 }
 
-// This creates the array in which different "steps" for notes are housed. I already sort-of explained this
+// This creates the array in which different "increments" for notes are housed. I already sort-of explained this
 // near the top of this file in the comment for "var incrementArr".
 function InitIncrementArr() 
 {
@@ -391,7 +364,7 @@ function GetNoteWRTKey(note)
 	// If the note increment is between 1 and 7, simply return that index in the key array with octave being zero.
 	if (note <= 7 && note >= 1)
 		return { note: keySignature[note - 1], octave: 0 };
-	// If the note increment is less than zero, return *something* so it doesn't break [WIP]
+	// If the note increment is less than zero, return -1 which will be treated as a rest.
 	else if (note <= 0)
 		return { note: -1, octave: 0 };
 	// If the note is valid and greater than 7
@@ -403,7 +376,7 @@ function GetNoteWRTKey(note)
 	}
 }
 
-// Returns the lowest necessary octave necessary for this song, using NUM_NOTES to determine.
+// Returns the lowest octave necessary for this song, using NUM_NOTES to determine.
 // Octave 5 is used as the center/default octave.
 function GetFloorOctave() 
 {
@@ -437,13 +410,11 @@ function findNumSamples(ms)
 	return numSamples;
 }
 
-// Stolen from https://gist.github.com/stuartmemo/3766449
+// Stolen from https://gist.github.com/stuartmemo/3766449. Thanks!!
 // Takes in a note and octave in string form (ex: 'C#6') and returns the raw frequency for that note.
 var getFrequencyFromNoteOctaveString = function(note) 
 {
-    var notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
-        octave,
-        keyNumber;
+    var notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'], octave, keyNumber;
 
     if (note.length === 3) 
         octave = note.charAt(2);
@@ -461,8 +432,11 @@ var getFrequencyFromNoteOctaveString = function(note)
     return 440 * Math.pow(2, (keyNumber- 49) / 12);
 };
 
+
 // ------------------------------------------------------------------------------ FUNCTIONS STOLEN FROM MICROTONALITY.NET ------------------------------------------------------------------------------
 
+
+// Places all instrument frequency/overtone data into one massive array.
 function setupInstrumentList() 
 {
 	instrList = [];
@@ -476,38 +450,47 @@ function setupInstrumentList()
 	instrList.push(tuba);
 }
 
-var numContexts = 0;
-var queueOfAudio;
+/*  Essentially, all of the AudioContexts (which actually allow for audio playback in the browser) get placed into this queue.
+	Whenever any single note is played, a new AudioContext is generated to avoid any collision with other sounds, since we will
+	be having multiple instruments playing simultaneously and having them in one or few AudioContexts could cause issues.
+	Chrome has a limit of 50 AudioContexts that can exist at once, so this program is set so when the queue reaches a size of 45, 
+	the oldest AudioContext gets closed and disconnected (essentially stopping all of its operations to avoid memory leaks) and 
+	then is removed from the queue, moving the next oldest AudioContext to the front of the line to be killed off next.
+	This theoretically should mean that we are never going over Chrome's limit, so our audio should never cut off even if the
+	program is running for a large amount of time, while also ensuring that AudioContexts will exist for as long as possible so
+	that we can minimize the chance of cutting off notes that are still playing.
 
-function initAudioQueue()
-{
-	queueOfAudio = new Array();
-}
+	This queue was NOT taken from Microtonality.net and is a custom way of handling the removal of old AudioContexts. It is
+	in the Microtonality.net section of this file for ease-of-reading and because the Microtonality.net functions had to be
+	tweaked to work with this queue system. 																				  */
+var queueOfAudio = new Array();
 
 function killOldestAudioContextIfNecessary()
 {
+	// If the number of existing AudioContexts in the queue is >= 45, kill off the oldest AudioContext completely and shift the queue accordingly.
 	if (numContexts >= 45)
 	{
 		queueOfAudio[0].ctx.close();
 		queueOfAudio[0].node.disconnect();
 		queueOfAudio.shift();
-		numContexts--;
-		console.log("Got one! Killed ")
+		numContexts--; // Decrement the numContexts variable because we removed one from the queue
 	}
 }
 
+// Total number of AudioContexts that have been generated by the program. Each AudioContext is used for one note and only one note.
+var numContexts = 0;
+
 function playMidiNote(frequency, amplitude, soundType, noteLength) 
 {
-	//console.log("Playing " + findNumSamples(timeForEachNoteARRAY[getNoteType(noteLength)]) + " samples.");
 	//var ks = { freq: frequency, playing: false, ctx: 0, buffer: 0, node: 0, gain: 0, needToClose: false, number: numContexts };
 	killOldestAudioContextIfNecessary();
+
 	queueOfAudio.push({ freq: frequency, playing: false, ctx: 0, buffer: 0, node: 0, gain: 0, needToClose: false, number: numContexts });
 	
-	console.log("Number of current contexts: " + numContexts + ", array: " + queueOfAudio);
+	//console.log("Number of current contexts: " + numContexts + ", array: " + queueOfAudio);
 
-	if (queueOfAudio[numContexts].playing) {
+	if (queueOfAudio[numContexts].playing) 
 		return false;
-	}
 
 	queueOfAudio[numContexts].playing = true;
 	queueOfAudio[numContexts].needToClose = false;
@@ -518,7 +501,7 @@ function playMidiNote(frequency, amplitude, soundType, noteLength)
 	queueOfAudio[numContexts].node.buffer = queueOfAudio[numContexts].buffer;
 
 	// We need this gain object so that at the end of the note play
-	//	we can taper the sound.
+	// we can taper the sound.
 	queueOfAudio[numContexts].gain = queueOfAudio[numContexts].ctx.createGain();
 	queueOfAudio[numContexts].node.connect(queueOfAudio[numContexts].gain);
 	queueOfAudio[numContexts].gain.connect(queueOfAudio[numContexts].ctx.destination);
@@ -528,37 +511,14 @@ function playMidiNote(frequency, amplitude, soundType, noteLength)
 	queueOfAudio[numContexts].node.loop = false;
 
 	// Start the note.
-	//console.log("queueOfAudio[numContexts]: ", queueOfAudio[numContexts]);
+	// This needs to be edited; the third argument of the function will only ever make quarter notes.
 	queueOfAudio[numContexts].node.start(0, 0, getMilliecondsFromBPM(BPM) / 1000);
 	
-	//waitForMilliseconds(500);
-	
-	//await delay(getMilliecondsFromBPM(BPM) / 1000);
-	//queueOfAudio[numContexts].ctx.close();
-
-	// ks.node.onended = function() {
-	// 	ks.ctx.close();
-	// 	//ks.node.disconnect();
-	// 	console.log("We detected an end, we killed " + ks);
-	// 	numContexts--;
-	// }
-
-	//ks.node.disconnect(getMilliecondsFromBPM(BPM) / 1000);
-	//ks.ctx.close();
-	//console.log("We waited and killed");
+	// Increment the numContexts variable to reflect the new AudioContext added to the queue.
 	numContexts++;
 
 	return true;
 }
-
-// ks.node.addEventListener('ended', event => { 
-// 	ks.ctx.close();
-// 	ks.node.disconnect();
-// 	console.log("We detected an end, we killed " + ks);
-// 	numContexts--;
-// });
-
-const delay = ms => new Promise(res => setTimeout(res, ms));
 
 function getNoteData(soundType, freq, amplitude, ctx, noteLength) 
 {
@@ -597,7 +557,8 @@ function getOvertoneFrequencies(instrumentIndex, frequency)
 
 		// If this is less (we are closer to the specified frequency)
 		//	then we record the index and remember the new difference.
-		if (td < diff) {
+		if (td < diff) 
+		{
 			diff = td;
 			index = i;
 		}
@@ -618,9 +579,11 @@ function getOvertoneFrequencies(instrumentIndex, frequency)
 	return retList;
 }
 
+
 // ------------------------------------------------------------------------------ INSTRUMENT DATA STOLEN FROM MICROTONALITY.NET ------------------------------------------------------------------------------
 
-// We are using a standard sample rate of 44100hz. Would not recommend changing this.
+
+// We are using a standard sample rate of 44100hz. Would not recommend changing this. I don't know what would happen, but you probably shouldn't.
 var sampleRate = 44100;
 
 // Sine wave
@@ -810,7 +773,7 @@ tromboneRange = "Range: e2 (82.4) to d#5 (622.25)";
 tubaRange = "Range: c2 (65.4) to g4 (91.99)";
 */
 
-// Flute note frequencies.
+// Flute note fundamentals and overtones.
 {
 	var flute_note0 = [261.626, 0.09836, 0.2957, 0.141921, 0.079014, 0.112871, 0.042798, 0.029077]; // C4
 	var flute_note1 = [277.183, 0.123199, 0.3478, 0.124674, 0.084353, 0.124837, 0.017114, 0.024019]; 
@@ -850,7 +813,7 @@ tubaRange = "Range: c2 (65.4) to g4 (91.99)";
 	var flute = [flute_note0, flute_note1, flute_note2, flute_note3, flute_note4, flute_note5, flute_note6, flute_note7, flute_note8, flute_note9, flute_note10, flute_note11, flute_note12, flute_note13, flute_note14, flute_note15, flute_note16, flute_note17, flute_note18, flute_note19, flute_note20, flute_note21, flute_note22, flute_note23, flute_note24, flute_note25, flute_note26, flute_note27, flute_note28, flute_note29, flute_note30, flute_note31, flute_note32, flute_note33];
 }
 
-// Oboe note frequencies.
+// Oboe note fundamentals and overtones.
 {
 	var oboe_note0 = [233.082, 0.121894, 0.157061, 0.322307, 0.230436, 0.6367, 0.253799, 0.102276];
 	var oboe_note1 = [246.942, 0.250743, 0.093645, 0.424012, 0.34939, 0.5719, 0.33155, 0.064913];
@@ -888,7 +851,7 @@ tubaRange = "Range: c2 (65.4) to g4 (91.99)";
 	var oboe = [oboe_note0, oboe_note1, oboe_note2, oboe_note3, oboe_note4, oboe_note5, oboe_note6, oboe_note7, oboe_note8, oboe_note9, oboe_note10, oboe_note11, oboe_note12, oboe_note13, oboe_note14, oboe_note15, oboe_note16, oboe_note17, oboe_note18, oboe_note19, oboe_note20, oboe_note21, oboe_note22, oboe_note23, oboe_note24, oboe_note25, oboe_note26, oboe_note27, oboe_note28, oboe_note29, oboe_note30, oboe_note31];
 }
 
-// Clarinet note frequencies.
+// Clarinet note fundamentals and overtones.
 {
 	var clarinet_note0 = [146.832, 0.2129, 0.014125, 0.150138, 0.049777, 0.157843, 0.082485, 0.05724];
 	var clarinet_note1 = [155.563, 0.1755, 0.002133, 0.068598, 0.005293, 0.03699, 0.00482, 0.071386];
@@ -931,7 +894,7 @@ tubaRange = "Range: c2 (65.4) to g4 (91.99)";
 	var clarinet = [clarinet_note0, clarinet_note1, clarinet_note2, clarinet_note3, clarinet_note4, clarinet_note5, clarinet_note6, clarinet_note7, clarinet_note8, clarinet_note9, clarinet_note10, clarinet_note11, clarinet_note12, clarinet_note13, clarinet_note14, clarinet_note15, clarinet_note16, clarinet_note17, clarinet_note18, clarinet_note19, clarinet_note20, clarinet_note21, clarinet_note22, clarinet_note23, clarinet_note24, clarinet_note25, clarinet_note26, clarinet_note27, clarinet_note28, clarinet_note29, clarinet_note30, clarinet_note31, clarinet_note32, clarinet_note33, clarinet_note34, clarinet_note35, clarinet_note36];
 }
 
-// Bassoon note frequencies.
+// Bassoon note fundamentals and overtones.
 {
 	var bassoon_note0 = [58.27, 0.149602, 0.176013, 0.14631, 0.149406, 0.055489, 0.182866, 0.32672];
 	var bassoon_note1 = [61.735, 0.128204, 0.117423, 0.171093, 0.290739, 0.236122, 0.129562, 0.224539];
@@ -969,7 +932,7 @@ tubaRange = "Range: c2 (65.4) to g4 (91.99)";
 	var bassoon = [bassoon_note0, bassoon_note1, bassoon_note2, bassoon_note3, bassoon_note4, bassoon_note5, bassoon_note6, bassoon_note7, bassoon_note8, bassoon_note9, bassoon_note10, bassoon_note11, bassoon_note12, bassoon_note13, bassoon_note14, bassoon_note15, bassoon_note16, bassoon_note17, bassoon_note18, bassoon_note19, bassoon_note20, bassoon_note21, bassoon_note22, bassoon_note23, bassoon_note24, bassoon_note25, bassoon_note26, bassoon_note27, bassoon_note28, bassoon_note29, bassoon_note30, bassoon_note31];
 }
 
-// Trumpet note frequencies.
+// Trumpet note fundamentals and overtones.
 {
 	var trumpet_note0 = [184.997, 0.068589, 0.118634, 0.077804, 0.154649, 0.168596, 0.2918, 0.129903];
 	var trumpet_note1 = [195.998, 0.123039, 0.232463, 0.096252, 0.243815, 0.257233, 0.3692, 0.197878];
@@ -1009,7 +972,7 @@ tubaRange = "Range: c2 (65.4) to g4 (91.99)";
 	var trumpet = [trumpet_note0, trumpet_note1, trumpet_note2, trumpet_note3, trumpet_note4, trumpet_note5, trumpet_note6, trumpet_note7, trumpet_note8, trumpet_note9, trumpet_note10, trumpet_note11, trumpet_note12, trumpet_note13, trumpet_note14, trumpet_note15, trumpet_note16, trumpet_note17, trumpet_note18, trumpet_note19, trumpet_note20, trumpet_note21, trumpet_note22, trumpet_note23, trumpet_note24, trumpet_note25, trumpet_note26, trumpet_note27, trumpet_note28, trumpet_note29, trumpet_note30, trumpet_note31, trumpet_note32, trumpet_note33];
 }
 
-// French Horn note frequencies.
+// French Horn note fundamentals and overtones.
 {
 	var frenchhorn_note0 = [73.416, 0.070697, 0.147718, 0.264715, 0.428841, 0.674782, 0.715, 0.696342];
 	var frenchhorn_note1 = [77.782, 0.069412, 0.149262, 0.25808, 0.451057, 0.585672, 0.8725, 0.743207];
@@ -1052,7 +1015,7 @@ tubaRange = "Range: c2 (65.4) to g4 (91.99)";
 	var frenchhorn = [frenchhorn_note0, frenchhorn_note1, frenchhorn_note2, frenchhorn_note3, frenchhorn_note4, frenchhorn_note5, frenchhorn_note6, frenchhorn_note7, frenchhorn_note8, frenchhorn_note9, frenchhorn_note10, frenchhorn_note11, frenchhorn_note12, frenchhorn_note13, frenchhorn_note14, frenchhorn_note15, frenchhorn_note16, frenchhorn_note17, frenchhorn_note18, frenchhorn_note19, frenchhorn_note20, frenchhorn_note21, frenchhorn_note22, frenchhorn_note23, frenchhorn_note24, frenchhorn_note25, frenchhorn_note26, frenchhorn_note27, frenchhorn_note28, frenchhorn_note29, frenchhorn_note30, frenchhorn_note31, frenchhorn_note32, frenchhorn_note33, frenchhorn_note34, frenchhorn_note35, frenchhorn_note36];
 }
 
-// Trombone note frequencies.
+// Trombone note fundamentals and overtones.
 {
 	var trombone_note0 = [82.407, 0.111951, 0.282449, 0.422485, 0.288118, 0.561584, 0.723852, 0.9186];
 	var trombone_note1 = [87.307, 0.202033, 0.631264, 0.58742, 0.441702, 0.938033, 1.002078, 1.1371];
@@ -1094,7 +1057,7 @@ tubaRange = "Range: c2 (65.4) to g4 (91.99)";
 	var trombone = [trombone_note0, trombone_note1, trombone_note2, trombone_note3, trombone_note4, trombone_note5, trombone_note6, trombone_note7, trombone_note8, trombone_note9, trombone_note10, trombone_note11, trombone_note12, trombone_note13, trombone_note14, trombone_note15, trombone_note16, trombone_note17, trombone_note18, trombone_note19, trombone_note20, trombone_note21, trombone_note22, trombone_note23, trombone_note24, trombone_note25, trombone_note26, trombone_note27, trombone_note28, trombone_note29, trombone_note30, trombone_note31, trombone_note32, trombone_note33, trombone_note34, trombone_note35];
 }
 
-// Tuba note frequencies.
+// Tuba note fundamentals and overtones.
 {
 	var tuba_note0 = [65.406, 0.084388, 0.2099, 0.087893, 0.18847, 0.194373, 0.07389, 0.07504];
 	var tuba_note1 = [69.296, 0.065594, 0.12792, 0.1848, 0.068682, 0.086533, 0.068158, 0.046939];
