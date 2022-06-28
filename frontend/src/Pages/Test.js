@@ -98,7 +98,7 @@ const instrumentEnums =
 }
 
 var BPM = 120; // BPM of the track
-var quickNoteType = "half"; // sixteenth, eighth, quarter, half, or whole. Don't forget the ""!
+var quickNoteType = "quarter"; // sixteenth, eighth, quarter, half, or whole. Don't forget the ""!
 var channelCounter = 0; // I forgor 💀
 var firstTickSkipped = 0; // Kinda useless will prob remove
 var keySignature = KEY_SIGNATURES_MAJOR[2];
@@ -256,7 +256,7 @@ const Test = () => {
 			else
 			{
 				let noteOctaveString = noteAndOctave.note + (noteAndOctave.octave + floorOctave);
-				let noteFrequency = getFrequency(noteOctaveString);
+				let noteFrequency = getFrequencyFromNoteOctaveString(noteOctaveString);
 				console.log("Note and frequency: " + noteOctaveString + ", " + noteFrequency);
 				//console.log(tracky.contentHint + ": " + noteAndOctave.note + "" + (noteAndOctave.octave + floorOctave) + " [" + (datay - -AMPLITUDE_OFFSET) + "]");
 				playMidiNote(noteFrequency, .1, instrumentEnums.Clarinet, quickNoteType);
@@ -435,24 +435,24 @@ function findNumSamples(ms)
 }
 
 // Stolen from https://gist.github.com/stuartmemo/3766449
-var getFrequency = function (note) {
+// Takes in a note and octave in string form (ex: 'C#6') and returns the raw frequency for that note.
+var getFrequencyFromNoteOctaveString = function(note) 
+{
     var notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
         octave,
         keyNumber;
 
-    if (note.length === 3) {
+    if (note.length === 3) 
         octave = note.charAt(2);
-    } else {
+    else
         octave = note.charAt(1);
-    }
 
     keyNumber = notes.indexOf(note.slice(0, -1));
 
-    if (keyNumber < 3) {
+    if (keyNumber < 3)
         keyNumber = keyNumber + 12 + ((octave - 1) * 12) + 1; 
-    } else {
+    else
         keyNumber = keyNumber + ((octave - 1) * 12) + 1; 
-    }
 
     // Return frequency of note
     return 440 * Math.pow(2, (keyNumber- 49) / 12);
@@ -473,10 +473,13 @@ function setupInstrumentList()
 	instrList.push(tuba);
 }
 
+var numContexts = 0;
 function playMidiNote(frequency, amplitude, soundType, noteLength) 
 {
 	//console.log("Playing " + findNumSamples(timeForEachNoteARRAY[getNoteType(noteLength)]) + " samples.");
 	let ks = { freq: frequency, playing: false, ctx: 0, buffer: 0, node: 0, gain: 0, needToClose: false };
+	numContexts++;
+	console.log("Number of current contexts: " + numContexts);
 
 	if (ks.playing) {
 		return false;
@@ -498,14 +501,33 @@ function playMidiNote(frequency, amplitude, soundType, noteLength)
 	ks.gain.gain.value = amplitude;
 
 	// Set to loop, although there is sill a perceptable break at the end.
-	ks.node.loop = true;
+	ks.node.loop = false;
 
 	// Start the note.
 	//console.log("ks: ", ks);
-	ks.node.start(0);
+	ks.node.start(0, 0, getMilliecondsFromBPM(BPM) / 1000);
+	//ks.node.stop(getMilliecondsFromBPM(BPM) / 1000);
+	//waitForMilliseconds(500);
+
+	console.log("Does this print every time?");
+
+	//await delay(getMilliecondsFromBPM(BPM) / 1000);
+
+	ks.node.addEventListener('ended', event => { 
+		ks.ctx.close();
+		ks.node.disconnect();
+		console.log("We detected an end, we killed " + ks);
+		numContexts--;
+	});
+
+	//ks.node.disconnect(getMilliecondsFromBPM(BPM) / 1000);
+	//ks.ctx.close();
+	//console.log("We waited and killed");
 
 	return true;
 }
+
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 function getNoteData(soundType, freq, amplitude, ctx, noteLength) 
 {
@@ -741,8 +763,6 @@ function instrumentWave(numSamples, frequency, ctx, soundType)
 			//buf[i] = frequency;
 		}
 	}
-
-	//console.log("What the shit is this: " + buf);
 
 	// Return the channel buffer.
 	return buffer;
