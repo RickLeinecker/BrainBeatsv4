@@ -1,15 +1,49 @@
 // ------------------------------------------------------------------------------ IMPORTS ------------------------------------------------------------------------------
+
+
 import React, { useEffect } from 'react'
 import Navbar from '../Components/Navbar/Navbar'
+import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/dist/index.esm.js"; // UI
+import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js"; // Data acquisition
+import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // Device drivers
 
-// User Interface
-import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/dist/index.esm.js";
 
-// Data Acquisition
-import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js";
+// ------------------------------------------------------------------------------ KEY SIGNATURE DATA ------------------------------------------------------------------------------
 
-// Device Drivers
-import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js";
+
+// 2D arrays that hold every note in each key signature, starting from C. 
+const KEY_SIGNATURES_MAJOR = 
+[
+	["C", "D", "E", "F", "G", "A", "B"], // 0
+	["C#", "D#", "E#", "F#", "G#", "A#", "B#"], // 1
+	["D", "E", "F#", "G", "A", "B", "C#"], // 2
+	["D#", "E#", "F", "G#", "A#", "B#", "C"], // 3
+	["E", "F#", "G", "A", "B", "C#", "D#"], // 4
+	["E#", "F", "G", "A#", "B#", "C", "D"], // 5
+	["F", "G", "A", "A#", "C", "D", "E"], // 6
+	["F#", "G#", "A#", "B", "C#", "D#", "E#"], // 7
+	["G", "A", "B", "C", "D", "E", "F#"], // 8
+	["G#", "A#", "B#", "C#", "D#", "E#", "F"], // 9
+	["A", "B", "C#", "D", "E", "F#", "G#"], // 10
+	["A#", "C", "D", "D#", "F", "G", "A"], // 11
+	["B", "C#", "D#", "E", "F#", "G#", "A#"] // 12
+];
+const KEY_SIGNATURES_MINOR = 
+[
+	["C", "D", "D#", "F", "G", "G#", "A#"], // 0
+	["C#", "D#", "E", "F#", "G#", "A", "B"], // 1
+	["D", "E", "F", "G", "A", "A#", "C"], // 2
+	["D#", "E#", "F#", "G#", "A#", "B", "C#"], // 3
+	["E", "F#", "G", "A", "B", "C", "D"], // 4
+	["E#", "F", "G#", "A#", "B#", "C#", "D#"], // 5
+	["F", "G", "G#", "A#", "C", "C#", "D#"], // 6
+	["F#", "G#", "A", "B", "C#", "D", "E"], // 7
+	["G", "A", "A#", "C", "D", "D#", "F"], // 8
+	["G#", "A#", "B", "C#", "D#", "E", "F#"], // 9 
+	["A", "B", "C", "D", "E", "F", "G"], // 10
+	["A#", "C", "C#", "D#", "F", "F#", "G#"], // 11
+	["B", "C#", "D", "E", "F#", "G", "A"] // 12
+];
 
 
 // ------------------------------------------------------------------------------ USER-DEFINED VARIABLES ------------------------------------------------------------------------------
@@ -59,40 +93,6 @@ const AMPLITUDE_OFFSET = 0.001;
 //       the scale. For example, C major is C, D, E, F, G, A, B. It does NOT include the C of the next octave.
 const NUM_NOTES = 21;
 
-// 2D arrays that hold every note in each key signature, starting from C
-const KEY_SIGNATURES_MAJOR = 
-[
-	["C", "D", "E", "F", "G", "A", "B"], // 0
-	["C#", "D#", "E#", "F#", "G#", "A#", "B#"], // 1
-	["D", "E", "F#", "G", "A", "B", "C#"], // 2
-	["D#", "E#", "F", "G#", "A#", "B#", "C"], // 3
-	["E", "F#", "G", "A", "B", "C#", "D#"], // 4
-	["E#", "F", "G", "A#", "B#", "C", "D"], // 5
-	["F", "G", "A", "A#", "C", "D", "E"], // 6
-	["F#", "G#", "A#", "B", "C#", "D#", "E#"], // 7
-	["G", "A", "B", "C", "D", "E", "F#"], // 8
-	["G#", "A#", "B#", "C#", "D#", "E#", "F"], // 9
-	["A", "B", "C#", "D", "E", "F#", "G#"], // 10
-	["A#", "C", "D", "D#", "F", "G", "A"], // 11
-	["B", "C#", "D#", "E", "F#", "G#", "A#"] // 12
-];
-const KEY_SIGNATURES_MINOR = 
-[
-	["C", "D", "D#", "F", "G", "G#", "A#"], // 0
-	["C#", "D#", "E", "F#", "G#", "A", "B"], // 1
-	["D", "E", "F", "G", "A", "A#", "C"], // 2
-	["D#", "E#", "F#", "G#", "A#", "B", "C#"], // 3
-	["E", "F#", "G", "A", "B", "C", "D"], // 4
-	["E#", "F", "G#", "A#", "B#", "C#", "D#"], // 5
-	["F", "G", "G#", "A#", "C", "C#", "D#"], // 6
-	["F#", "G#", "A", "B", "C#", "D", "E"], // 7
-	["G", "A", "A#", "C", "D", "D#", "F"], // 8
-	["G#", "A#", "B", "C#", "D#", "E", "F#"], // 9 
-	["A", "B", "C", "D", "E", "F", "G"], // 10
-	["A#", "C", "C#", "D#", "F", "F#", "G#"], // 11
-	["B", "C#", "D", "E", "F#", "G", "A"] // 12
-];
-
 const instrumentEnums = 
 {
 	SineWave: -3,
@@ -140,22 +140,22 @@ const Test = () => {
 		const dataDevices = new datastreams.DataDevices();
 		dataDevices.load(ganglion);
 
-		// ------------- Setup Visualization (very rough) -------------
+		// Set up graph (rough)
 		const graphDiv = document.getElementById("graph");
 		graphDiv.style.padding = "25px";
 		const timeseries = new components.streams.data.TimeSeries();
 		graphDiv.insertAdjacentElement("beforeend", timeseries);
 
-		// ------------- Global Variables -------------
+		// Global variables
 		const allData = [];
 		let channels = 0;
 		let trackMap = new Map();
 		let contentHintToIndex = {};
 
-		// ------------- Track Handler -------------
+		// Track handler
 		const handleTrack = (track) => 
 		{
-			// ------------- Map Track Information (e.g. 10-20 Coordinate) to Index -------------
+			// Map track information (e.g. 10-20 Coordinate) to index
 			if (!trackMap.has(track.contentHint)) 
 			{
 				const index = trackMap.size;
@@ -163,11 +163,11 @@ const Test = () => {
 				trackMap.set(index, track);
 			}
 
-			// ------------- Grab Index -------------
+			// Grab index
 			const i = contentHintToIndex[track.contentHint];
 			channels = i > channels ? i : channels; // Assign channels as max track number
 
-			// ------------- Subscribe to New Data -------------
+			// Subscribe to new data
 			track.subscribe((data, timestamps) => 
 			{
 				// Organize New Data
@@ -183,20 +183,21 @@ const Test = () => {
 			});
 		};
 
-		// ------------- Acquisition Function -------------
+		// Acquisition function
 		const startAcquisition = async (label) => 
 		{
-			// ------------- Get Device Stream -------------
+			// Get device stream
 			const dataDevice = await dataDevices.getUserDevice({ label });
 
-			// ------------- Grab DataStream from Device -------------
+			// Grab datastream from device
 			const stream = dataDevice.stream;
 
-			// ------------- Handle All Tracks -------------
+			// Handle all tracks
 			stream.tracks.forEach(handleTrack);
 			stream.onaddtrack = (e) => handleTrack(e.track);
 		};
 
+		// This is the function that calls all of the other functions for note generation.
 		const thisIsATest = async (tracky, datay) => 
 		{
 			InitIncrementArr();
@@ -233,7 +234,7 @@ const Test = () => {
 			}
 		};
 
-		// ------------- Set Button Functionality -------------
+		// Set button functionality
 		const buttons = document.querySelector("#buttons");
 
 		for (let button of buttons.querySelectorAll("button"))
@@ -451,7 +452,7 @@ function setupInstrumentList()
 }
 
 /*  Essentially, all of the AudioContexts (which actually allow for audio playback in the browser) get placed into this queue.
-	Whenever any single note is played, a new AudioContext is generated to avoid any collision with other sounds, since we will
+	Whenever any single note is played, a new AudioContext is generated to avoid any collisions with other sounds, since we will
 	be having multiple instruments playing simultaneously and having them in one or few AudioContexts could cause issues.
 	Chrome has a limit of 50 AudioContexts that can exist at once, so this program is set so when the queue reaches a size of 45, 
 	the oldest AudioContext gets closed and disconnected (essentially stopping all of its operations to avoid memory leaks) and 
@@ -480,6 +481,7 @@ function killOldestAudioContextIfNecessary()
 // Total number of AudioContexts that have been generated by the program. Each AudioContext is used for one note and only one note.
 var numContexts = 0;
 
+// The function that plays audio!
 function playMidiNote(frequency, amplitude, soundType, noteLength) 
 {
 	//var ks = { freq: frequency, playing: false, ctx: 0, buffer: 0, node: 0, gain: 0, needToClose: false, number: numContexts };
@@ -500,8 +502,7 @@ function playMidiNote(frequency, amplitude, soundType, noteLength)
 	queueOfAudio[numContexts].node = queueOfAudio[numContexts].ctx.createBufferSource();
 	queueOfAudio[numContexts].node.buffer = queueOfAudio[numContexts].buffer;
 
-	// We need this gain object so that at the end of the note play
-	// we can taper the sound.
+	// We need this gain object so that at the end of the note play we can taper the sound.
 	queueOfAudio[numContexts].gain = queueOfAudio[numContexts].ctx.createGain();
 	queueOfAudio[numContexts].node.connect(queueOfAudio[numContexts].gain);
 	queueOfAudio[numContexts].gain.connect(queueOfAudio[numContexts].ctx.destination);
@@ -522,8 +523,7 @@ function playMidiNote(frequency, amplitude, soundType, noteLength)
 
 function getNoteData(soundType, freq, amplitude, ctx, noteLength) 
 {
-	// Local buffer variable.
-	var buffer;
+	var buffer; // Local buffer variable.
 
 	// For each supported sound type we call the correct function.
 	if (soundType == instrumentEnums.SineWave)
@@ -551,12 +551,10 @@ function getOvertoneFrequencies(instrumentIndex, frequency)
 	// Loop through the list of frequencies/amplitudes and find the closest match.
 	for (let i = 1; i < list.length; i++) 
 	{
-		// Get the difference between incoming frequency value and the
-		//	the frequeny of this list element.
+		// Get the difference between incoming frequency value and the frequeny of this list element.
 		let td = Math.abs(frequency - list[i][0]);
 
-		// If this is less (we are closer to the specified frequency)
-		//	then we record the index and remember the new difference.
+		// If this is less (we are closer to the specified frequency) then we record the index and remember the new difference.
 		if (td < diff) 
 		{
 			diff = td;
@@ -564,16 +562,12 @@ function getOvertoneFrequencies(instrumentIndex, frequency)
 		}
 	}
 
-	// Here we take the current array and make a new array to
-	//	return. This reflects code that we previously developed.
-	//	This could be eliminated if the "using" code was rewritten.
+	// Here we take the current array and make a new array to return.
 	let retList = [];
 	for (let i = 1; i < list[index].length; i++) 
 	{
-		// Push the harmonic number.
-		retList.push(i);
-		// Push the amplitude.
-		retList.push(list[index][i]);
+		retList.push(i); // Push the harmonic number.
+		retList.push(list[index][i]); // Push the amplitude.
 	}
 
 	return retList;
@@ -583,7 +577,7 @@ function getOvertoneFrequencies(instrumentIndex, frequency)
 // ------------------------------------------------------------------------------ INSTRUMENT DATA STOLEN FROM MICROTONALITY.NET ------------------------------------------------------------------------------
 
 
-// We are using a standard sample rate of 44100hz. Would not recommend changing this. I don't know what would happen, but you probably shouldn't.
+// We are using a standard sample rate of 44100hz. Would not recommend changing this. I don't know what would happen, but you still probably shouldn't.
 var sampleRate = 44100;
 
 // Sine wave
@@ -761,17 +755,6 @@ function instrumentWave(numSamples, frequency, ctx, soundType)
 	// Return the channel buffer.
 	return buffer;
 }
-
-/*
-fluteRange = "Range: c4 (261.62) to c7 (2093.0)";
-oboeRange = "Range: a#3 (233.08) to f6 (1396.91)";
-clarinetRange = "Range: d3 (146.83) to d6 (1174.66)";
-bassoonRange = "Range: a#1 (58.27) to f4 (349.22)";
-trumpetRange = "Range: f#3 (184.99) to d#6 (1244.51)";
-frenchhornRange = "Range: d2 (73.41) to d5 (587.33)";
-tromboneRange = "Range: e2 (82.4) to d#5 (622.25)";
-tubaRange = "Range: c2 (65.4) to g4 (91.99)";
-*/
 
 // Flute note fundamentals and overtones.
 {
@@ -1093,5 +1076,16 @@ tubaRange = "Range: c2 (65.4) to g4 (91.99)";
 	// Aggregate tuba notes
 	var tuba = [tuba_note0, tuba_note1, tuba_note2, tuba_note3, tuba_note4, tuba_note5, tuba_note6, tuba_note7, tuba_note8, tuba_note9, tuba_note10, tuba_note11, tuba_note12, tuba_note13, tuba_note14, tuba_note15, tuba_note16, tuba_note17, tuba_note18, tuba_note19, tuba_note20, tuba_note21, tuba_note22, tuba_note23, tuba_note24, tuba_note25, tuba_note26, tuba_note27, tuba_note28, tuba_note29, tuba_note30];
 }
+
+/* Just good to know:
+fluteRange = "Range: c4 (261.62) to c7 (2093.0)";
+oboeRange = "Range: a#3 (233.08) to f6 (1396.91)";
+clarinetRange = "Range: d3 (146.83) to d6 (1174.66)";
+bassoonRange = "Range: a#1 (58.27) to f4 (349.22)";
+trumpetRange = "Range: f#3 (184.99) to d#6 (1244.51)";
+frenchhornRange = "Range: d2 (73.41) to d5 (587.33)";
+tromboneRange = "Range: e2 (82.4) to d#5 (622.25)";
+tubaRange = "Range: c2 (65.4) to g4 (91.99)";
+*/
 
 export default Test
