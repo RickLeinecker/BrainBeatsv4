@@ -161,6 +161,8 @@ var instrList;
 // We should probably rename this file lol
 const Test = () => {
 
+	initAudioQueue();
+
 	// I have absolutely no idea what this useEffect() function is, but Quan added it
 	// and it made everything work, so don't touch. Things WILL break if removed.
 	useEffect(() => 
@@ -252,17 +254,18 @@ const Test = () => {
 			//console.log("declaredNote: " + declaredNote + ", noteAndOctave: " + noteAndOctave + ", floorOctave: " + floorOctave);
 
 			if (noteAndOctave.note == -1) // If no note was declared, it's a rest.
-				console.log(tracky.contentHint + ": Rest [" + (datay - -AMPLITUDE_OFFSET) + "]");
+			{
+				//console.log(tracky.contentHint + ": Rest [" + (datay - -AMPLITUDE_OFFSET) + "]");
+				console.log(tracky.contentHint + ": Rest");
+			}
 			else
 			{
 				let noteOctaveString = noteAndOctave.note + (noteAndOctave.octave + floorOctave);
 				let noteFrequency = getFrequencyFromNoteOctaveString(noteOctaveString);
-				console.log("Note and frequency: " + noteOctaveString + ", " + noteFrequency);
+				console.log(tracky.contentHint + ": " + noteOctaveString);
 				//console.log(tracky.contentHint + ": " + noteAndOctave.note + "" + (noteAndOctave.octave + floorOctave) + " [" + (datay - -AMPLITUDE_OFFSET) + "]");
 				playMidiNote(noteFrequency, .1, instrumentEnums.Clarinet, quickNoteType);
 			}
-
-			//playMidiNote(554.365, .1, instrumentEnums.SquareWave, quickNoteType);
 		};
 
 		// ------------- Set Button Functionality -------------
@@ -474,58 +477,86 @@ function setupInstrumentList()
 }
 
 var numContexts = 0;
+var queueOfAudio;
+
+function initAudioQueue()
+{
+	queueOfAudio = new Array();
+}
+
+function killOldestAudioContextIfNecessary()
+{
+	if (numContexts >= 45)
+	{
+		queueOfAudio[0].ctx.close();
+		queueOfAudio[0].node.disconnect();
+		queueOfAudio.shift();
+		numContexts--;
+		console.log("Got one! Killed ")
+	}
+}
+
 function playMidiNote(frequency, amplitude, soundType, noteLength) 
 {
 	//console.log("Playing " + findNumSamples(timeForEachNoteARRAY[getNoteType(noteLength)]) + " samples.");
-	let ks = { freq: frequency, playing: false, ctx: 0, buffer: 0, node: 0, gain: 0, needToClose: false };
-	numContexts++;
-	console.log("Number of current contexts: " + numContexts);
+	//var ks = { freq: frequency, playing: false, ctx: 0, buffer: 0, node: 0, gain: 0, needToClose: false, number: numContexts };
+	killOldestAudioContextIfNecessary();
+	queueOfAudio.push({ freq: frequency, playing: false, ctx: 0, buffer: 0, node: 0, gain: 0, needToClose: false, number: numContexts });
+	
+	console.log("Number of current contexts: " + numContexts + ", array: " + queueOfAudio);
 
-	if (ks.playing) {
+	if (queueOfAudio[numContexts].playing) {
 		return false;
 	}
 
-	ks.playing = true;
-	ks.needToClose = false;
+	queueOfAudio[numContexts].playing = true;
+	queueOfAudio[numContexts].needToClose = false;
 
-	ks.ctx = new AudioContext();
-	ks.buffer = getNoteData(soundType, ks.freq, amplitude, ks.ctx, noteLength);
-	ks.node = ks.ctx.createBufferSource();
-	ks.node.buffer = ks.buffer;
+	queueOfAudio[numContexts].ctx = new AudioContext();
+	queueOfAudio[numContexts].buffer = getNoteData(soundType, queueOfAudio[numContexts].freq, amplitude, queueOfAudio[numContexts].ctx, noteLength);
+	queueOfAudio[numContexts].node = queueOfAudio[numContexts].ctx.createBufferSource();
+	queueOfAudio[numContexts].node.buffer = queueOfAudio[numContexts].buffer;
 
 	// We need this gain object so that at the end of the note play
 	//	we can taper the sound.
-	ks.gain = ks.ctx.createGain();
-	ks.node.connect(ks.gain);
-	ks.gain.connect(ks.ctx.destination);
-	ks.gain.gain.value = amplitude;
+	queueOfAudio[numContexts].gain = queueOfAudio[numContexts].ctx.createGain();
+	queueOfAudio[numContexts].node.connect(queueOfAudio[numContexts].gain);
+	queueOfAudio[numContexts].gain.connect(queueOfAudio[numContexts].ctx.destination);
+	queueOfAudio[numContexts].gain.gain.value = amplitude;
 
 	// Set to loop, although there is sill a perceptable break at the end.
-	ks.node.loop = false;
+	queueOfAudio[numContexts].node.loop = false;
 
 	// Start the note.
-	//console.log("ks: ", ks);
-	ks.node.start(0, 0, getMilliecondsFromBPM(BPM) / 1000);
-	//ks.node.stop(getMilliecondsFromBPM(BPM) / 1000);
+	//console.log("queueOfAudio[numContexts]: ", queueOfAudio[numContexts]);
+	queueOfAudio[numContexts].node.start(0, 0, getMilliecondsFromBPM(BPM) / 1000);
+	
 	//waitForMilliseconds(500);
-
-	console.log("Does this print every time?");
-
+	
 	//await delay(getMilliecondsFromBPM(BPM) / 1000);
+	//queueOfAudio[numContexts].ctx.close();
 
-	ks.node.addEventListener('ended', event => { 
-		ks.ctx.close();
-		ks.node.disconnect();
-		console.log("We detected an end, we killed " + ks);
-		numContexts--;
-	});
+	// ks.node.onended = function() {
+	// 	ks.ctx.close();
+	// 	//ks.node.disconnect();
+	// 	console.log("We detected an end, we killed " + ks);
+	// 	numContexts--;
+	// }
 
 	//ks.node.disconnect(getMilliecondsFromBPM(BPM) / 1000);
 	//ks.ctx.close();
 	//console.log("We waited and killed");
+	numContexts++;
 
 	return true;
 }
+
+// ks.node.addEventListener('ended', event => { 
+// 	ks.ctx.close();
+// 	ks.node.disconnect();
+// 	console.log("We detected an end, we killed " + ks);
+// 	numContexts--;
+// });
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
