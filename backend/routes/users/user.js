@@ -212,17 +212,15 @@ router.get('/findUserPostsByUsername', async (req, res) => {
 
 
 // Get user post information by user id HERE
-router.get('/findUserPostsByID', async (req, res) => {
-
+router.post('/findUserPostsByID', async (req, res) => {
+    //res.json([req.body, 'hello'])
     try {
         const userPosts = await prisma.post.findMany({
-            where: {authorId: req.query.authorId},
-            select: {
-                    post: true,                
-
-            }
+            where: {authorId: req.body.authorId},
+            
         });
-        // res.json(userPosts)
+        
+        //res.json([req.body, "hello"])
 
 
         if(!userPosts) {
@@ -231,7 +229,7 @@ router.get('/findUserPostsByID', async (req, res) => {
             })
         }
         
-        // res.json(userPosts)
+        res.json(userPosts)
     } 
     catch(err) {
         res.status(500).send({msg: err})

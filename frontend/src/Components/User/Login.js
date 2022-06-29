@@ -61,8 +61,8 @@ const Login = () => {
 
     return (
 
-        <div class="box">
-            <div class="form-box">
+        <div className="box">
+            <div className="form-box">
                 <div className="">
                     <form onSubmit={loginAccount}>
                         <h3>Sign In</h3>
@@ -96,7 +96,7 @@ const Login = () => {
                         <p>{errMsg}</p>
                         <button type="submit" className="btn btn-primary btn-block">Submit</button>
 
-                        <div id="HASH" class="blue-msg">
+                        <div id="HASH" className="blue-msg">
                             <p className="sign-up text-left">New here? <a href="/Register">Sign up</a></p>
                             <p className="forgot-password text-right">Forgot <a href="/Forgot">password?</a></p>
                         </div>
