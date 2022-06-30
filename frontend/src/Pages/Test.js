@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------ NOTES ------------------------------------------------------------------------------
+/*
+
+- If you have issues with T3 and T4 not outputting anything, try CTRL+H'ing and replace T3 and T4 with C3 and C4. May help. Dunno. 
+	- I ended up having an issue and doing this fixed it. Lol. Leaving this here just for future reference.
+- Note lengths don't seem to be correct past quarter notes? 1/16, 1/8, and 1/4 all seem to behave fine but half and whole notes don't play for long enough.
+
+*/
 // ------------------------------------------------------------------------------ IMPORTS ------------------------------------------------------------------------------
 
 
@@ -8,8 +16,18 @@ import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@lates
 import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // Device drivers
 
 
-// ------------------------------------------------------------------------------ KEY SIGNATURE DATA ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ CONSTANTS AND GLOBAL VARIABLES ------------------------------------------------------------------------------
 
+
+// This isnt a constant its a user variable but it needs to be at the top I'm sorry I can move it later probably hopefully
+var BPM = 120; // Beats Per Minute of the track [aka tempo]
+
+// This isnt a constant its a user variable but it needs to be at the top I'm sorry I can move it later probably hopefully
+// The type of note for each channel. sixteenth, eighth, quarter, half, or whole. Don't forget the ""!
+var FP1NoteType = "eighth", 
+	FP2NoteType = "quarter", 
+	C3NoteType = "half", 
+	C4NoteType = "whole";
 
 // 2D arrays that hold every note in each key signature, starting from C. 
 const KEY_SIGNATURES_MAJOR = 
@@ -44,20 +62,6 @@ const KEY_SIGNATURES_MINOR =
 	["A#", "C", "C#", "D#", "F", "F#", "G#"], // 11
 	["B", "C#", "D", "E", "F#", "G", "A"] // 12
 ];
-
-
-// ------------------------------------------------------------------------------ USER-DEFINED VARIABLES ------------------------------------------------------------------------------
-
-
-// Feel free to change these! That's their purpose!
-var BPM = 120; // Beats Per Minute of the track [aka tempo]
-var quickNoteType = "quarter"; // sixteenth, eighth, quarter, half, or whole. Don't forget the ""! This will be replaced by the 4 below variables.
-var noteTypeSensorOne, noteTypeSensorTwo, noteTypeSensorThree, noteTypeSensorFour; // These will be used later; not implemented yet.
-var keySignature = KEY_SIGNATURES_MAJOR[0]; // Default hard coded to C major for now
-
-
-// ------------------------------------------------------------------------------ CONSTANTS AND GLOBAL VARIABLES ------------------------------------------------------------------------------
-
 
 // Constant to hold the sample rate in hz. May remove. Not sure if we need it. We'll see...
 const SAMPLE_RATE = 44100
@@ -126,6 +130,33 @@ var instrList;
 var channelCounter = 0; // I forgor 💀
 var firstTickSkipped = 0; // Kinda useless will prob remove
 
+var FP1Ready = 1, 
+	FP2Ready = 1, 
+	C3Ready = 1, 
+	C4Ready = 1,
+	TempoCounterReady = 1;
+
+var FP1NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(FP1NoteType)], 
+	FP2NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(FP2NoteType)], 
+	C3NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C3NoteType)], 
+	C4NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C4NoteType)];
+
+
+// ------------------------------------------------------------------------------ USER-DEFINED VARIABLES ------------------------------------------------------------------------------
+
+
+// Feel free to change all of these! That's their purpose!
+
+var quickNoteType = "quarter"; // sixteenth, eighth, quarter, half, or whole. Don't forget the ""! Currently not used but available if-need be.
+
+// The instrument that each channel will be "playing"
+var FP1Instrument = instrumentEnums.SineWave, 
+	FP2Instrument = instrumentEnums.TriangleWave, 
+	C3Instrument = instrumentEnums.SquareWave, 
+	C4Instrument = instrumentEnums.Flute;
+
+var keySignature = KEY_SIGNATURES_MINOR[0]; // Default hard coded to C minor
+
 
 // ------------------------------------------------------------------------------ THE MAIN CHUNK OF THE PROGRAM ------------------------------------------------------------------------------
 
@@ -168,7 +199,9 @@ const Test = () => {
 			channels = i > channels ? i : channels; // Assign channels as max track number
 
 			// Subscribe to new data
-			track.subscribe((data, timestamps) => 
+			// This track.subscribe thing is basically one big infinite loop that iterates every time a new "tick" or "frame" of data
+			// is sent from the headset... so it basically runs super quickly. 
+			track.subscribe((data) => 
 			{
 				// Organize New Data
 				let arr = [];
@@ -179,7 +212,37 @@ const Test = () => {
 				timeseries.data = arr;
 				timeseries.draw(); // FORCE DRAW: Update happens too fast for UI
 
-				thisIsATest(track, data);
+				if (TempoCounterReady == 1)
+				{
+					TempoCounterReady = 0;
+					setTimeout(() => 
+					{
+						console.log("----- It's been " + getMilliecondsFromBPM(BPM) + "ms (one quarter note at " + BPM + "bpm) -----");
+						TempoCounterReady = 1;
+					}, getMilliecondsFromBPM(BPM));
+				}
+
+				// TODO: Comment what this does :)
+				if (track.contentHint.localeCompare("FP1") == 0 && FP1Ready == 1)
+				{
+					FP1Ready = 0;
+					setTimeout(() => { mainDriverFunction(track, data, FP1Instrument, FP1NoteType) }, FP1NoteLengthMS)
+				}
+				else if (track.contentHint.localeCompare("FP2") == 0 && FP2Ready == 1)
+				{
+					FP2Ready = 0;
+					setTimeout(() => { mainDriverFunction(track, data, FP2Instrument, FP2NoteType) }, FP2NoteLengthMS)
+				}
+				else if (track.contentHint.localeCompare("C3") == 0 && C3Ready == 1)
+				{
+					C3Ready = 0;
+					setTimeout(() => { mainDriverFunction(track, data, C3Instrument, C3NoteType) }, C3NoteLengthMS)
+				}
+				else if (track.contentHint.localeCompare("C4") == 0 && C4Ready == 1)
+				{
+					C4Ready = 0;
+					setTimeout(() => { mainDriverFunction(track, data, C4Instrument, C4NoteType) }, C4NoteLengthMS)
+				}
 			});
 		};
 
@@ -198,7 +261,7 @@ const Test = () => {
 		};
 
 		// This is the function that calls all of the other functions for note generation.
-		const thisIsATest = async (tracky, datay) => 
+		const mainDriverFunction = async (tracky, datay, instrument, noteType) => 
 		{
 			InitIncrementArr();
 
@@ -210,7 +273,7 @@ const Test = () => {
 				if (firstTickSkipped == 0)
 					firstTickSkipped = 1;
 				else
-					waitForNextTick(quickNoteType);
+					//waitForNextTick(quickNoteType);
 				channelCounter = 0;
 			}
 
@@ -221,17 +284,33 @@ const Test = () => {
 			if (noteAndOctave.note == -1) // If no note was declared, it's a rest.
 			{
 				//console.log(tracky.contentHint + ": Rest [" + (datay - -AMPLITUDE_OFFSET) + "]");
-				console.log(tracky.contentHint + ": Rest");
+				//console.log(tracky.contentHint + ": Rest");
 			}
 			else
 			{
 				let noteOctaveString = noteAndOctave.note + (noteAndOctave.octave + floorOctave);
 				let noteFrequency = getFrequencyFromNoteOctaveString(noteOctaveString);
-				console.log(tracky.contentHint + ": " + noteOctaveString);
-				//console.log(tracky.contentHint + ": " + noteAndOctave.note + "" + (noteAndOctave.octave + floorOctave) + " [" + (datay - -AMPLITUDE_OFFSET) + "]");
 
-				playMidiNote(noteFrequency, .1, instrumentEnums.Clarinet, quickNoteType);
+				if (tracky.contentHint.localeCompare("FP1") == 0)
+					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP1Instrument) + " playing " + FP1NoteType + " notes]");
+				else if (tracky.contentHint.localeCompare("FP2") == 0)
+					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP2Instrument) + " playing " + FP2NoteType + " notes]");
+				else if (tracky.contentHint.localeCompare("C3") == 0)
+					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C3Instrument) + " playing " + C3NoteType + " notes]");
+				else if (tracky.contentHint.localeCompare("C4") == 0)
+					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C4Instrument) + " playing " + C4NoteType + " notes]");
+
+				playMidiNote(noteFrequency, .1, instrument, noteType);
 			}
+
+			if (tracky.contentHint.localeCompare("FP1") == 0)
+				FP1Ready = 1;
+			else if (tracky.contentHint.localeCompare("FP2") == 0)
+				FP2Ready = 1;
+			else if (tracky.contentHint.localeCompare("C3") == 0)
+				C3Ready = 1;
+			else if (tracky.contentHint.localeCompare("C4") == 0)
+				C4Ready = 1;
 		};
 
 		// Set button functionality
@@ -278,6 +357,30 @@ const Test = () => {
 // ------------------------------------------------------------------------------ CUSTOM HELPER FUNCTIONS ------------------------------------------------------------------------------
 
 
+function getInstrumentNameFromInt(input)
+{
+	if (input == -3) return "Sine Wave";
+	else if (input == -2) return "Triangle Wave";
+	else if (input == -1) return "Square Wave";
+	else if (input == 0) return "Flute";
+	else if (input == 1) return "Oboe";
+	else if (input == 2) return "Clarinet";
+	else if (input == 3) return "Bassoon";
+	else if (input == 4) return "Trumpet";
+	else if (input == 5) return "French Horn";
+	else if (input == 6) return "Trombone";
+	else if (input == 7) return "Tuba";
+}
+
+function getIntFromNoteTypeString(input)
+{
+	if (input.localeCompare("sixteenth") == 0) return 0;
+	else if (input.localeCompare("eighth") == 0) return 1;
+	else if (input.localeCompare("quarter") == 0) return 2;
+	else if (input.localeCompare("half") == 0) return 3;
+	else if (input.localeCompare("whole") == 0) return 4;
+}
+
 // This if/else stack returns a note length multiplier based off input. Quarter notes are used as the baseline (x1.0 multiplier).
 // Input should just be a lowercase string of the note type. Ex: "quarter", "half"
 function getNoteLengthMultiplier(noteType)
@@ -301,32 +404,6 @@ function getNoteLengthMultiplier(noteType)
 function getMilliecondsFromBPM(bpm) 
 {
 	return 60000 / bpm;
-}
-
-// This function uses the type of note (quarter, whole, etc) to wait a certain amount of milliseconds
-// before allowing the rest of the program to continue. This is used to only read data from the
-// headset (which is constantly streaming data) when a note is needed. This makes it "realtime."
-function waitForNextTick(noteType) 
-{
-	// Get the time that this function started running at
-	var startTime = new Date();
-	var ms = startTime.getTime(); // Retrieve the milliseconds component from startTime
-
-	// Total amount of time that this function will wait for before completing.
-	var targetTime = getMilliecondsFromBPM(BPM) * getNoteLengthMultiplier(noteType);
-
-	// Infinite loop; hoping to make this an async function so this will not be necessary.
-	while (1 == 1) 
-	{
-		var currentTime = new Date(); // Get the time right now
-		var timeDifference = (currentTime.getTime() - ms); // Subtract start time from current time
-
-		if (timeDifference >= targetTime) // If the elapsed time is >= the amount of time to wait, stop the function.
-		{
-			console.log("----- It's been " + targetTime + "ms (one " + noteType + " note at " + BPM + "bpm) -----");
-			return;
-		}
-	}
 }
 
 // This creates the array in which different "increments" for notes are housed. I already sort-of explained this
@@ -461,9 +538,9 @@ function setupInstrumentList()
 	program is running for a large amount of time, while also ensuring that AudioContexts will exist for as long as possible so
 	that we can minimize the chance of cutting off notes that are still playing.
 
-	This queue was NOT taken from Microtonality.net and is a custom way of handling the removal of old AudioContexts. It is
-	in the Microtonality.net section of this file for ease-of-reading and because the Microtonality.net functions had to be
-	tweaked to work with this queue system. 																				  */
+	queueOfAudio and killOldestAudioContextIfNecessary() were NOT taken from Microtonality.net and is a custom way of handling the 
+	removal of old AudioContexts. It is in the Microtonality.net section of this file for ease-of-reading and because the 
+	Microtonality.net functions had to be tweaked to work with this new queue system. 								              */
 var queueOfAudio = new Array();
 
 function killOldestAudioContextIfNecessary()
