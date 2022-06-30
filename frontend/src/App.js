@@ -7,6 +7,7 @@ import Login from './Pages/Login'
 import Register from './Pages/Register'
 import Forgot from './Pages/Forgot'
 import Profile from './Pages/Profile';
+import Search from './Pages/SearchPage'
 import Test from './Pages/Test';
 import Test1 from './Pages/Test1';
 
@@ -26,6 +27,7 @@ function App() {
           <Route path='/Login' element={user ? <Navigate to ='/' /> : <Login />}/>
           <Route path='/Record' element={user? <Record /> : <Navigate to='/Login' />} />
           <Route path='/Profile' element={user ? <Profile /> : <Navigate to='/Login' />} />
+          <Route path='/Search' element={<Search />} />
           <Route path='/Register' element={<Register />} />
           <Route path='/Forgot' element={<Forgot />} />
           <Route path='/Test1' element={<Test1 />} />

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Navbar, Container, Nav, Button, NavDropdown } from 'react-bootstrap'
 import { AuthContext } from '../context/AuthContext'
 import Logo from './Logo.jpg'
-import { FaHome, FaUserEdit, FaRegPlayCircle, FaDoorOpen } from 'react-icons/fa';
+import { FaHome, FaUserEdit, FaRegPlayCircle, FaDoorOpen, FaSearch } from 'react-icons/fa';
 import './Nav.css'
 
 let imgStyle = {
@@ -48,6 +48,7 @@ const Navbars = () => {
                         {user ?
                             <NavDropdown title={user.username}>
                                 <NavDropdown.Item ><Link to='/' style={{ textDecoration: 'none' }}><FaHome /> Home</Link></NavDropdown.Item>
+                                <NavDropdown.Item ><Link to='/' style={{ textDecoration: 'none' }}><FaSearch /> Search</Link></NavDropdown.Item>
                                 <NavDropdown.Item ><Link to='/Profile' style={{ textDecoration: 'none' }} ><FaUserEdit /> Profile</Link></NavDropdown.Item>
                                 <NavDropdown.Item ><Link to='/Record' style={{ textDecoration: 'none' }}><FaRegPlayCircle />Record</Link></NavDropdown.Item>
                                 <NavDropdown.Divider />
