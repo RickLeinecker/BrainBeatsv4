@@ -22,11 +22,14 @@
 .cardFlex {
     display: flex;
     flex-wrap: wrap;
+    height:500px;
+    overflow-y: scroll;
 }
 
 .cardText {
     position: relative;
     text-align: left;
+    color: white;
     left: -10px;
     top: -15px
 }

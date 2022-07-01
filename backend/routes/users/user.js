@@ -185,14 +185,11 @@ router.post('/createPost', async (req, res) => {
 
 
 // Get user post information by username HERE
-router.get('/findUserPostsByUsername', async (req, res) => {
+router.post('/findUserPostsByUsername', async (req, res) => {
 
     try {
-        const userPosts = await prisma.user.findUnique({
-            where: {username: req.body.username},
-            select: {
-                posts: true,
-            }
+        const userPosts = await prisma.post.findMany({
+            where: {title: req.body.title},
         });
             // res.json(userPosts)
     

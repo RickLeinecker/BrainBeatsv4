@@ -17,16 +17,16 @@ const SeachComp = () => {
   const [showMedia, setShowMedia] = useState(false);
   let _data = atob(data);
 
-  useEffect(() => {
-    let config = {
-      method: 'get',
-      url: path.buildPath('/users/getAllUsersPosts'),
-    }
-    axios(config)
-      .then((response) => {
-        setPost(response.data);
-      })
-  })
+  // useEffect(() => {
+  //   let config = {
+  //     method: 'get',
+  //     url: path.buildPath('/users/getAllUsersPosts'),
+  //   }
+  //   axios(config)
+  //     .then((response) => {
+  //       setPost(response.data);
+  //     })
+  // }, [Post])
 
   const handle = () => {
     console.log(search);
@@ -35,13 +35,28 @@ const SeachComp = () => {
   const endPlay = () => {
     setData('');
     setShowMedia(false);
-}
+  }
+  const searchPost = () => {
+    const searchField = {
+      title: search
+    }
+   
+      let config = {
+        method: 'post',
+        url: path.buildPath('/users/findUserPostsByUsername'),
+        data: searchField
+      }
+      axios(config)
+        .then((response) => {
+          setPost(response.data);
+        })
+  }
   return (
     <div className='container searchBody'>
       <div className='row'>
         <div>
           <input className='textBox' placeholder='Search Box' onChange={(event) => setSearch(event.target.value)} />
-          <button onClick={handle}>Search</button>
+          <button onClick={searchPost}>Search</button>
         </div>
 
       </div>
