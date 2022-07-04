@@ -8,7 +8,7 @@ import './search.css'
 
 const SeachComp = () => {
   const { user } = useContext(AuthContext);
-  const [search, setSearch] = useState('');
+  let search = '';
   const [Post, setPost] = useState([]);
   const path = require('../Path');
   //midi data which is a sting
@@ -17,25 +17,17 @@ const SeachComp = () => {
   const [showMedia, setShowMedia] = useState(false);
   let _data = atob(data);
 
-  // useEffect(() => {
-  //   let config = {
-  //     method: 'get',
-  //     url: path.buildPath('/users/getAllUsersPosts'),
-  //   }
-  //   axios(config)
-  //     .then((response) => {
-  //       setPost(response.data);
-  //     })
-  // }, [Post])
+  //get data onload
+  useEffect(() => {
+    searchPost();
+  }, [])
 
-  const handle = () => {
-    console.log(search);
-    console.log(Post);
-  }
+  //stop playing and hide player
   const endPlay = () => {
     setData('');
     setShowMedia(false);
   }
+  //axios call for finding post
   const searchPost = () => {
     const searchField = {
       title: search
@@ -51,12 +43,19 @@ const SeachComp = () => {
           setPost(response.data);
         })
   }
+
   return (
     <div className='container searchBody'>
       <div className='row'>
         <div>
-          <input className='textBox' placeholder='Search Box' onChange={(event) => setSearch(event.target.value)} />
-          <button onClick={searchPost}>Search</button>
+          <input className='textBox' placeholder='Search Box' onChange={(event) => {
+            //the reason search is not a use state is setState is asyncronous which
+            //messes with live search
+            search = event.target.value;
+            //call axios
+            searchPost();
+          }} />
+ 
         </div>
 
       </div>

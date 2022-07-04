@@ -1,6 +1,6 @@
 require("dotenv").config();
-const bcrypt =  require('bcryptjs');
-const jwt =  require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -14,26 +14,25 @@ const jwtAPI = require("../../utils/jwt");
 // Create a new user
 router.post('/createUser', async (req, res) => {
 
-    try 
-    {
+    try {
         const { firstName, lastName, dob, email, username, password, bio } = req.body;
 
         // Check if the email already exists in db
         const userEmailExists = await prisma.user.findUnique({
-        where: { email },
+            where: { email },
         });
 
         // Check if the username already exists in db
         const userNameExists = await prisma.user.findUnique({
-        where: { username },
+            where: { username },
         });
 
-        if(userEmailExists || userNameExists) {
+        if (userEmailExists || userNameExists) {
             return res.status(400).json({
                 msg: "Email or username already exists. Please try again."
             })
         } else {
-            
+
             //Encrypt user password
             encryptedPassword = await bcrypt.hash(password, 10);
 
@@ -69,10 +68,10 @@ router.post('/createUser', async (req, res) => {
             res.json(newUser);
         }
 
-    } 
-    catch(err) {
+    }
+    catch (err) {
         console.log(err)
-        res.status(500).json({msg: "Unable to create user"})
+        res.status(500).json({ msg: "Unable to create user" })
     }
 
 });
@@ -81,9 +80,8 @@ router.post('/createUser', async (req, res) => {
 // Get all users with all records
 router.get('/getAllUsers', async (req, res) => {
 
-    try 
-    {
-        const users =  await prisma.user.findMany({
+    try {
+        const users = await prisma.user.findMany({
             select: {
                 id: true,
                 firstName: true,
@@ -99,46 +97,44 @@ router.get('/getAllUsers', async (req, res) => {
         res.json(users)
         // FIND THE LENGTH OF USERS IN MYSQL USER TABLE
         // res.json(users.length)
-    } 
-    catch(err) {
-        res.status(500).send({msg: err})
     }
-    
+    catch (err) {
+        res.status(500).send({ msg: err })
+    }
+
 });
 
 
 // Get all users with all records
 router.get('/getAllUsersPosts', async (req, res) => {
 
-    try 
-    {
-        const allUsersPosts =  await prisma.post.findMany();
+    try {
+        const allUsersPosts = await prisma.post.findMany();
         res.json(allUsersPosts)
-    } 
-    catch(err) {
-        res.status(500).send({msg: err})
     }
-    
+    catch (err) {
+        res.status(500).send({ msg: err })
+    }
+
 });
 
 
 // Post at user account
 router.post('/createPost', async (req, res) => {
 
-    try 
-    {
-        const { id, title, bpm, key, midi} =  req.body
+    try {
+        const { id, title, bpm, key, midi } = req.body
         const userExists = await prisma.user.findUnique({
             where: { id },
         });
 
-        if(!userExists) {
+        if (!userExists) {
             return res.status(400).json({
                 msg: "User not found"
             })
         } else {
-                
-                
+
+
             // file reader to read sheetjs.xnxx
             // some way to (string) encode the sheetjs.xlsx file to a blob
             // actualMidi = blob
@@ -152,11 +148,11 @@ router.post('/createPost', async (req, res) => {
                 where: { id },
                 data: {
                     posts: {
-                        create: 
-                            {
-                                title,
-                                // midi: actualMidi ,
-                                data: JSON.stringify('\TVRoZAAAAAYAAQADAGRNVHJrAAAAGgD/AwtMaXR0bGUgTGFtZQD/UQMKLCsA/y8ATVRyawAAAPMA/wMG\
+                        create:
+                        {
+                            title,
+                            // midi: actualMidi ,
+                            data: JSON.stringify('\TVRoZAAAAAYAAQADAGRNVHJrAAAAGgD/AwtMaXR0bGUgTGFtZQD/UQMKLCsA/y8ATVRyawAAAPMA/wMG\
                                         THlyaWNzAP8BGEBUTWFyeSBXYXMgQSBMaXR0bGUgTGFtZWT/AQNcTWFL/wEDcnkgGf8BBHdhcyAy/wEC\
                                         YSAy/wEDbGl0Mv8BBHRsZSAy/wEFbGFtZSxk/wEEL0xpdDL/AQR0bGUgMv8BBWxhbWUsZP8BBC9MaXQy\
                                         /wEEdGxlIDL/AQVsYW1lLGT/AQMvTWFL/wEDcnkgGf8BBHdhcyAy/wECYSAy/wEDbGl0Mv8BBHRsZSAy\
@@ -166,19 +162,19 @@ router.post('/createPost', async (req, res) => {
                                         gENACpBAf0uAQEAAkD5/GYA+QACQPH8ygDxAAJA+fzKAPkAAkEB/MoBAQACQQH8ygEBAAJBAfzKAQEAZ\
                                         kEB/GYBAQACQPn8ygD5AAJA+fzKAPkAAkEB/MoBAQACQPn8ygD5AAJA8f2RAZABDZABIf1qAPEAAQEAA\
                                         Q0AASEAK/y8A'), // raw midi data for midi file
-                                bpm,
-                                key,
-                            }      
+                            bpm,
+                            key,
+                        }
                     }
-                }, 
+                },
                 include: {
                     posts: true
                 }
             });
             res.json(newPost)
         }
-    } catch(err) {
-        res.status(500).send({msg: err})
+    } catch (err) {
+        res.status(500).send({ msg: err })
     }
 
 });
@@ -188,21 +184,36 @@ router.post('/createPost', async (req, res) => {
 router.post('/findUserPostsByUsername', async (req, res) => {
 
     try {
-        const userPosts = await prisma.post.findMany({
-            where: {title: req.body.title},
-        });
-            // res.json(userPosts)
-    
-        if(!userPosts) {
+        const title = req.body.title
+        let userPosts;
+        if (title != "") {
+            userPosts = await prisma.post.findMany({
+                take: 10,
+                where: {
+                    title: {
+                        contains: title,
+                    },
+                },
+            });
+        }else{
+            userPosts = await prisma.post.findMany({
+                take: 10,
+            })
+        
+        }
+
+        // res.json(userPosts)
+
+        if (!userPosts) {
             return res.status(400).json({
                 msg: "Username not found"
             })
         }
-        
+
         res.json(userPosts)
-    } 
-    catch(err) {
-        res.status(500).send({msg: err})
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
     }
 
 })
@@ -213,23 +224,23 @@ router.post('/findUserPostsByID', async (req, res) => {
     //res.json([req.body, 'hello'])
     try {
         const userPosts = await prisma.post.findMany({
-            where: {authorId: req.body.authorId},
-            
+            where: { authorId: req.body.authorId },
+
         });
-        
+
         //res.json([req.body, "hello"])
 
 
-        if(!userPosts) {
+        if (!userPosts) {
             return res.status(400).json({
                 msg: "Author ID not found"
             })
         }
-        
+
         res.json(userPosts)
-    } 
-    catch(err) {
-        res.status(500).send({msg: err})
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
     }
 
 })
@@ -238,9 +249,8 @@ router.post('/findUserPostsByID', async (req, res) => {
 // Get user by username
 router.get('/findUser', async (req, res) => {
 
-    try 
-    {
-        const findUser =  await prisma.user.findUnique({
+    try {
+        const findUser = await prisma.user.findUnique({
             where: { username: req.body.username },
             select: {
                 firstName: true,
@@ -253,15 +263,15 @@ router.get('/findUser', async (req, res) => {
             }
         });
 
-        if(!findUser) {
+        if (!findUser) {
             return res.status(400).json({
                 msg: "Username does not exist"
             })
         }
         res.json(findUser)
-    } 
-    catch(err) {
-        res.status(500).send({msg: err})
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
     }
 
 });
@@ -277,65 +287,62 @@ router.get('/findUser', async (req, res) => {
 // Update user info 
 router.put('/updateUser', async (req, res) => {
 
-    try 
-    {
-        const {id, firstName, lastName, dob, email, username, bio} = req.body
+    try {
+        const { id, firstName, lastName, dob, email, username, bio } = req.body
         const updateUser = await prisma.user.update({
             where: { id },
             data: {
-                    firstName: firstName,
-                    lastName: lastName,
-                    email: email,
-                    username: username,
-                    bio: bio
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                username: username,
+                bio: bio
             }
-          })
+        })
         //   res.status(200).send({msg: "Updated OK"});
-          res.json(updateUser);
-    } 
+        res.json(updateUser);
+    }
 
-    catch(err) {
+    catch (err) {
         res.status(500).send(err);
     }
-    
+
 });
 
 
 // Delete user by ID
 router.delete('/deleteUser', async (req, res) => {
 
-    try 
-    { 
+    try {
         const deleteUser = await prisma.user.delete({
             where: { id: req.body.id }
         })
-        res.status(200).send({msg: "Deleted OK"});
-    } 
-    catch(err) {
+        res.status(200).send({ msg: "Deleted OK" });
+    }
+    catch (err) {
         res.status(500).send(err);
     }
-    
+
 });
 
 
 const transporter = nodemailer.createTransport({
     port: 465,               // true for 465, false for other ports
     host: "smtp.gmail.com",
-       auth: {
-            user: 'brainbeatsdev@gmail.com',
-            pass: process.env.EMAIL_PASSWORD,
-         },
+    auth: {
+        user: 'brainbeatsdev@gmail.com',
+        pass: process.env.EMAIL_PASSWORD,
+    },
     secure: true,
 });
 
 
 // Send Email to user to verify login
 router.post('/sendVerificationEmail', async (req, res) => {
-    try 
-    {
+    try {
         const { email, subject, text } = req.body;
         const userExists = await prisma.user.findUnique({
-        where: { email },
+            where: { email },
             select: { email: true }
         });
 
@@ -348,21 +355,21 @@ router.post('/sendVerificationEmail', async (req, res) => {
                 text: 'Verify your login to BrainBeats by clicking the following link, or copy and paste it into your browser: ',
                 html: '<a href=\"https://www.brainbeats.dev/verify/${userExists._id}\">Verify Email</a>',
             };
-        
+
             transporter.sendMail(mailData, function (err, info) {
-                if(err) {
+                if (err) {
                     return console.log(err);
                 } else {
                     console.log('Email Sent: ' + info.response);
                 }
-        
-                res.status(200).send({message: "Mail send", message_id: info.messageId });
+
+                res.status(200).send({ message: "Mail send", message_id: info.messageId });
             });
         }
-    } 
-    catch(err) {
+    }
+    catch (err) {
         console.log(err)
-        res.status(500).json({msg: "User does not exist."})
+        res.status(500).json({ msg: "User does not exist." })
     }
 });
 
@@ -371,26 +378,26 @@ router.post('/jwtStuff', async (req, res) => {
     try {
 
 
-    } 
-    catch(err) {
+    }
+    catch (err) {
         console.log(err)
-        res.status(500).json({msg: "Unable to create JWT token"})
+        res.status(500).json({ msg: "Unable to create JWT token" })
     }
 })
 
 // Login an existing user
 router.post('/loginUser', async (req, res) => {
-  
+
     try {
 
         // Get user input
         const { email, password } = req.body;
-    
+
         // Validate if user exist in our database
         const user = await prisma.user.findUnique({
-          where: { email: email }
-          });
-        
+            where: { email: email }
+        });
+
         // if (jwtAPI.verifyJWT()) {
         //   console.log("User logged in via JWT");
         //   return res.status(200).json(user, {
@@ -400,15 +407,15 @@ router.post('/loginUser', async (req, res) => {
 
         // If password is related to the email console log a successful login
         if (user && (await bcrypt.compare(password, user.password))) {
-          // res.json("Logged In!")
-          res.json(user)
-          // jwtAPI.giveLoginJWT({id: user.id, email: user.email})
+            // res.json("Logged In!")
+            res.json(user)
+            // jwtAPI.giveLoginJWT({id: user.id, email: user.email})
         } else {
-          return res.status(400).send("Invalid Credentials");
+            return res.status(400).send("Invalid Credentials");
         }
-      } catch (err) {
+    } catch (err) {
         console.log(err)
-      }
+    }
 
 });
 
@@ -420,14 +427,14 @@ router.get('/findMidi', async (req, res) => {
         where: { username },
     });
 
-    if(!userExist) {
+    if (!userExist) {
         return res.status(400).json({
             msg: "User not found"
         })
     } else {
 
         const posts = await prisma.user.findUnique({
-            where: { username: username }, 
+            where: { username: username },
             select: {
                 posts: {
                     select: {
@@ -437,7 +444,7 @@ router.get('/findMidi', async (req, res) => {
                 }
             }
         });
-    res.json(posts);
+        res.json(posts);
     }
 
 })
