@@ -155,6 +155,13 @@ var FP1Instrument = instrumentEnums.SineWave,
 	C3Instrument = instrumentEnums.SquareWave,
 	C4Instrument = instrumentEnums.Flute;
 
+const DEFAULT_VOLUME = 0.1;
+
+var FP1Volume = DEFAULT_VOLUME,
+	FP2Volume = DEFAULT_VOLUME,
+	C3Volume = DEFAULT_VOLUME,
+	C4Volume = DEFAULT_VOLUME;
+
 var keySignature = KEY_SIGNATURES_MINOR[0]; // Default hard coded to C minor
 
 
@@ -319,15 +326,15 @@ const Test = () => {
 				let noteFrequency = getFrequencyFromNoteOctaveString(noteOctaveString);
 
 				if (tracky.contentHint.localeCompare("FP1") == 0)
-					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP1Instrument) + " playing " + FP1NoteType + " notes]");
+					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP1Instrument) + " playing " + FP1NoteType + " notes] " + datay);
 				else if (tracky.contentHint.localeCompare("FP2") == 0)
-					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP2Instrument) + " playing " + FP2NoteType + " notes]");
+					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP2Instrument) + " playing " + FP2NoteType + " notes] " + datay);
 				else if (tracky.contentHint.localeCompare("C3") == 0)
-					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C3Instrument) + " playing " + C3NoteType + " notes]");
+					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C3Instrument) + " playing " + C3NoteType + " notes] " + datay);
 				else if (tracky.contentHint.localeCompare("C4") == 0)
-					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C4Instrument) + " playing " + C4NoteType + " notes]");
+					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C4Instrument) + " playing " + C4NoteType + " notes] " + datay);
 
-				playMidiNote(noteFrequency, .1, instrument, noteType);
+				playMidiNote(noteFrequency, noteVolume, instrument, noteType);
 			}
 
 			if (tracky.contentHint.localeCompare("FP1") == 0)
