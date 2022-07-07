@@ -81,7 +81,6 @@ const Cards = () => {
                     <Carousel />
                 </div> : <></>
             }
-            <button onClick={checkData}>HE</button>
             <h1>RECENT SONGS</h1>
             <div style={{ overflowX: 'hidden' }}>
                 <div className='row'>
@@ -113,7 +112,6 @@ const Cards = () => {
                 <div className='row'>
                     {//Only appears if user is signed in
                         user ? <>
-                        <button onClick={handle}>Button</button>
                         <h1> YOUR SONG </h1>
                         <Container className='containerOverflow'>
                             <div style={{ display: 'inline-flex' }}>

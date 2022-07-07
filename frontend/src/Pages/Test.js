@@ -298,7 +298,7 @@ const Test = () => {
 		};
 
 		// This is the function that calls all of the other functions for note generation.
-		const mainDriverFunction = async (tracky, datay, instrument, noteType) => {
+		const mainDriverFunction = async (tracky, datay, instrument, noteType, noteVolume) => {
 			InitIncrementArr();
 
 			// This entire handleTrack section needs to run 4 times total, once for each channel, every tick.

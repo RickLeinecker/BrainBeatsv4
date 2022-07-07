@@ -3,22 +3,31 @@ import RecordButton from './RecordButton';
 import { Carousel } from "react-responsive-carousel";
 import { SliderPicker } from 'react-color'
 import './record.css'
-import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
+import { FaAngleRight, FaAngleLeft, FaRegPlayCircle, FaRegPauseCircle } from "react-icons/fa";
 import { AuthContext } from '../context/AuthContext';
+
 
 function Record() {
     //Set onLoad to link
     const [type, setType] = useState('link');
     const { user } = useContext(AuthContext);
+    const [checked, setChecked] = useState(false);
+
+    const handleChange = () => {
+        setChecked(!checked);
+      };
 
     return (
         <div>
-            <select onChange={e => { setType(e.target.value) }}>
-                <option value={"link"}>Youtube</option>
-                <option value={"script"}>Script</option>
-            </select>
-            <ScriptThing show={type === "script"} />
-            <LinkThing show={type === "link"} />
+            <div className="">
+                <label className="switch">
+                    <input type="checkbox" className="switch-input" checked={checked} onChange={handleChange}/>
+                    <span className="switch-label" data-on="Script" data-off="Link"></span>
+                    <span className="switch-handle"></span>
+                </label>
+            </div>
+            <ScriptThing show={checked === true} />
+            <LinkThing show={checked === false} />
             <Setting />
         </div>
     );
@@ -32,7 +41,7 @@ function LinkThing(shown) {
     const [stage, setStage] = useState(0)
 
     let correctLink = id.split('='); //return the string with youtube id
-    
+
     let url = correctLink[1];
     const goNext = (e) => {
         e.preventDefault()
@@ -98,7 +107,7 @@ function VidLink(link) {
     //https://www.youtube.com/watch?v=DSBBEDAGOTc
     //https://www.youtube.com/watch?v=ScMzIvxBSi4&ab_channel=BenMarquezTX
 
-    
+
     let tempID = link.link;
     //this discards discards everything after the & sign giving the correct URL if the URL
     //in the second form
@@ -128,10 +137,12 @@ function ScriptThing(shown) {
 
     let words = script.split(', ');
 
+    //Go to next step in recording
     const goNext = (e) => {
         e.preventDefault()
         setStage(stage + 1)
     }
+    //Go back a step in recording
     const goBack = (e) => {
         e.preventDefault()
         setStage(stage - 1)
@@ -145,7 +156,7 @@ function ScriptThing(shown) {
 
                         <p className='textColor'>Script Setting</p>
                         <br />
-                        <textarea className='scriptTextBox' rows='5' cols='50' placeholder='Wordbox (seperate words by commas and spaces)' onChange={(e) => setScript(e.target.value)} />
+                        <textarea value={script} className='scriptTextBox' rows='5' cols='50' placeholder='Wordbox (seperate inputs by commas and spaces)' onChange={(e) => setScript(e.target.value)} />
                         <br />
                         <label className='textColor'>Slideshow Speed</label> <br />
                         <input value={speed / 1000} type='number' placeholder='(seconds)' onChange={(e) => setSpeed(e.target.value * 1000)} />
@@ -175,9 +186,9 @@ function ScriptThing(shown) {
                                 <ValidScript scripts={[words, speed, background, textColor]} />
                             </div>
                             <div className='col scriptBox'>
-                                <label>Slideshow Background</label>
+                                <label className='textColor'>Slideshow Background</label>
                                 <SliderPicker color={background} onChangeComplete={(e) => setBackground(e.hex)} />
-                                <label>Text color</label>
+                                <label className='textColor'>Text color</label>
                                 <SliderPicker color={textColor} onChangeComplete={(e) => setTextColor(e.hex)} />
                                 <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
                                 <button className='nextButton' onClick={goNext}>POST {<FaAngleRight />}</button>
@@ -231,6 +242,10 @@ function Setting() {
         opacity: '1',
     }
 
+    const [record, setRecord] = useState(false)
+
+
+
     return (
         <>
             <div style={st}>
@@ -261,8 +276,20 @@ function Setting() {
                         <td style={{ width: '22%', textAlign: 'left' }}>
 
                         </td>
-                        <td>
-                            <RecordButton />
+                        <td style={{ textAlign: 'left' }}>
+                            {record ?
+                                <>
+                                    <button className='recordButton' onClick={(e) => setRecord(false)}>
+                                        <FaRegPauseCircle size={60} className='reactIcon' />
+                                    </button>
+                                </> :
+                                <>
+                                    <button className='recordButton' onClick={(e) => setRecord(true)}>
+                                        <FaRegPlayCircle size={60} className='reactIcon' />
+                                    </button>
+                                </>
+
+                            }
                         </td>
                         <td style={{ width: '25%', textAlign: 'center' }}>
                             <div style={{ color: 'white' }}>Tempo</div>
