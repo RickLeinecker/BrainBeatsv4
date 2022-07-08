@@ -9,8 +9,6 @@ info:
   servers:
     -url: http://localhost:2000
     description: Local server
-    -url: http://xyz.com/
-    description: Original URL
 schemes: [http]
 
 
@@ -217,7 +215,7 @@ paths:
       - application/json
       parameters:
       - in: body
-        name: Posts
+        name: Find user posts by username
         required: true
         description: Get user posts by username
         schema:
@@ -242,7 +240,7 @@ paths:
       - application/json
       parameters:
       - in: body
-        name: Posts
+        name: Find user posts by user ID
         required: true
         description: Get user posts by user ID
         schema:
@@ -518,25 +516,13 @@ definitions:
         type: string
         example: JohnDoe96
 
-  findUserPostsByUserID:
+  findUserPostsByID:
     required:
     - authorId
     properties:
-      username:
+      id:
         type: string
-        example: JohnDoe96
-  
-  loginUser:
-    required: 
-    - email
-    - password
-    properties:
-      email:
-        type: string
-        example: JohnDoe@gmail.com
-      password:
-        type: string
-        example: Secret_Password123
+        example: abb3973d-29ee-4221-aee1-639836c91be0
 
   midi:
     required: 
