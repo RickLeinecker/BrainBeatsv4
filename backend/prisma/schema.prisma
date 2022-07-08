@@ -40,6 +40,7 @@ model Post {
   createdAt DateTime  @default(now())
   Playlists Playlist[]
   Likes Like[]
+  PlaylistPosts PlaylistPost[]
 }
 
 model Playlist {
@@ -50,6 +51,16 @@ model Playlist {
   userID String
   post Post          @relation(fields: [postID], references: [id], onDelete: Cascade)
   postID Int
+  PlaylistPosts PlaylistPost[]
+}
+
+model PlaylistPost {
+  postID Int
+  post Post @relation(fields: [postID], references: [id], onDelete: Cascade)
+  playlistID Int
+  playlist Playlist @relation(fields: [playlistID], references: [id], onDelete: Cascade)
+  
+  @@id([postID, playlistID])
 }
 
 model Like {
