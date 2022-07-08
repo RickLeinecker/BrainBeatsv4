@@ -76,23 +76,7 @@ router.post('/createUser', async (req, res) => {
 router.get('/getAllUsers', async (req, res) => {
 
     try {
-        const users = await prisma.user.findMany({
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                dob: true,
-                email: true,
-                username: true,
-                password: true,
-                bio: true,
-                profilePicture: true,
-                createdAt: true,
-                Posts: true,
-                Playlists: true,
-                Likes: true
-            }
-        });
+        const users = await prisma.user.findMany();
         res.json(users)
         // FIND THE LENGTH OF USERS IN MYSQL USER TABLE
         // res.json(users.length)
@@ -108,22 +92,7 @@ router.get('/findUser', async (req, res) => {
 
     try {
         const findUser = await prisma.user.findUnique({
-            where: { username: req.body.username },
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                dob: true,
-                email: true,
-                username: true,
-                password: true,
-                bio: true,
-                profilePicture: true,
-                createdAt: true,
-                Posts: true,
-                Playlists: true,
-                Likes: true
-            }
+            where: { username: req.body.username }
         });
 
         if (!findUser) {
