@@ -19,18 +19,43 @@ model User {
   username  String    @unique @db.VarChar(20)
   password  String
   bio       String?   @db.LongText
+  profilePicture String   @db.LongText // Store file path in database instead of the actual image
   createdAt DateTime  @default(now())
-  posts Post[]
+  Posts Post[]
+  Playlists Playlist[]
+  Likes Like[]
 }
 
 model Post {
   id       Int       @id @default(autoincrement())
-  title    String?
-  bpm      Int?      @db.Int
-  key      String?   @db.VarChar(255)
-  midi     Bytes?    @db.Blob
-  data     String?   @db.LongText
-  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId String // relation scalar field  (used in the `@relation` attribute above)
+  title    String
+  bpm      Int       @db.Int
+  key      String    @db.VarChar(255)
+  data     String   @db.LongText
+  likeCount Int
+  thumbnail String?   @db.LongText // Store file path in database instead of the actual image
+  visibility Boolean
+  user   User      @relation(fields: [userID], references: [id], onDelete: Cascade)
+  userID String // relation scalar field  (used in the `@relation` attribute above)
   createdAt DateTime  @default(now())
+  Playlists Playlist[]
+  Likes Like[]
+}
+
+model Playlist {
+  id       Int       @id @default(autoincrement())
+  name     String
+  thumbnail String?  @db.LongText // Store file path in database instead of the actual image
+  user User          @relation(fields: [userID], references: [id], onDelete: Cascade)
+  userID String
+  post Post          @relation(fields: [postID], references: [id], onDelete: Cascade)
+  postID Int
+}
+
+model Like {
+  postID Int         @id
+  post Post          @relation(fields: [postID], references: [id], onDelete: Cascade)
+  userID String
+  user User          @relation(fields: [userID], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }
