@@ -171,6 +171,7 @@ var keySignature = KEY_SIGNATURES_MINOR[0]; // Default hard coded to C minor
 // We should probably rename this file lol
 const Test = () => {
 
+
 	// I have absolutely no idea what this useEffect() function is, but Quan added it
 	// and it made everything work, so don't touch. Things WILL break if removed.
 	useEffect(() => {
@@ -226,51 +227,51 @@ const Test = () => {
 				// TODO: Comment what this does :)
 				if (track.contentHint.localeCompare("FP1") == 0 && FP1Ready == 1) {
 					FP1Ready = 0;
-					setTimeout(() => { mainDriverFunction(track, data, FP1Instrument, FP1NoteType) }, FP1NoteLengthMS)
-					if (data[0] != null) {
-						allData.push(
-							[
-								track.contentHint,
-								`${data[0]}`,
-							]
-						);
-					}
+					setTimeout(() => { mainDriverFunction(track, data, FP1Instrument, FP1NoteType, FP1Volume) }, FP1NoteLengthMS)
+					// if (data[0] != null) {
+					// 	allData.push(
+					// 		[
+					// 			track.contentHint,
+					// 			`${data[0]}`,
+					// 		]
+					// 	);
+					// }
 				}
 				else if (track.contentHint.localeCompare("FP2") == 0 && FP2Ready == 1) {
 					FP2Ready = 0;
-					setTimeout(() => { mainDriverFunction(track, data, FP2Instrument, FP2NoteType) }, FP2NoteLengthMS)
-					if (data[0] != null) {
-						allData.push(
-							[
-								track.contentHint,
-								`${data[0]}`,
-							]
-						);
-					}
+					setTimeout(() => { mainDriverFunction(track, data, FP2Instrument, FP2NoteType, FP2Volume) }, FP2NoteLengthMS)
+					// if (data[0] != null) {
+					// 	allData.push(
+					// 		[
+					// 			track.contentHint,
+					// 			`${data[0]}`,
+					// 		]
+					// 	);
+					// }
 				}
 				else if (track.contentHint.localeCompare("C3") == 0 && C3Ready == 1) {
 					C3Ready = 0;
-					setTimeout(() => { mainDriverFunction(track, data, C3Instrument, C3NoteType) }, C3NoteLengthMS)
-					if (data[0] != null) {
-						allData.push(
-							[
-								track.contentHint,
-								`${data[0]}`,
-							]
-						);
-					}
+					setTimeout(() => { mainDriverFunction(track, data, C3Instrument, C3NoteType, C3Volume) }, C3NoteLengthMS)
+					// if (data[0] != null) {
+					// 	allData.push(
+					// 		[
+					// 			track.contentHint,
+					// 			`${data[0]}`,
+					// 		]
+					// 	);
+					// }
 				}
 				else if (track.contentHint.localeCompare("C4") == 0 && C4Ready == 1) {
 					C4Ready = 0;
-					setTimeout(() => { mainDriverFunction(track, data, C4Instrument, C4NoteType) }, C4NoteLengthMS)
-					if (data[0] != null) {
-						allData.push(
-							[
-								track.contentHint,
-								`${data[0]}`,
-							]
-						);
-					}
+					setTimeout(() => { mainDriverFunction(track, data, C4Instrument, C4NoteType, C4Volume) }, C4NoteLengthMS)
+					// if (data[0] != null) {
+					// 	allData.push(
+					// 		[
+					// 			track.contentHint,
+					// 			`${data[0]}`,
+					// 		]
+					// 	);
+					// }
 				}
 			});
 		};
