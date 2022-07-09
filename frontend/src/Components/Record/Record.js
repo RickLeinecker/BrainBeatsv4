@@ -158,7 +158,7 @@ var FP1Volume = DEFAULT_VOLUME,
 
 var keySignature = KEY_SIGNATURES_MINOR[0]; // Default hard coded to C minor
 
-
+var UUIDArray = new Array();
 
 function Record() {
     //Set onLoad to link
@@ -397,9 +397,12 @@ function Setting() {
     }
 
     const [record, setRecord] = useState(false)
+	let rec;
 
 	let dataDevices;
 
+	let letMeRecord = true;
+	
 	// Global variables
 	const allData = [];
 	let channels = 0;
@@ -435,16 +438,28 @@ function Setting() {
 			// This track.subscribe thing is basically one big infinite loop that iterates every time a new "tick" or "frame" of data
 			// is sent from the headset... so it basically runs super quickly. 
 
-				track.subscribe((data) => {
-					// Organize New Data
+
+			// UUIDArray.push(track.callbacks)
+			// console.log(UUIDArray)
+
+			
+			track.subscribe((data) => {
+				//Stops the recording
+				//TODO: find solution to unsubscribe the tracks
+				if(!rec){
+					//console.log(track.unsubscribe(track))
+
+				}else
+				{
+						// Organize New Data
 					let arr = [];
 					for (let j = 0; j <= channels; j++)
 						i === j ? arr.push(data) : arr.push([]);
-	
+
 					// Add Data to Timeseries Graph
 					timeseries.data = arr;
 					timeseries.draw(); // FORCE DRAW: Update happens too fast for UI
-	
+
 					if (TempoCounterReady == 1) {
 						TempoCounterReady = 0;
 						setTimeout(() => {
@@ -452,9 +467,9 @@ function Setting() {
 							TempoCounterReady = 1;
 						}, getMilliecondsFromBPM(BPM));
 					}
-	
+
 					// TODO: Comment what this does :)
-					if (track.contentHint.localeCompare("FP1") == 0 && FP1Ready == 1) {
+					if (track.contentHint.localeCompare("FP1") == 0 && FP1Ready == 1 ) {
 						FP1Ready = 0;
 						setTimeout(() => { mainDriverFunction(track, data, FP1Instrument, FP1NoteType, FP1Volume) }, FP1NoteLengthMS)
 						if (data[0] != null) {
@@ -466,7 +481,7 @@ function Setting() {
 							);
 						}
 					}
-					else if (track.contentHint.localeCompare("FP2") == 0 && FP2Ready == 1) {
+					else if (track.contentHint.localeCompare("FP2") == 0 && FP2Ready == 1 ) {
 						FP2Ready = 0;
 						setTimeout(() => { mainDriverFunction(track, data, FP2Instrument, FP2NoteType, FP2Volume) }, FP2NoteLengthMS)
 						if (data[0] != null) {
@@ -478,7 +493,7 @@ function Setting() {
 							);
 						}
 					}
-					else if (track.contentHint.localeCompare("C3") == 0 && C3Ready == 1) {
+					else if (track.contentHint.localeCompare("C3") == 0 && C3Ready == 1 ) {
 						C3Ready = 0;
 						setTimeout(() => { mainDriverFunction(track, data, C3Instrument, C3NoteType, C3Volume) }, C3NoteLengthMS)
 						if (data[0] != null) {
@@ -502,7 +517,9 @@ function Setting() {
 							);
 						}
 					}
-				});
+				}
+				
+			});
 			
 		};
 
@@ -585,81 +602,78 @@ function Setting() {
 
 		for (let button of buttons.querySelectorAll("button"))
 			if (button.id === "ganglion") {
-				button.onclick = () => startAcquisition(button.id);
-
+				button.onclick = () => {rec=true;console.log(rec);startAcquisition(button.id)};
 			}
 			else if (button.id === "downloadBtn") {
 				button.onclick = () => downloadData();
 			}
+			else if (button.id === 'disconnect'){
+				button.onclick = () => {rec=false;console.log("I GOT CLICKED" + rec)};
+			}
 
-	})
+		
 
+
+	},[])
+	
     return (
-        <>
-            <div style={st}>
-                <table style={{ width: '100%'}}>
-                    <tr>
-                        <td style={{ width: '25%', textAlign: 'center' }}>
-                            <div style={{ color: 'white' }}>Key Signature</div>
+      <>
+        <div style={st}>
+          <table style={{ width: "100%" }}>
+            <tr>
+              <td style={{ width: "25%", textAlign: "center" }}>
+                <div style={{ color: "white" }}>Key Signature</div>
 
-                            <select>
-                                <option>C</option>
-                                <option>C#/Db</option>
-                                <option>D</option>
-                                <option>D#/Eb</option>
-                                <option>E</option>
-                                <option>F</option>
-                                <option>F#/Gb</option>
-                                <option>G</option>
-                                <option>G#/Ab</option>
-                                <option>A</option>
-                                <option>B</option>
-                            </select>
-                            <div style={{ color: 'white' }}>Scale</div>
-                            <select>
-                                <option>Major</option>
-                                <option>Minor</option>
-                            </select>
-                        </td>
-                        <td style={{ width: '22%', textAlign: 'left' }}>
-						<div id="graph">
-				<p>Graph of live EEG data:</p>
-			</div>
-                        </td>
-                        <td style={{ textAlign: 'left' }}>
-						{record ?
-                                <>
-									<div id="buttons">
-				<p>Click connect and choose your Ganglion headset in the popup.</p>
-				<button className='recordButton' id="" onClick={(e) => setRecord(false)}>
-                                        <FaRegPauseCircle size={60} className='reactIcon'  />
-                                    </button>
-				<button id="downloadBtn">Download your raw data</button>
-			</div>
-   
-                                </> :
-                                <>
-									<div id="buttons">
-									<button id="ganglion" className='recordButton' onClick={(e) => setRecord(true)}>
-                                        <FaRegPlayCircle size={60} className='reactIcon' />
-                                    </button>
-									</div>
-                                    
-                                </>
+                <select>
+                  <option>C</option>
+                  <option>C#/Db</option>
+                  <option>D</option>
+                  <option>D#/Eb</option>
+                  <option>E</option>
+                  <option>F</option>
+                  <option>F#/Gb</option>
+                  <option>G</option>
+                  <option>G#/Ab</option>
+                  <option>A</option>
+                  <option>B</option>
+                </select>
+                <div style={{ color: "white" }}>Scale</div>
+                <select>
+                  <option>Major</option>
+                  <option>Minor</option>
+                </select>
+              </td>
+              <td style={{ width: "22%", textAlign: "left" }}>
+                <div id="graph">
+                  <p>Graph of live EEG data:</p>
+                </div>
+              </td>
+              <td style={{ textAlign: "left" }}>
+			  
+				 <div id="buttons">
+                      <button
+                        id="ganglion"
+                        className="recordButton"
+                      >
+                        Connect
+                      </button>
+					  <button
+                        id="disconnect"
+                        className="recordButton"
+                      >
+                        disconnect
+                      </button>
+                    </div>
 
-                            }
-                           
-                        </td>
-                        <td style={{ width: '25%', textAlign: 'center' }}>
-                            <div style={{ color: 'white' }}>Tempo</div>
-                            <input type="text" defaultValue="120" />
-                        </td>
-                    </tr>
-
-                </table>
-            </div>
-
-        </>
+              </td>
+              <td style={{ width: "25%", textAlign: "center" }}>
+                <div style={{ color: "white" }}>Tempo</div>
+                <input type="text" defaultValue="120" />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </>
     );
 
 }
