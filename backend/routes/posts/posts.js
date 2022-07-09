@@ -10,10 +10,10 @@ const { user, post } = new PrismaClient();
 // Create a post
 router.post('/createPost', async (req, res) => {
 
-    try {
-        const { userID, title, bpm, key, visibility } = req.body
+    // try {
+        const { userID, title, bpm, key, visibility} = req.body
         const userExists = await prisma.user.findUnique({
-            where: { userID },
+            where: { id: userID },
         });
 
         if (!userExists) {
@@ -35,9 +35,9 @@ router.post('/createPost', async (req, res) => {
 
             res.json(newPost);
         }
-    } catch (err) {
-        res.status(500).send({ msg: err })
-    }
+    // } catch (err) {
+    //     res.status(500).send({ msg: err })
+    // }
 
 });
 
