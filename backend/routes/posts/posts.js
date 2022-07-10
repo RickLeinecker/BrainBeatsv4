@@ -42,7 +42,7 @@ router.post('/createPost', async (req, res) => {
 });
 
 // Get all posts based on a username
-router.post('/getUserPostsByUsername', async (req, res) => {
+router.get('/getUserPostsByUsername', async (req, res) => {
     try {
         const username = req.body.username
         
@@ -75,7 +75,7 @@ router.post('/getUserPostsByUsername', async (req, res) => {
 });
 
 // Get all posts based on a user ID
-router.post('/getUserPostsByID', async (req, res) => {
+router.get('/getUserPostsByID', async (req, res) => {
     //res.json([req.body, 'hello'])
     try {
         const userPosts = await prisma.post.findMany({

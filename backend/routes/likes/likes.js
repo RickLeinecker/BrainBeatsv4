@@ -61,7 +61,7 @@ router.delete('/removeUserLike', async (req, res) => {
 });
 
 // Get user like status
-router.post('/getUserLike', async (req, res) => {
+router.get('/getUserLike', async (req, res) => {
     try {
         const likeStatus = await prisma.like.findUnique({
             where: {
