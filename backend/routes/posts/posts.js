@@ -10,7 +10,7 @@ const { user, post } = new PrismaClient();
 // Create a post
 router.post('/createPost', async (req, res) => {
 
-    // try {
+    try {
         const { userID, title, bpm, key, visibility} = req.body
         const userExists = await prisma.user.findUnique({
             where: { id: userID },
@@ -35,9 +35,9 @@ router.post('/createPost', async (req, res) => {
 
             res.json(newPost);
         }
-    // } catch (err) {
-    //     res.status(500).send({ msg: err })
-    // }
+    } catch (err) {
+        res.status(500).send({ msg: err })
+    }
 
 });
 
@@ -96,6 +96,19 @@ router.post('/getUserPostsByID', async (req, res) => {
         res.status(500).send({ msg: err })
     }
 
+});
+
+// Delete a post
+router.delete('/deletePost', async (req, res) => {
+    try {
+        const deletePost = await prisma.post.delete({
+            where: { id: req.body.id }
+        })
+        res.status(200).send({ msg: "Deleted a user post" });
+    }
+    catch (err) {
+        res.status(500).send(err);
+    }
 });
 
 // TODO : Implement a post update api call

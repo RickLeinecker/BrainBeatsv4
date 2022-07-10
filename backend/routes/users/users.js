@@ -150,7 +150,7 @@ router.delete('/deleteUser', async (req, res) => {
         const deleteUser = await prisma.user.delete({
             where: { id: req.body.id }
         })
-        res.status(200).send({ msg: "Deleted OK" });
+        res.status(200).send({ msg: "Deleted a user" });
     }
     catch (err) {
         res.status(500).send(err);

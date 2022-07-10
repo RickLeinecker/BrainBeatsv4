@@ -30,6 +30,8 @@ router.post('/createPlaylist', async (req, res) => {
                     user: userExists
                 }
             });
+
+            res.json(newPlaylist);
         }
     } catch (err) {
         res.status(500).send({ msg: err })
@@ -43,7 +45,7 @@ router.get('/getAllPlaylists', async (req, res) => {
 
     try {
         const playlists = await prisma.playlist.findMany();
-        res.json(users);
+        res.json(playlists);
     }
     catch (err) {
         res.status(500).send({ msg: err })
@@ -54,27 +56,17 @@ router.get('/getAllPlaylists', async (req, res) => {
 // Get playlist by ID
 router.get('/getPlaylistByID', async (req, res) => {
     try {
-        const postExists = await prisma.post.findUnique({
+        const playlist = await prisma.playlist.findUnique({
             where: { id: req.body.id }
         });
 
-        if (!postExists) {
+        if (!playlist) {
             return res.status(400).json({
-                msg: "Post not found"
+                msg: "Playlist does not exist."
             });
-        } else {
-            const playlist = await prisma.playlist.findUnique({
-                where: { id: req.body.id }
-            });
-
-            if (!playlist) {
-                return res.status(400).json({
-                    msg: "Playlist does not exist."
-                });
-            }
-
-            res.json(playlist);
         }
+
+        res.json(playlist);
     }
     catch (err) {
         res.status(500).send({ msg: err })
@@ -99,6 +91,47 @@ router.get('/getPlaylistsByPostID', async (req, res) => {
     }
     catch (err) {
         res.status(500).send({ msg: err })
+    }
+
+});
+
+// Get all posts in a playlist
+router.get('/getPostsByPlaylistID', async (req, res) => {
+    try {
+        const playlist = await prisma.playlist.findUnique({
+            where: { id: req.body.id }
+        });
+
+        if (!playlist) {
+            return res.status(400).json({
+                msg: "Playlist does not exist."
+            });
+        } else {
+            const posts = await prisma.playlistpost.findMany({
+                where: { playlistID: req.body.id }
+            });
+
+            res.json(posts);
+        }
+
+        res.json(playlist);
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
+    }
+});
+
+// Delete a playlist
+router.delete('/deletePlaylist', async (req, res) => {
+
+    try {
+        const deletePlaylist = await prisma.playlist.delete({
+            where: { id: req.body.id }
+        })
+        res.status(200).send({ msg: "Deleted a user playlist" });
+    }
+    catch (err) {
+        res.status(500).send(err);
     }
 
 });
