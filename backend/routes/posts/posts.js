@@ -13,7 +13,7 @@ router.post('/createPost', async (req, res) => {
     try {
         const { userID, title, bpm, key, visibility} = req.body
         const userExists = await prisma.user.findUnique({
-            where: { id: userID },
+            where: { id: userID }
         });
 
         if (!userExists) {
@@ -91,6 +91,19 @@ router.get('/getUserPostsByID', async (req, res) => {
         }
 
         res.json(userPosts)
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
+    }
+
+});
+
+// Get all posts
+router.get('/getAllPosts', async (req, res) => {
+    try {
+        const posts = await prisma.post.findMany();
+
+        res.json(posts)
     }
     catch (err) {
         res.status(500).send({ msg: err })
