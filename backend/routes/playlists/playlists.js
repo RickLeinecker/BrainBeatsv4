@@ -193,4 +193,74 @@ router.put('/updatePlaylist', async (req, res) => {
 
 });
 
+// #**** Swagger API requests ****#
+
+// Get playlist by ID
+router.post('/getPlaylistWithID', async (req, res) => {
+    try {
+        const playlist = await prisma.playlist.findUnique({
+            where: { id: req.body.id }
+        });
+
+        if (!playlist) {
+            return res.status(400).json({
+                msg: "Playlist does not exist."
+            });
+        }
+
+        res.json(playlist);
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
+    }
+});
+
+// Get all playlists for a post by post ID
+router.post('/getPlaylistsByPostsID', async (req, res) => {
+
+    try {
+        const playlists = await prisma.playlistpost.findMany({
+            where: { postID: req.body.postID },
+            distinct: ['playlistID']
+        });
+
+        if (!playlists) {
+            return res.status(400).json({
+                msg: "Post does not exist"
+            })
+        }
+        res.json(playlist)
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
+    }
+
+});
+
+// Get all posts in a playlist
+router.post('/getPostsByPlaylistsID', async (req, res) => {
+    try {
+        const playlist = await prisma.playlist.findUnique({
+            where: { id: req.body.id }
+        });
+
+        if (!playlist) {
+            return res.status(400).json({
+                msg: "Playlist does not exist."
+            });
+        } else {
+            const posts = await prisma.playlistpost.findMany({
+                where: { playlistID: req.body.id }
+            });
+
+            res.json(posts);
+        }
+
+        res.json(playlist);
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
+    }
+});
+
 module.exports = router;
