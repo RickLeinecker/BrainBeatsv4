@@ -14,552 +14,552 @@ schemes: [http]
 # Path to API
 paths:
 
-# ***** User Information ***** #
+  # ***** User Information ***** #
 
-# Returns all of list of users
-  /api/users/getAllUsers:
-    get:
-      tags:
-        - Users
-      summary: Returns a list of all users.
-      responses:
-        200:    # status code
-          description: Successful Response
-          schema: 
-            type: array
-            items: 
-              type: object
-              properties:
-                id:
-                  type: integer
-                name:
-                  type: string
+  # Returns all of list of users
+    /api/users/getAllUsers:
+      get:
+        tags:
+          - Users
+        summary: Returns a list of all users.
+        responses:
+          200:    # status code
+            description: Successful Response
+            schema: 
+              type: array
+              items: 
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
 
-# Create a new user
-  /api/users/createUser:
-    post:
-      tags:
-        - Users
-      summary: Create a user
-      operationId: createUser
-      description: Create a new user in the database
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: Create
-        required: true
-        description: User Creation
-        schema:
-          $ref: '#/definitions/createUser'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
+  # Create a new user
+    /api/users/createUser:
+      post:
+        tags:
+          - Users
+        summary: Create a user
+        operationId: createUser
+        description: Create a new user in the database
+        consumes: 
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: Create
+          required: true
+          description: User Creation
+          schema:
+            $ref: '#/definitions/createUser'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
 
-# Find user by userID
-  /api/users/getUserByUserID:
-    post:
-      tags:
-        - Users
-      summary: Search a user by with their username
-      operationId: getUserByUserID
-      description: Search a user in the database
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: getUserByUserID
-        required: true
-        description: Find a user by their username
-        schema:
-          type: string
-          $ref: '#/definitions/getUserByUserID'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
+  # Find user by userID
+    /api/users/getUserByUserID:
+      post:
+        tags:
+          - Users
+        summary: Search a user by with their username
+        operationId: getUserByUserID
+        description: Search a user in the database
+        consumes: 
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: getUserByUserID
+          required: true
+          description: Find a user by their username
+          schema:
+            type: string
+            $ref: '#/definitions/getUserByUserID'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
 
-# Find user by username
-  /api/users/getUserByUserName:
-    post:
-      tags:
-        - Users
-      summary: Search a user by with their username
-      operationId: getUserByUserName
-      description: Search a user in the database
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: getUserByUserName
-        required: true
-        description: Find a user by their username
-        schema:
-          type: string
-          $ref: '#/definitions/getUserByUserName'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
+  # Find user by username
+    /api/users/getUserByUserName:
+      post:
+        tags:
+          - Users
+        summary: Search a user by with their username
+        operationId: getUserByUserName
+        description: Search a user in the database
+        consumes: 
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: getUserByUserName
+          required: true
+          description: Find a user by their username
+          schema:
+            type: string
+            $ref: '#/definitions/getUserByUserName'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
 
-# Update user information
-  /api/users/updateUser:
-    put:
-      tags:
-        - Users
-      summary: Update user
-      operationId: updateUser
-      description: Update user information
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: Update
-        required: true
-        description: UpdateUser
-        schema:
-          $ref: '#/definitions/updateUser'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
+  # Update user information
+    /api/users/updateUser:
+      put:
+        tags:
+          - Users
+        summary: Update user
+        operationId: updateUser
+        description: Update user information
+        consumes: 
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: Update
+          required: true
+          description: UpdateUser
+          schema:
+            $ref: '#/definitions/updateUser'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
 
-# Delete a user by ID
-  /api/users/deleteUser:
-    delete:
-      tags:
-        - Users
-      summary: Delete user by username
-      operationId: deleteUser
-      description: Delete a user from the database
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: id
-        required: true
-        description: Delete
-        schema:
-          $ref: '#/definitions/deleteUser'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
-
-
-
-# ***** User Posts ***** #
-
-# Returns an array of all user posts
-  /api/posts/getAllPosts:
-    get:
-      tags:
-        - Posts
-      summary: Returns a list of all users.
-      responses:
-        200:    # status code
-          description: Successful Response
-          schema: 
-            type: array
-            items: 
-              type: object
-              properties:
-                id:
-                  type: integer
-                name:
-                  type: string
-
-# Create user posts
-  /api/posts/createPost:
-    post:
-      tags:
-        - Posts
-      summary: Create post at user profile
-      operationId: createPost
-      description: Create a post for a user by username
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: Create post
-        required: true
-        description: User Post
-        schema:
-          $ref: '#/definitions/createPost'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
-
-# Get user posts by username
-  /api/posts/getUsersPostsByUsername:
-    post:
-      tags:
-        - Posts
-      summary: Search a users posts by username
-      operationId: getUsersPostsByUsername
-      description: Get posts from user profile
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: Find user posts by username
-        required: true
-        description: Get user posts by username
-        schema:
-          $ref: '#/definitions/getUsersPostsByUsername'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
-
-# Get user posts by author ID
-  /api/posts/getUsersPostsByID:
-    post:
-      tags:
-        - Posts
-      summary: Search a users posts by user ID
-      operationId: getUsersPostsByID
-      description: Get posts from user profile
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: Find user posts by user ID
-        required: true
-        description: Get user posts by user ID
-        schema:
-          $ref: '#/definitions/getUsersPostsByID'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
-
-# Update user post information
-  /api/posts/updatePost:
-    put:
-      tags:
-        - Posts
-      summary: Update user post
-      operationId: updatePost
-      description: Update user post information
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: Update
-        required: true
-        description: Updated information
-        schema:
-          $ref: '#/definitions/updatePost'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
-
-# Delete a user post by ID
-  /api/posts/deletePost:
-    delete:
-      tags:
-        - Posts
-      summary: Delete user by username
-      operationId: deletePost
-      description: Delete a user from the database
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: id
-        required: true
-        description: Delete
-        schema:
-          $ref: '#/definitions/deletePost'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
+  # Delete a user by ID
+    /api/users/deleteUser:
+      delete:
+        tags:
+          - Users
+        summary: Delete user by username
+        operationId: deleteUser
+        description: Delete a user from the database
+        consumes:
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: id
+          required: true
+          description: Delete
+          schema:
+            $ref: '#/definitions/deleteUser'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
 
 
 
-# ***** User Playlist ***** #
+  # ***** User Posts ***** #
 
-# Returns all of playlists in db
-  /api/playlists/getAllPlaylists:
-    get:
-      tags:
-        - Playlists
-      summary: Returns a list of playlists in db.
-      responses:
-        200:    # status code
-          description: Successful Response
-          schema: 
-            type: array
-            items: 
-              type: object
-              properties:
-                id:
-                  type: integer
-                name:
-                  type: string
+  # Returns an array of all user posts
+    /api/posts/getAllPosts:
+      get:
+        tags:
+          - Posts
+        summary: Returns a list of all users.
+        responses:
+          200:    # status code
+            description: Successful Response
+            schema: 
+              type: array
+              items: 
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
 
-# Create user playlist
-  /api/playlists/createPlaylist:
-    post:
-      tags:
-        - Playlists
-      summary: Create user playlist
-      operationId: createPlaylist
-      description: Create user a playlist
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: Create
-        required: true
-        description: Create playlist information
-        schema:
-          $ref: '#/definitions/createPlaylist'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
+  # Create user posts
+    /api/posts/createPost:
+      post:
+        tags:
+          - Posts
+        summary: Create post at user profile
+        operationId: createPost
+        description: Create a post for a user by username
+        consumes: 
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: Create post
+          required: true
+          description: User Post
+          schema:
+            $ref: '#/definitions/createPost'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
 
-# Add a post to the playlist 
-  /api/playlists/addPostToPlaylist:
-    post:
-      tags:
-        - Playlists
-      summary: Add a post to the playlist
-      operationId: addPostToPlaylist
-      description: Add a post to the playlist
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: id
-        required: true
+  # Get user posts by username
+    /api/posts/getUsersPostsByUsername:
+      post:
+        tags:
+          - Posts
+        summary: Search a users posts by username
+        operationId: getUsersPostsByUsername
+        description: Get posts from user profile
+        consumes: 
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: Find user posts by username
+          required: true
+          description: Get user posts by username
+          schema:
+            $ref: '#/definitions/getUsersPostsByUsername'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
+
+  # Get user posts by author ID
+    /api/posts/getUsersPostsByID:
+      post:
+        tags:
+          - Posts
+        summary: Search a users posts by user ID
+        operationId: getUsersPostsByID
+        description: Get posts from user profile
+        consumes: 
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: Find user posts by user ID
+          required: true
+          description: Get user posts by user ID
+          schema:
+            $ref: '#/definitions/getUsersPostsByID'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
+
+  # Update user post information
+    /api/posts/updatePost:
+      put:
+        tags:
+          - Posts
+        summary: Update user post
+        operationId: updatePost
+        description: Update user post information
+        consumes: 
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: Update
+          required: true
+          description: Updated information
+          schema:
+            $ref: '#/definitions/updatePost'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
+
+  # Delete a user post by ID
+    /api/posts/deletePost:
+      delete:
+        tags:
+          - Posts
+        summary: Delete user by username
+        operationId: deletePost
+        description: Delete a user from the database
+        consumes:
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: id
+          required: true
+          description: Delete
+          schema:
+            $ref: '#/definitions/deletePost'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
+
+
+
+  # ***** User Playlist ***** #
+
+  # Returns all of playlists in db
+    /api/playlists/getAllPlaylists:
+      get:
+        tags:
+          - Playlists
+        summary: Returns a list of playlists in db.
+        responses:
+          200:    # status code
+            description: Successful Response
+            schema: 
+              type: array
+              items: 
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+
+  # Create user playlist
+    /api/playlists/createPlaylist:
+      post:
+        tags:
+          - Playlists
+        summary: Create user playlist
+        operationId: createPlaylist
+        description: Create user a playlist
+        consumes: 
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: Create
+          required: true
+          description: Create playlist information
+          schema:
+            $ref: '#/definitions/createPlaylist'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
+
+  # Add a post to the playlist 
+    /api/playlists/addPostToPlaylist:
+      post:
+        tags:
+          - Playlists
+        summary: Add a post to the playlist
+        operationId: addPostToPlaylist
         description: Add a post to the playlist
-        schema:
-          $ref: '#/definitions/addPostToPlaylist'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
+        consumes:
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: id
+          required: true
+          description: Add a post to the playlist
+          schema:
+            $ref: '#/definitions/addPostToPlaylist'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
 
-# Get user posts by author ID
-  /api/playlists/getPlaylistWithID:
-    post:
-      tags:
-        - Playlists
-      summary: Search a users posts by user ID
-      operationId: getPlaylistWithID
-      description: Get posts from user profile
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: Find user posts by user ID
-        required: true
-        description: Get user posts by user ID
-        schema:
-          $ref: '#/definitions/getPlaylistWithID'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
+  # Get user posts by author ID
+    /api/playlists/getPlaylistWithID:
+      post:
+        tags:
+          - Playlists
+        summary: Search a users posts by user ID
+        operationId: getPlaylistWithID
+        description: Get posts from user profile
+        consumes: 
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: Find user posts by user ID
+          required: true
+          description: Get user posts by user ID
+          schema:
+            $ref: '#/definitions/getPlaylistWithID'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
 
-# Get user posts by author ID
-  /api/playlists/getPlaylistsByPostsID:
-    post:
-      tags:
-        - Playlists
-      summary: Search a users posts by user ID
-      operationId: getPlaylistsByPostsID
-      description: Get posts from user profile
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: Find user posts by user ID
-        required: true
-        description: Get user posts by user ID
-        schema:
-          $ref: '#/definitions/getPlaylistsByPostsID'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
+  # Get user posts by author ID
+    /api/playlists/getPlaylistsByPostsID:
+      post:
+        tags:
+          - Playlists
+        summary: Search a users posts by user ID
+        operationId: getPlaylistsByPostsID
+        description: Get posts from user profile
+        consumes: 
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: Find user posts by user ID
+          required: true
+          description: Get user posts by user ID
+          schema:
+            $ref: '#/definitions/getPlaylistsByPostsID'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
 
-# Get user posts by author ID
-  /api/playlists/getPostsByPlaylistsID:
-    post:
-      tags:
-        - Playlists
-      summary: Search a users posts by user ID
-      operationId: getPostsByPlaylistsID
-      description: Get playlist from user profile
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: Find user playlist by playlist ID
-        required: true
-        description: Get user playlist by user ID
-        schema:
-          $ref: '#/definitions/getPostsByPlaylistsID'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
+  # Get user posts by author ID
+    /api/playlists/getPostsByPlaylistsID:
+      post:
+        tags:
+          - Playlists
+        summary: Search a users posts by user ID
+        operationId: getPostsByPlaylistsID
+        description: Get playlist from user profile
+        consumes: 
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: Find user playlist by playlist ID
+          required: true
+          description: Get user playlist by user ID
+          schema:
+            $ref: '#/definitions/getPostsByPlaylistsID'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
 
-# Update user playlist
-  /api/playlists/updatePlaylist:
-    put:
-      tags:
-        - Playlists
-      summary: Update user playlist
-      operationId: updatePlaylist
-      description: Update user playlist
-      consumes: 
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: Update
-        required: true
-        description: Update playlist information
-        schema:
-          $ref: '#/definitions/updatePlaylist'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
+  # Update user playlist
+    /api/playlists/updatePlaylist:
+      put:
+        tags:
+          - Playlists
+        summary: Update user playlist
+        operationId: updatePlaylist
+        description: Update user playlist
+        consumes: 
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: Update
+          required: true
+          description: Update playlist information
+          schema:
+            $ref: '#/definitions/updatePlaylist'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
 
-# Delete a user playlist by playlist id
-  /api/playlists/deletePlaylist:
-    delete:
-      tags:
-        - Playlists
-      summary: Delete user by username
-      operationId: deletePlaylist
-      description: Delete a user playlist from the database
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: id
-        required: true
-        description: Delete
-        schema:
-          $ref: '#/definitions/deletePlaylist'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
+  # Delete a user playlist by playlist id
+    /api/playlists/deletePlaylist:
+      delete:
+        tags:
+          - Playlists
+        summary: Delete user by username
+        operationId: deletePlaylist
+        description: Delete a user playlist from the database
+        consumes:
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: id
+          required: true
+          description: Delete
+          schema:
+            $ref: '#/definitions/deletePlaylist'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
 
 
 
-# *** User Verification *** #
+  # *** User Verification *** #
 
-# Check login credentials
-  /api/authentication/loginUser:
-    post:
-      tags:
-      - Authentication
-      summary: Checks if a user related to their password for login
-      description: |
-        Authenticates a user
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: loginUser
-        required: true
-        schema:
-          $ref: '#/definitions/loginUser'
-      responses:
-        200:
-          description: User logged in successfully
-        401:
-          description: bad input parameter
-
-# Send a verification email to a user
-  /api/authentication/sendVerificationEmail:
-    post:
-      tags:
+  # Check login credentials
+    /api/authentication/loginUser:
+      post:
+        tags:
         - Authentication
-      summary: Send a user a verification email
-      operationId: sendVerificationEmail
-      description: Sends a user a verification email to their account's email address
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: Email
-        required: true
-        type: string
-        schema:
-          $ref: '#/definitions/sendVerificationEmail'
-      responses:
-        200:
-          description: OK
-        404:
-          description: URL Not Found
+        summary: Checks if a user related to their password for login
+        description: |
+          Authenticates a user
+        consumes:
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: loginUser
+          required: true
+          schema:
+            $ref: '#/definitions/loginUser'
+        responses:
+          200:
+            description: User logged in successfully
+          401:
+            description: bad input parameter
+
+  # Send a verification email to a user
+    /api/authentication/sendVerificationEmail:
+      post:
+        tags:
+          - Authentication
+        summary: Send a user a verification email
+        operationId: sendVerificationEmail
+        description: Sends a user a verification email to their account's email address
+        consumes:
+        - application/json
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: Email
+          required: true
+          type: string
+          schema:
+            $ref: '#/definitions/sendVerificationEmail'
+        responses:
+          200:
+            description: OK
+          404:
+            description: URL Not Found
 
 
 # Definitions components
