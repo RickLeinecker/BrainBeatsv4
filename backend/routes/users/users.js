@@ -71,7 +71,6 @@ router.post('/createUser', async (req, res) => {
 
 });
 
-
 // Get all users with all records
 router.get('/getAllUsers', async (req, res) => {
 
@@ -129,7 +128,6 @@ router.get('/getUserByID', async (req, res) => {
 
 });
 
-
 // for (let i = 0; i <= user.length; i++) {
 //     title: 'Song ' + i;
 //     artist: user.lastName + user.lastName;
@@ -142,6 +140,16 @@ router.put('/updateUser', async (req, res) => {
 
     try {
         const { id, firstName, lastName, dob, email, username, bio, profilePicture } = req.body
+        // Check if the id already exists in db
+        const userIDExists = await prisma.user.findUnique({
+            where: { id },
+        });
+
+        if (!userIDExists) {
+            return res.status(400).json({
+                msg: "User ID not found"
+            })
+        } else {
         const updateUser = await prisma.user.update({
             where: { id },
             data: {
@@ -155,6 +163,7 @@ router.put('/updateUser', async (req, res) => {
         })
         //   res.status(200).send({msg: "Updated OK"});
         res.json(updateUser);
+        }
     }
 
     catch (err) {
@@ -162,7 +171,6 @@ router.put('/updateUser', async (req, res) => {
     }
 
 });
-
 
 // Delete user by ID
 router.delete('/deleteUser', async (req, res) => {
@@ -175,6 +183,50 @@ router.delete('/deleteUser', async (req, res) => {
     }
     catch (err) {
         res.status(500).send(err);
+    }
+
+});
+
+// ****** SwaggerUI calls ******
+
+// Get user by user ID (SwaggerHubUI)
+router.post('/getUserByUserID', async (req, res) => {
+
+    try {
+        const findUser = await prisma.user.findUnique({
+            where: { id: req.body.id }
+        });
+
+        if (!findUser) {
+            return res.status(400).json({
+                msg: "User does not exist"
+            })
+        }
+        res.json(findUser)
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
+    }
+
+});
+
+// Get user by username (SwaggerHubUI)
+router.post('/getUserByUserName', async (req, res) => {
+
+    try {
+        const findUser = await prisma.user.findUnique({
+            where: { username: req.body.username }
+        });
+
+        if (!findUser) {
+            return res.status(400).json({
+                msg: "Username does not exist"
+            })
+        }
+        res.json(findUser)
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
     }
 
 });

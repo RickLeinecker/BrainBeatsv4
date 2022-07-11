@@ -124,6 +124,102 @@ router.delete('/deletePost', async (req, res) => {
     }
 });
 
-// TODO : Implement a post update api call
+// Update user post info 
+router.put('/updatePost', async (req, res) => {
+
+    try {
+        const { id, title, bpm, key, visibility, bio, profilePicture } = req.body
+
+        // Check if the id already exists in db
+        const userIDExists = await prisma.post.findUnique({
+            where: { id },
+        });
+
+        if (!userIDExists) {
+            return res.status(400).json({
+                msg: "Post ID not found"
+            })
+        } else {
+            
+        const updatePost = await prisma.post.update({
+            where: { id },
+            data: {
+                title: title,
+                bpm: bpm,
+                key: key,
+                bio: bio,
+                visibility: visibility,
+                profilePicture: profilePicture
+            }
+        })
+        //   res.status(200).send({msg: "Updated OK"});
+        res.json(updatePost);
+      }
+    }
+
+    catch (err) {
+        res.status(500).send(err);
+    }
+
+});
+
+// ****** SwaggerUI calls ******
+
+// Get all posts based on a username 
+router.post('/getUsersPostsByUsername', async (req, res) => {
+    try {
+        const username = req.body.username
+        
+        const userExists = await prisma.user.findUnique({
+            where: { username }
+        });
+
+        if (!userExists) {
+            return res.status(400).json({
+                msg: "User not found"
+            })
+        } else {
+            // Find the records
+            const userPosts = await prisma.post.findMany({
+                where: { userID: userExists.id }
+            });
+
+            if (!userPosts) {
+                return res.status(400).json({
+                    msg: "Posts not found"
+                })
+            }
+
+            res.json(userPosts);
+        }
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
+    }
+});
+
+// Get all posts based on a user ID
+router.post('/getUsersPostsByID', async (req, res) => {
+    //res.json([req.body, 'hello'])
+    try {
+        const userPosts = await prisma.post.findMany({
+            where: { userID: req.body.userID },
+        });
+
+        //res.json([req.body, "hello"])
+
+        if (!userPosts) {
+            return res.status(400).json({
+                msg: "User ID not found"
+            })
+        }
+
+        res.json(userPosts)
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
+    }
+
+});
 
 module.exports = router;
