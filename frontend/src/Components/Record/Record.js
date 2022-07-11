@@ -135,6 +135,15 @@ var FP1NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(FP1NoteType)
 	C3NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C3NoteType)],
 	C4NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C4NoteType)];
 
+const MidiWriter = require('midi-writer-js');
+
+const trackFP1 = new MidiWriter.Track();
+const trackFP2 = new MidiWriter.Track();
+const trackC3 = new MidiWriter.Track();
+const trackC4 = new MidiWriter.Track();
+
+var noteFP1, noteFP2, noteC3, noteC4;
+
 
 // ------------------------------------------------------------------------------ USER-DEFINED VARIABLES ------------------------------------------------------------------------------
 
@@ -410,6 +419,9 @@ function Setting() {
 	let contentHintToIndex = {};
 
     useEffect(() => {
+
+		initMIDIWriterParams();
+
 		dataDevices = new datastreams.DataDevices();
 		dataDevices.load(ganglion);
 
@@ -418,8 +430,6 @@ function Setting() {
 		graphDiv.style.padding = "25px";
 		const timeseries = new components.streams.data.TimeSeries();
 		graphDiv.insertAdjacentElement("beforeend", timeseries);
-
-		
 
 		// Track handler
 		const handleTrack = (track) => {
@@ -566,15 +576,17 @@ function Setting() {
 			var noteAndOctave = GetNoteWRTKey(declaredNote); // Get the actual note and its octave
 			var floorOctave = GetFloorOctave(); // Get the lowest octave that will be used in the song
 
-			if (noteAndOctave.note == -1) // If no note was declared, it's a rest.
-			{
-				//console.log(tracky.contentHint + ": Rest [" + (datay - -AMPLITUDE_OFFSET) + "]");
-				//console.log(tracky.contentHint + ": Rest");
-			}
-			else {
-				let noteOctaveString = noteAndOctave.note + (noteAndOctave.octave + floorOctave);
-				let noteFrequency = getFrequencyFromNoteOctaveString(noteOctaveString);
+			let noteOctaveString;
+			let noteFrequency;
 
+			if (noteAndOctave.note != -1)
+			{
+				noteOctaveString = noteAndOctave.note + (noteAndOctave.octave + floorOctave);
+				noteFrequency = getFrequencyFromNoteOctaveString(noteOctaveString);
+			}
+
+			if (noteAndOctave.note != -1)
+			{
 				if (tracky.contentHint.localeCompare("FP1") == 0)
 					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP1Instrument) + " playing " + FP1NoteType + " notes] " + datay);
 				else if (tracky.contentHint.localeCompare("FP2") == 0)
@@ -583,9 +595,46 @@ function Setting() {
 					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C3Instrument) + " playing " + C3NoteType + " notes] " + datay);
 				else if (tracky.contentHint.localeCompare("C4") == 0)
 					console.log(tracky.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C4Instrument) + " playing " + C4NoteType + " notes] " + datay);
-
+				
 				playMidiNote(noteFrequency, noteVolume, instrument, noteType);
+			}				
+
+			if (tracky.contentHint.localeCompare("FP1") == 0)
+			{
+				if (noteAndOctave.note == -1)
+					noteFP1 = new MidiWriter.NoteEvent({pitch: 0, duration: getIntFromNoteTypeStringWithMidiWriterJsValues(FP1NoteType).toString()});
+				else
+					noteFP1 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(FP1NoteType).toString()});
+				trackFP1.addEvent(noteFP1);
 			}
+			else if (tracky.contentHint.localeCompare("FP2") == 0)
+			{
+				if (noteAndOctave.note == -1)
+					noteFP2 = new MidiWriter.NoteEvent({pitch: 0, duration: getIntFromNoteTypeStringWithMidiWriterJsValues(FP2NoteType).toString()});
+				else
+					noteFP2 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(FP2NoteType).toString()});
+				trackFP2.addEvent(noteFP2);
+			}
+			else if (tracky.contentHint.localeCompare("C3") == 0)
+			{
+				if (noteAndOctave.note == -1)
+					noteC3 = new MidiWriter.NoteEvent({pitch: 0, duration: getIntFromNoteTypeStringWithMidiWriterJsValues(C3NoteType).toString()});
+				else
+					noteC3 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(C3NoteType).toString()});
+				trackC3.addEvent(noteC3);
+			}
+			else if (tracky.contentHint.localeCompare("C4") == 0)
+			{
+				if (noteAndOctave.note == -1)
+					noteC4 = new MidiWriter.NoteEvent({pitch: 0, duration: getIntFromNoteTypeStringWithMidiWriterJsValues(C4NoteType).toString()});
+				else
+					noteC4 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(C4NoteType).toString()});
+				trackC4.addEvent(noteC4);
+			}
+
+			// Generate a data URI
+			const write = new MidiWriter.Writer([trackFP1, trackFP2, trackC3, trackC4]);
+			console.log(write.dataUri());
 
 			if (tracky.contentHint.localeCompare("FP1") == 0)
 				FP1Ready = 1;
@@ -610,10 +659,6 @@ function Setting() {
 			else if (button.id === 'disconnect'){
 				button.onclick = () => {rec=false;console.log("I GOT CLICKED" + rec)};
 			}
-
-		
-
-
 	},[])
 	
     return (
@@ -684,6 +729,21 @@ export default Record;
 // ------------------------------------------------------------------------------ CUSTOM HELPER FUNCTIONS ------------------------------------------------------------------------------
 
 
+function initMIDIWriterParams()
+{
+	// Sets the tempo of each track to the song's tempo. There is currently no support for tempo changes nor tracks that have varying tempos
+	trackFP1.setTempo(BPM);
+	trackFP2.setTempo(BPM);
+	trackC3.setTempo(BPM);
+	trackC4.setTempo(BPM);
+
+	// There is currently no support for any time signature other than 4/4, though it likely isn't hard to get others working ¯\_(ツ)_/¯
+	trackFP1.setTimeSignature(4, 4); 
+	trackFP2.setTimeSignature(4, 4); 
+	trackC3.setTimeSignature(4, 4); 
+	trackC4.setTimeSignature(4, 4); 
+}
+
 function getInstrumentNameFromInt(input) {
 	if (input == -3) return "Sine Wave";
 	else if (input == -2) return "Triangle Wave";
@@ -704,6 +764,15 @@ function getIntFromNoteTypeString(input) {
 	else if (input.localeCompare("quarter") == 0) return 2;
 	else if (input.localeCompare("half") == 0) return 3;
 	else if (input.localeCompare("whole") == 0) return 4;
+}
+
+function getIntFromNoteTypeStringWithMidiWriterJsValues(input)
+{
+	if (input.localeCompare("sixteenth") == 0) return 16;
+	else if (input.localeCompare("eighth") == 0) return 8;
+	else if (input.localeCompare("quarter") == 0) return 4;
+	else if (input.localeCompare("half") == 0) return 2;
+	else if (input.localeCompare("whole") == 0) return 1;
 }
 
 // This if/else stack returns a note length multiplier based off input. Quarter notes are used as the baseline (x1.0 multiplier).
