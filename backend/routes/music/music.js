@@ -6,7 +6,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 var nodemailer = require("nodemailer");
-const jwtAPI = require("../../utils/jwt");
+const musicUtils = require("../../utils/music");
 // const { JSON } = require("express");
 
 // TODO : Don't think this is needed, change it to actually work for our case for downloading to
@@ -38,6 +38,11 @@ router.get('/findMidi', async (req, res) => {
         res.json(posts);
     }
 
+});
+
+// Get BPM values
+router.get('/getBPMValues', async (req, res) => {
+    res.json(musicUtils.getBPMValues());
 })
 
 module.exports = router;
