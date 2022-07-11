@@ -42,10 +42,9 @@ router.post('/createPost', async (req, res) => {
 });
 
 // Get all posts based on a username
-router.get('/getUserPostsByUsername', async (req, res) => {
+router.post('/getUserPostsByUsername', async (req, res) => {
     try {
         const username = req.body.username
-        
         const userExists = await prisma.user.findUnique({
             where: { username }
         });
@@ -75,13 +74,12 @@ router.get('/getUserPostsByUsername', async (req, res) => {
 });
 
 // Get all posts based on a user ID
-router.get('/getUserPostsByID', async (req, res) => {
+router.post('/getUserPostsByID', async (req, res) => {
     //res.json([req.body, 'hello'])
     try {
         const userPosts = await prisma.post.findMany({
             where: { userID: req.body.userID },
         });
-
         //res.json([req.body, "hello"])
 
         if (!userPosts) {

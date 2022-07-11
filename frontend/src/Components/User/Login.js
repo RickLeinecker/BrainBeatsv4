@@ -27,7 +27,7 @@ const Login = () => {
         //create field to pass to axios
         let config = {
             method: 'post',
-            url: path.buildPath('/users/LoginUser'),
+            url: path.buildPath('/authentication/loginUser'),
             data: loginCheck,
         }
         //tell useContext to start login procedure

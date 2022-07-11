@@ -397,7 +397,7 @@ function ValidScript(scripts) {
 
 function Setting() {
     let st = {
-        height: '1000px',
+        height: '500px',
         position: 'fixed',
         bottom: '0%',
         width: '100%',
@@ -405,7 +405,15 @@ function Setting() {
         opacity: '1',
     }
 
-    const [record, setRecord] = useState(false)
+    const [record, setRecord] = useState(false);
+	const [FP1, setFP1Inst] = useState();
+	const [FP2, setFP2Inst] = useState();
+	const [C3, setC3Inst] = useState();
+	const [C4, setC4Inst] = useState();
+	const [key, setKey] = useState('C');
+	const [scale, setScale] = useState('Major')
+
+	//this rec is to stop the infinite loop from track.subscribe
 	let rec;
 
 	let dataDevices;
@@ -660,7 +668,14 @@ function Setting() {
 				button.onclick = () => {rec=false;console.log("I GOT CLICKED" + rec)};
 			}
 	},[])
+
+	const handleStuff = () => {
+		console.log(key);
+		console.log(scale)
+
+	}
 	
+
     return (
       <>
         <div style={st}>
@@ -669,24 +684,25 @@ function Setting() {
               <td style={{ width: "25%", textAlign: "center" }}>
                 <div style={{ color: "white" }}>Key Signature</div>
 
-                <select>
-                  <option>C</option>
-                  <option>C#/Db</option>
-                  <option>D</option>
-                  <option>D#/Eb</option>
-                  <option>E</option>
-                  <option>F</option>
-                  <option>F#/Gb</option>
-                  <option>G</option>
-                  <option>G#/Ab</option>
-                  <option>A</option>
-                  <option>B</option>
+                <select onChange={(e) => setKey(e.target.value)} value={key}>
+                  <option value='C'>C</option>
+                  <option value='C#'>C#/Db</option>
+                  <option value='D'>D</option>
+                  <option value='D#'>D#/Eb</option>
+                  <option value='E'>E</option>
+                  <option value='F'>F</option>
+                  <option value='F#'>F#/Gb</option>
+                  <option value='G'>G</option>
+                  <option value='G#'>G#/Ab</option>
+                  <option value='A'>A</option>
+                  <option value='B'>B</option>
                 </select>
                 <div style={{ color: "white" }}>Scale</div>
-                <select>
-                  <option>Major</option>
-                  <option>Minor</option>
+                <select onChange={(e) => setScale(e.target.value)} value={scale}>
+                  <option value='Major'>Major</option>
+                  <option value='Minor'>Minor</option>
                 </select>
+				<button onClick={handleStuff}>HE</button>
               </td>
               <td style={{ width: "22%", textAlign: "left" }}>
                 <div id="graph">
