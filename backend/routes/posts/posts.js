@@ -10,10 +10,10 @@ const { user, post } = new PrismaClient();
 // Create a post
 router.post('/createPost', async (req, res) => {
 
-    // try {
+    try {
         const { userID, title, bpm, key, visibility} = req.body
         const userExists = await prisma.user.findUnique({
-            where: { id: userID },
+            where: { id: userID }
         });
 
         if (!userExists) {
@@ -35,14 +35,14 @@ router.post('/createPost', async (req, res) => {
 
             res.json(newPost);
         }
-    // } catch (err) {
-    //     res.status(500).send({ msg: err })
-    // }
+    } catch (err) {
+        res.status(500).send({ msg: err })
+    }
 
 });
 
 // Get all posts based on a username
-router.post('/getUserPostsByUsername', async (req, res) => {
+router.get('/getUserPostsByUsername', async (req, res) => {
     try {
         const username = req.body.username
         
@@ -75,7 +75,7 @@ router.post('/getUserPostsByUsername', async (req, res) => {
 });
 
 // Get all posts based on a user ID
-router.post('/getUserPostsByID', async (req, res) => {
+router.get('/getUserPostsByID', async (req, res) => {
     //res.json([req.body, 'hello'])
     try {
         const userPosts = await prisma.post.findMany({
@@ -96,6 +96,32 @@ router.post('/getUserPostsByID', async (req, res) => {
         res.status(500).send({ msg: err })
     }
 
+});
+
+// Get all posts
+router.get('/getAllPosts', async (req, res) => {
+    try {
+        const posts = await prisma.post.findMany();
+
+        res.json(posts)
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
+    }
+
+});
+
+// Delete a post
+router.delete('/deletePost', async (req, res) => {
+    try {
+        const deletePost = await prisma.post.delete({
+            where: { id: req.body.id }
+        })
+        res.status(200).send({ msg: "Deleted a user post" });
+    }
+    catch (err) {
+        res.status(500).send(err);
+    }
 });
 
 // TODO : Implement a post update api call

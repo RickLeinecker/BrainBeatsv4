@@ -88,7 +88,7 @@ router.get('/getAllUsers', async (req, res) => {
 });
 
 // Get user by username
-router.get('/findUser', async (req, res) => {
+router.get('/getUserByUsername', async (req, res) => {
 
     try {
         const findUser = await prisma.user.findUnique({
@@ -98,6 +98,27 @@ router.get('/findUser', async (req, res) => {
         if (!findUser) {
             return res.status(400).json({
                 msg: "Username does not exist"
+            })
+        }
+        res.json(findUser)
+    }
+    catch (err) {
+        res.status(500).send({ msg: err })
+    }
+
+});
+
+// Get user by user ID
+router.get('/getUserByID', async (req, res) => {
+
+    try {
+        const findUser = await prisma.user.findUnique({
+            where: { id: req.body.id }
+        });
+
+        if (!findUser) {
+            return res.status(400).json({
+                msg: "User does not exist"
             })
         }
         res.json(findUser)
@@ -150,7 +171,7 @@ router.delete('/deleteUser', async (req, res) => {
         const deleteUser = await prisma.user.delete({
             where: { id: req.body.id }
         })
-        res.status(200).send({ msg: "Deleted OK" });
+        res.status(200).send({ msg: "Deleted a user" });
     }
     catch (err) {
         res.status(500).send(err);
