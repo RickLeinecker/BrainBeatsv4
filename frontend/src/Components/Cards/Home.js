@@ -26,22 +26,22 @@ const Cards = () => {
 
     useEffect(() => {
         //always run this api for homepage
-        let config = {
-            method: 'get',
-            url: path.buildPath('/users/getAllUsersPosts'),
-        }
-        axios(config)
-            .then((response) => {
-                setAllPost(response.data);
-            })
+        // let config = {
+        //     method: 'get',
+        //     url: path.buildPath('posts/getUserPostsByUsername'),
+        // }
+        // axios(config)
+        //     .then((response) => {
+        //         setAllPost(response.data);
+        //     })
         //only run this api if user is logged in
         if(user){
             const dataBody = {
-                'authorId': user.id
+                'userID': user.id
             }
             let config = {
                 method: 'post',
-                url: path.buildPath('/users/findUserPostsByID/'),
+                url: path.buildPath('/posts/getUserPostsByID'),
                 data: dataBody,
             }
             axios(config)
@@ -68,14 +68,13 @@ const Cards = () => {
         console.log(user);
     }
     const handle = () => {
-
-
         console.log(user.id)
         console.log(userPost)
         console.log(log)
     }
     return (
         <>
+            <button onClick={handle}>he</button>
             {//if user is logged in dont display carousel
                 !user ? <div style={{ width: '50%', marginLeft: '25%' }}>
                     <Carousel />

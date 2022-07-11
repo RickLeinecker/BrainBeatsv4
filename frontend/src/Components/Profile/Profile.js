@@ -14,7 +14,7 @@ const Profile = () => {
     const [username, setUsername] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [password, setPassword] = useState("");
+    const [dob, setDob] = useState();
     const [stage, setStage] = useState(0);
     const [bio, setBio] = useState("");
     const [errorMsg, setErrorMsg] = useState('');
@@ -22,7 +22,7 @@ const Profile = () => {
     const emptyField = () => {
         return (!email || !username || !firstName || !lastName || !bio)
     }
-
+    
     const UpdateProfile = (event) => {
         event.preventDefault();
         if (emptyField()) {
@@ -42,6 +42,7 @@ const Profile = () => {
             "id": user.id,
             "firstName": firstName,
             "lastName": lastName,
+            'dob': dob,
             "email": email,
             "username": username,
             "bio": bio
@@ -76,7 +77,12 @@ const Profile = () => {
     const handle = (e) => {
         e.preventDefault();
         console.log(user);
-        
+        console.log(firstName)
+        console.log(lastName)
+        console.log(dob)
+        console.log(email)
+        console.log(username)
+        console.log(bio)
     }
 
     //Validates email field
@@ -90,8 +96,11 @@ const Profile = () => {
         }
     }
 
+    
+
     return (
         <div className='content-fluid'>
+            <button onClick={handle}>HE</button>
             <div className='row'>
                 <div className='col-md-8'>
                     <div className='editCard'>
@@ -103,19 +112,19 @@ const Profile = () => {
                                 <div className="pr-1 col-md-3">
                                     <div className="form-group">
                                         <label>Username</label>
-                                        <input placeholder={user ? user.username : 'username'} onChange = {(event) => setUsername(event.target.value)} type="text" className="form-control" />
+                                        <input placeholder={user ? user.username : 'username'} onChange = {(event) => setUsername(event.target.value)} type="text" className="form-control" value={username}/>
                                     </div>
                                 </div>
                                 <div className="px-1 col-md-3">
                                     <div className="form-group">
-                                        <label>Password</label>
-                                        <input placeholder={user ? '**********' : 'password'} disabled type="password" className="form-control" />
+                                        <label>DOB</label>
+                                        <input type="date" className="form-control" onChange={(e) => setDob(e.target.value)}/>
                                     </div>
                                 </div>
                                 <div className="pl-1 col-md-6">
                                     <div className="form-group">
                                         <label>Email address</label>
-                                        <input placeholder={user ? user.email : 'email'} onChange = {(event) => setEmail(event.target.value)} type="text" className="form-control" />
+                                        <input placeholder={user ? user.email : 'email'} onChange = {(event) => setEmail(event.target.value)} type="text" className="form-control" value={email}/>
                                     </div>
                                 </div>
                             </div>
@@ -123,13 +132,13 @@ const Profile = () => {
                                 <div className="pr-1 col-md-6">
                                     <div className="form-group">
                                         <label>First Name</label>
-                                        <input placeholder={user ? user.firstName : 'First Name'} onChange = {(event) => setFirstName(event.target.value)} type="text" className="form-control" />
+                                        <input placeholder={user ? user.firstName : 'First Name'} onChange = {(event) => setFirstName(event.target.value)} type="text" className="form-control" value={firstName}/>
                                     </div>
                                 </div>
                                 <div className="pl-1 col-md-6">
                                     <div className="form-group">
                                         <label>Last Name </label>
-                                        <input placeholder={user ? user.lastName : 'Last Name'} onChange = {(event) => setLastName(event.target.value)} type="text" className="form-control" />
+                                        <input placeholder={user ? user.lastName : 'Last Name'} onChange = {(event) => setLastName(event.target.value)} type="text" className="form-control"  value={lastName}/>
                                     </div>
                                 </div>
                             </div>
@@ -137,7 +146,7 @@ const Profile = () => {
                                 <div className="col-md-12">
                                     <div className="form-group">
                                         <label>About Me</label>
-                                        <textarea cols="80" placeholder={user.bio ? user.bio : 'User bio'} onChange = {(event) => setBio(event.target.value)} rows="5" className="form-control"></textarea>
+                                        <textarea cols="80" placeholder={user.bio ? user.bio : 'User bio'} onChange = {(event) => setBio(event.target.value)} rows="5" className="form-control" value={bio}></textarea>
                                     </div>
                                 </div>
                             </div>

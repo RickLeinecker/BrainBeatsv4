@@ -10,6 +10,7 @@ const SeachComp = () => {
   const { user } = useContext(AuthContext);
   let search = '';
   const [Post, setPost] = useState([]);
+  const [log, setLog] = useState();
   const path = require('../Path');
   //midi data which is a sting
   const [data, setData] = useState('');
@@ -19,7 +20,7 @@ const SeachComp = () => {
 
   //get data onload
   useEffect(() => {
-    searchPost();
+    searchPost()
   }, [])
 
   //stop playing and hide player
@@ -29,23 +30,33 @@ const SeachComp = () => {
   }
   //axios call for finding post
   const searchPost = () => {
-    const searchField = {
-      title: search
-    }
-   
-      let config = {
-        method: 'post',
-        url: path.buildPath('/users/findUserPostsByUsername'),
-        data: searchField
-      }
-      axios(config)
-        .then((response) => {
-          setPost(response.data);
-        })
+    const dataBody = {
+      'username': search
+  }
+  let config = {
+      method: 'post',
+      url: path.buildPath('/posts/getUserPostsByUsername'),
+      data: dataBody,
+  }
+  axios(config)
+      .then((res) => {
+          setPost(res.data);
+          setLog(res);
+      })
+      .catch((err) => {
+          setLog(err);
+      })
+
+  }
+
+  const handle = () => {
+    console.log(Post)
+    console.log(log)
   }
 
   return (
     <div className='container searchBody'>
+      <button onClick={handle}>HE</button>
       <div className='row'>
         <div>
           <input className='textBox' placeholder='Search Box' onChange={(event) => {
@@ -55,7 +66,7 @@ const SeachComp = () => {
             //call axios
             searchPost();
           }} />
- 
+
         </div>
 
       </div>

@@ -42,7 +42,7 @@ const Navbars = () => {
                         {user ?
                             <NavDropdown title={user.username}>
                                 <NavDropdown.Item ><Link to='/' style={{ textDecoration: 'none' }}><FaHome /> Home</Link></NavDropdown.Item>
-                                <NavDropdown.Item ><Link to='/' style={{ textDecoration: 'none' }}><FaSearch /> Search</Link></NavDropdown.Item>
+                                <NavDropdown.Item ><Link to='/Search' style={{ textDecoration: 'none' }}><FaSearch /> Search</Link></NavDropdown.Item>
                                 <NavDropdown.Item ><Link to='/Profile' style={{ textDecoration: 'none' }} ><FaUserEdit /> Profile</Link></NavDropdown.Item>
                                 <NavDropdown.Item ><Link to='/Record' style={{ textDecoration: 'none' }}><FaRegPlayCircle />Record</Link></NavDropdown.Item>
                                 <NavDropdown.Divider />
