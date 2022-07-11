@@ -172,19 +172,15 @@ router.post('/addPostToPlaylist', async (req, res) => {
 });
 
 // TODO : Update a playlist
-router.put('/updateUser', async (req, res) => {
+router.put('/updatePlaylist', async (req, res) => {
 
     try {
-        const { id, firstName, lastName, dob, email, username, bio, profilePicture } = req.body
-        const updateUser = await prisma.user.update({
+        const { id, name, thumbnail} = req.body
+        const updateUser = await prisma.playlist.update({
             where: { id },
             data: {
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                username: username,
-                bio: bio,
-                profilePicture: profilePicture
+                name: name,
+                thumbnail: thumbnail
             }
         })
         //   res.status(200).send({msg: "Updated OK"});

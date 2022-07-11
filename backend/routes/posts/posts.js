@@ -128,7 +128,7 @@ router.delete('/deletePost', async (req, res) => {
 router.put('/updatePost', async (req, res) => {
 
     try {
-        const { id, title, bpm, key, visibility, bio, profilePicture } = req.body
+        const { id, title, visibility, bio, thumbnail, likeCount} = req.body
 
         // Check if the id already exists in db
         const userIDExists = await prisma.post.findUnique({
@@ -145,11 +145,10 @@ router.put('/updatePost', async (req, res) => {
             where: { id },
             data: {
                 title: title,
-                bpm: bpm,
-                key: key,
                 bio: bio,
+                likeCount: likeCount,
                 visibility: visibility,
-                profilePicture: profilePicture
+                thumbnail: thumbnail
             }
         })
         //   res.status(200).send({msg: "Updated OK"});

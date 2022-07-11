@@ -202,6 +202,31 @@ paths:
         404:
           description: URL Not Found
 
+# Update user playlist
+  /api/playlists/updatePlaylist:
+    put:
+      tags:
+        - Users
+      summary: Update user post
+      operationId: updatePlaylist
+      description: Update user playlist
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Update
+        required: true
+        description: Update playlist information
+        schema:
+          $ref: '#/definitions/updatePlaylist'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+
 # Create user posts
   /api/posts/createPost:
     post:
@@ -524,6 +549,18 @@ definitions:
       # profilePicture:
       #   type: string
       #   example: https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwj_q7q_o_7jAhXDxVAKHWXxD-AQjRx6BAgBEAU&url=https%3A%2F%2Fwww.pexels.com%2Fphoto%2Fwoman-in-black-and-white-dressed-in-white-clothes-812093%2F&psig=AOvVaw0_X_X_X_X_X_X_X&ust=1560984100879087
+
+  updatePlaylist:
+    required: 
+    - id
+    - name
+    properties:
+      id:
+        type: int
+        example: 1
+      name:
+        type: string
+        example: Playlist title
 
   getUsersPostsByUsername:
     required:
