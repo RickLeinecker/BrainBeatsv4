@@ -10,165 +10,6 @@ import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@lates
 import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // Device drivers
 import * as XLSX from 'xlsx';
 
-// ------------------------------------------------------------------------------ CONSTANTS AND GLOBAL VARIABLES ------------------------------------------------------------------------------
-
-
-// This isnt a constant its a user variable but it needs to be at the top I'm sorry I can move it later probably hopefully
-var BPM = 120; // Beats Per Minute of the track [aka tempo]
-
-// This isnt a constant its a user variable but it needs to be at the top I'm sorry I can move it later probably hopefully
-// The type of note for each channel. sixteenth, eighth, quarter, half, or whole. Don't forget the ""!
-var FP1NoteType = "eighth",
-	FP2NoteType = "quarter",
-	C3NoteType = "half",
-	C4NoteType = "whole";
-
-// 2D arrays that hold every note in each key signature, starting from C. 
-const KEY_SIGNATURES_MAJOR =
-	[
-		["C", "D", "E", "F", "G", "A", "B"], // 0
-		["C#", "D#", "E#", "F#", "G#", "A#", "B#"], // 1
-		["D", "E", "F#", "G", "A", "B", "C#"], // 2
-		["D#", "E#", "F", "G#", "A#", "B#", "C"], // 3
-		["E", "F#", "G", "A", "B", "C#", "D#"], // 4
-		["E#", "F", "G", "A#", "B#", "C", "D"], // 5
-		["F", "G", "A", "A#", "C", "D", "E"], // 6
-		["F#", "G#", "A#", "B", "C#", "D#", "E#"], // 7
-		["G", "A", "B", "C", "D", "E", "F#"], // 8
-		["G#", "A#", "B#", "C#", "D#", "E#", "F"], // 9
-		["A", "B", "C#", "D", "E", "F#", "G#"], // 10
-		["A#", "C", "D", "D#", "F", "G", "A"], // 11
-		["B", "C#", "D#", "E", "F#", "G#", "A#"] // 12
-	];
-const KEY_SIGNATURES_MINOR =
-	[
-		["C", "D", "D#", "F", "G", "G#", "A#"], // 0
-		["C#", "D#", "E", "F#", "G#", "A", "B"], // 1
-		["D", "E", "F", "G", "A", "A#", "C"], // 2
-		["D#", "E#", "F#", "G#", "A#", "B", "C#"], // 3
-		["E", "F#", "G", "A", "B", "C", "D"], // 4
-		["E#", "F", "G#", "A#", "B#", "C#", "D#"], // 5
-		["F", "G", "G#", "A#", "C", "C#", "D#"], // 6
-		["F#", "G#", "A", "B", "C#", "D", "E"], // 7
-		["G", "A", "A#", "C", "D", "D#", "F"], // 8
-		["G#", "A#", "B", "C#", "D#", "E", "F#"], // 9 
-		["A", "B", "C", "D", "E", "F", "G"], // 10
-		["A#", "C", "C#", "D#", "F", "F#", "G#"], // 11
-		["B", "C#", "D", "E", "F#", "G", "A"] // 12
-	];
-
-// Constant to hold the sample rate in hz. May remove. Not sure if we need it. We'll see...
-const SAMPLE_RATE = 44100
-
-// The amount of time (in milliseconds) that each of the supported notes would take at the specified BPM.
-const timeForEachNoteARRAY =
-	[
-		getMilliecondsFromBPM(BPM) / 4,
-		getMilliecondsFromBPM(BPM) / 2,
-		getMilliecondsFromBPM(BPM),
-		getMilliecondsFromBPM(BPM) * 2,
-		getMilliecondsFromBPM(BPM) * 4
-	];
-
-// The highest and lowest possible values of the headset's data that we will actually use and parse into musical data.
-// Anything under the maximum and above the minimum will be sorted into respective notes, but anything above the maximum
-// or below the minimum will be treated as rests. 
-const MAX_AMPLITUDE = 0.001;
-const MIN_AMPLITUDE = -0.001;
-
-// The distance between the ceiling amplitude and the floor amplitude.
-const MIN_MAX_AMPLITUDE_DIFFERENCE = MAX_AMPLITUDE - MIN_AMPLITUDE;
-
-// An offset that is equal to the absolute value of MIN_AMPLITUDE. This offset is used to turn the negative MIN value 
-// into effectively zero, and the MAX value into itself plus this offset. This just removes negative numbers from all
-// of the calculation, making it simpler for humans to both read and write the code.
-const AMPLITUDE_OFFSET = 0.001;
-
-// Number of total notes that are able to be assigned. 7 is one octave, 14 is two octaves, 21 is three octaves.
-// Going above 21 is NOT recommended and has NOT been tested, but should theoretically work. DO NOT use values 
-// that aren't multiples of 7. Works best with 7, 14, and 21. Do not ever exceed 63.
-// NOTE: This software works using 7-note octaves, meaning that the root note's octave jump is not included in
-//       the scale. For example, C major is C, D, E, F, G, A, B. It does NOT include the C of the next octave.
-const NUM_NOTES = 21;
-
-const instrumentEnums =
-{
-	SineWave: -3,
-	TriangleWave: -2,
-	SquareWave: -1,
-	Flute: 0,
-	Oboe: 1,
-	Clarinet: 2,
-	Bassoon: 3,
-	Trumpet: 4,
-	FrenchHorn: 5,
-	Trombone: 6,
-	Tuba: 7
-}
-
-// The array of size NUM_NOTES that is used to house the cutoffs for each of the NUM_NOTES incremements. 
-// The value of MIN_MAX_AMPLITUDE_DIFFERENCE is divided by NUM_NOTES, and the result (let's call this X) is then used to 
-// create evenly-spaced "sections" in the array. 
-// incrementArr[0] will always be 0, and incrementArr[NUM_NOTES - 1] will always be MAX_AMPLITUDE + AMPLITUDE_OFFSET.
-// incrementArr[1] will be X. incrementArr[2] will be X * 2. incrementArr[3] will be X * 3.
-// In runtime, the data that the headset relays will be compared to entries in incrementArr simultaneously to find
-// which values it falls between, and from there a note will be declared. For example, let's say incrementArr[0] is 0,
-// incrementArr[1] is 0.5, and incrementArr[2] is 1.0. The headset relays data equal to 0.75. Because 0.75 falls
-// between incrementArr[1] and [2], it will be assigned to note 1, the floor of the indexes it fell between.
-var incrementArr = new Array(NUM_NOTES);
-
-// Array used to house all of the overtone information for each instrument, used by getOvertoneFrequencies()
-var instrList;
-
-// Variables that will likely be removed
-var channelCounter = 0; // I forgor 💀
-var firstTickSkipped = 0; // Kinda useless will prob remove
-
-var FP1Ready = 1,
-	FP2Ready = 1,
-	C3Ready = 1,
-	C4Ready = 1,
-	TempoCounterReady = 1;
-
-var FP1NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(FP1NoteType)],
-	FP2NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(FP2NoteType)],
-	C3NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C3NoteType)],
-	C4NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C4NoteType)];
-
-const MidiWriter = require('midi-writer-js');
-
-const trackFP1 = new MidiWriter.Track();
-const trackFP2 = new MidiWriter.Track();
-const trackC3 = new MidiWriter.Track();
-const trackC4 = new MidiWriter.Track();
-
-var noteFP1, noteFP2, noteC3, noteC4;
-
-
-// ------------------------------------------------------------------------------ USER-DEFINED VARIABLES ------------------------------------------------------------------------------
-
-
-// Feel free to change all of these! That's their purpose!
-
-var quickNoteType = "quarter"; // sixteenth, eighth, quarter, half, or whole. Don't forget the ""! Currently not used but available if-need be.
-
-// The instrument that each channel will be "playing"
-var FP1Instrument = instrumentEnums.SineWave,
-	FP2Instrument = instrumentEnums.TriangleWave,
-	C3Instrument = instrumentEnums.SquareWave,
-	C4Instrument = instrumentEnums.Flute;
-
-const DEFAULT_VOLUME = 0.1;
-
-var FP1Volume = DEFAULT_VOLUME,
-	FP2Volume = DEFAULT_VOLUME/ 10,
-	C3Volume = DEFAULT_VOLUME ,
-	C4Volume = DEFAULT_VOLUME;
-
-var keySignature = KEY_SIGNATURES_MINOR[0]; // Default hard coded to C minor
-
-var UUIDArray = new Array();
-
 function Record() {
     //Set onLoad to link
     const [type, setType] = useState('link');
@@ -368,7 +209,7 @@ function ScriptThing(shown) {
 }
 
 function ValidScript(scripts) {
-    console.log(scripts);
+
     let wordArray = scripts.scripts[0];
     let speed = scripts.scripts[1];
     let backgroundCol = scripts.scripts[2];
@@ -410,8 +251,8 @@ function Setting() {
 	const [FP2, setFP2Inst] = useState();
 	const [C3, setC3Inst] = useState();
 	const [C4, setC4Inst] = useState();
-	const [key, setKey] = useState('C');
-	const [scale, setScale] = useState('Major')
+	const [keyNum, setKey] = useState(0);
+	const [scale, setScale] = useState(0)
 
 	//this rec is to stop the infinite loop from track.subscribe
 	let rec;
@@ -434,10 +275,10 @@ function Setting() {
 		dataDevices.load(ganglion);
 
 		// Set up graph (rough)
-		const graphDiv = document.getElementById("graph");
-		graphDiv.style.padding = "25px";
-		const timeseries = new components.streams.data.TimeSeries();
-		graphDiv.insertAdjacentElement("beforeend", timeseries);
+		// const graphDiv = document.getElementById("graph");
+		// graphDiv.style.padding = "25px";
+		// const timeseries = new components.streams.data.TimeSeries();
+		// graphDiv.insertAdjacentElement("beforeend", timeseries);
 
 		// Track handler
 		const handleTrack = (track) => {
@@ -475,8 +316,8 @@ function Setting() {
 						i === j ? arr.push(data) : arr.push([]);
 
 					// Add Data to Timeseries Graph
-					timeseries.data = arr;
-					timeseries.draw(); // FORCE DRAW: Update happens too fast for UI
+					// timeseries.data = arr;
+					// timeseries.draw(); // FORCE DRAW: Update happens too fast for UI
 
 					if (TempoCounterReady == 1) {
 						TempoCounterReady = 0;
@@ -672,85 +513,175 @@ function Setting() {
 	},[])
 
 	const handleStuff = () => {
-		console.log(key);
-		console.log(scale)
+		console.log(numNotes);
+
 
 	}
-	
+	// ------------------------------------------------------------------------------ CONSTANTS AND GLOBAL VARIABLES ------------------------------------------------------------------------------
 
-    return (
-      <>
-        <div style={st}>
-          <table style={{ width: "100%" }}>
-            <tr>
-              <td style={{ width: "25%", textAlign: "center" }}>
-                <div style={{ color: "white" }}>Key Signature</div>
 
-                <select onChange={(e) => setKey(e.target.value)} value={key}>
-                  <option value='C'>C</option>
-                  <option value='C#'>C#/Db</option>
-                  <option value='D'>D</option>
-                  <option value='D#'>D#/Eb</option>
-                  <option value='E'>E</option>
-                  <option value='F'>F</option>
-                  <option value='F#'>F#/Gb</option>
-                  <option value='G'>G</option>
-                  <option value='G#'>G#/Ab</option>
-                  <option value='A'>A</option>
-                  <option value='B'>B</option>
-                </select>
-                <div style={{ color: "white" }}>Scale</div>
-                <select onChange={(e) => setScale(e.target.value)} value={scale}>
-                  <option value='Major'>Major</option>
-                  <option value='Minor'>Minor</option>
-                </select>
-				<button onClick={handleStuff}>HE</button>
-              </td>
-              <td style={{ width: "22%", textAlign: "left" }}>
-                <div id="graph">
-                  <p>Graph of live EEG data:</p>
-                </div>
-              </td>
-              <td style={{ textAlign: "left" }}>
-			  
-				 <div id="buttons">
-                      <button
-                        id="ganglion"
-                        className="recordButton"
-                      >
-                        Connect
-                      </button>
-					  <button
-                        id="disconnect"
-                        className="recordButton"
-                      >
-                        disconnect
-                      </button>
+// This isnt a constant its a user variable but it needs to be at the top I'm sorry I can move it later probably hopefully
+var BPM = 120; // Beats Per Minute of the track [aka tempo]
 
-					  <button
-                        id="downloadBtn"
-                        className="recordButton"
-                      >
-                        disconnect
-                      </button>
-                    </div>
+// This isnt a constant its a user variable but it needs to be at the top I'm sorry I can move it later probably hopefully
+// The type of note for each channel. sixteenth, eighth, quarter, half, or whole. Don't forget the ""!
+var FP1NoteType = "eighth",
+	FP2NoteType = "quarter",
+	C3NoteType = "half",
+	C4NoteType = "whole";
 
-              </td>
-              <td style={{ width: "25%", textAlign: "center" }}>
-                <div style={{ color: "white" }}>Tempo</div>
-                <input type="text" defaultValue="120" />
-              </td>
-            </tr>
-          </table>
-        </div>
-      </>
-    );
+// 2D arrays that hold every note in each key signature, starting from C. 
 
+
+const KEY_SIGNATURES_MAJOR =
+	[
+		["C", "D", "E", "F", "G", "A", "B"], // 0 done
+		["C#", "D#", "F", "F#", "G#", "A#", "C"], // 1 done
+		["D", "E", "F#", "G", "A", "B", "C#"], // 2 done
+		["D#", "F", "G", "G#", "A#", "C", "D"], // 3 done
+		["E", "F#", "G#", "A", "B", "C#", "D#"], // 4 done
+		["F", "G", "A", "A#", "C", "D", "E"], // 6 done
+		["F#", "G#", "A#", "B", "C#", "D#", "E#"], // 7 done
+		["G", "A", "B", "C", "D", "E", "F#"], // 8 done
+		["G#", "A#", "C", "C#", "D#", "F", "G"], // 9 done
+		["A", "B", "C#", "D", "E", "F#", "G#"], // 10 done
+		["A#", "C", "D", "D#", "F", "G", "A"], // 11 done 
+		["B", "C#", "D#", "E", "F#", "G#", "A#"] // 12 done
+	];
+const KEY_SIGNATURES_MINOR =
+	[
+		["C", "D", "D#", "F", "G", "G#", "A#"], // 0 done
+		["C#", "D#", "E", "F#", "G#", "A", "B"], // 1 done
+		["D", "E", "F", "G", "A", "A#", "C"], // 2 done 
+		["D#", "F", "F#", "G#", "A#", "B", "C#"], // 3 done 
+		["E", "F#", "G", "A", "B", "C", "D"], // 4 done 
+		["F", "G", "G#", "A#", "C", "C#", "D#"], // 6 done
+		["F#", "G#", "A", "B", "C#", "D", "E"], // 7 done
+		["G", "A", "A#", "C", "D", "D#", "F"], // 8 done
+		["G#", "A#", "B", "C#", "D#", "E", "F#"], // 9 done
+		["A", "B", "C", "D", "E", "F", "G"], // 10 done
+		["A#", "C", "C#", "D#", "F", "F#", "G#"], // 11 done
+		["B", "C#", "D", "E", "F#", "G", "A"] // 12 done
+	];
+const KEY_SIGNATURES = [KEY_SIGNATURES_MAJOR, KEY_SIGNATURES_MINOR]
+// Constant to hold the sample rate in hz. May remove. Not sure if we need it. We'll see...
+const SAMPLE_RATE = 44100
+
+// The amount of time (in milliseconds) that each of the supported notes would take at the specified BPM.
+const timeForEachNoteARRAY =
+	[
+		getMilliecondsFromBPM(BPM) / 4,
+		getMilliecondsFromBPM(BPM) / 2,
+		getMilliecondsFromBPM(BPM),
+		getMilliecondsFromBPM(BPM) * 2,
+		getMilliecondsFromBPM(BPM) * 4
+	];
+
+// The highest and lowest possible values of the headset's data that we will actually use and parse into musical data.
+// Anything under the maximum and above the minimum will be sorted into respective notes, but anything above the maximum
+// or below the minimum will be treated as rests. 
+const MAX_AMPLITUDE = 0.001;
+const MIN_AMPLITUDE = -0.001;
+
+// The distance between the ceiling amplitude and the floor amplitude.
+const MIN_MAX_AMPLITUDE_DIFFERENCE = MAX_AMPLITUDE - MIN_AMPLITUDE;
+
+// An offset that is equal to the absolute value of MIN_AMPLITUDE. This offset is used to turn the negative MIN value 
+// into effectively zero, and the MAX value into itself plus this offset. This just removes negative numbers from all
+// of the calculation, making it simpler for humans to both read and write the code.
+const AMPLITUDE_OFFSET = 0.001;
+
+// Number of total notes that are able to be assigned. 7 is one octave, 14 is two octaves, 21 is three octaves.
+// Going above 21 is NOT recommended and has NOT been tested, but should theoretically work. DO NOT use values 
+// that aren't multiples of 7. Works best with 7, 14, and 21. Do not ever exceed 63.
+// NOTE: This software works using 7-note octaves, meaning that the root note's octave jump is not included in
+//       the scale. For example, C major is C, D, E, F, G, A, B. It does NOT include the C of the next octave.
+
+var numNotes = 7;
+
+
+const instrumentEnums =
+{
+	SineWave: -3,
+	TriangleWave: -2,
+	SquareWave: -1,
+	Flute: 0,
+	Oboe: 1,
+	Clarinet: 2,
+	Bassoon: 3,
+	Trumpet: 4,
+	FrenchHorn: 5,
+	Trombone: 6,
+	Tuba: 7
 }
 
-export default Record;
+// The array of size numNotes that is used to house the cutoffs for each of the numNotes incremements. 
+// The value of MIN_MAX_AMPLITUDE_DIFFERENCE is divided by numNotes, and the result (let's call this X) is then used to 
+// create evenly-spaced "sections" in the array. 
+// incrementArr[0] will always be 0, and incrementArr[numNotes - 1] will always be MAX_AMPLITUDE + AMPLITUDE_OFFSET.
+// incrementArr[1] will be X. incrementArr[2] will be X * 2. incrementArr[3] will be X * 3.
+// In runtime, the data that the headset relays will be compared to entries in incrementArr simultaneously to find
+// which values it falls between, and from there a note will be declared. For example, let's say incrementArr[0] is 0,
+// incrementArr[1] is 0.5, and incrementArr[2] is 1.0. The headset relays data equal to 0.75. Because 0.75 falls
+// between incrementArr[1] and [2], it will be assigned to note 1, the floor of the indexes it fell between.
+var incrementArr = new Array(numNotes);
+
+// Array used to house all of the overtone information for each instrument, used by getOvertoneFrequencies()
+var instrList;
+
+// Variables that will likely be removed
+var channelCounter = 0; // I forgor 💀
+var firstTickSkipped = 0; // Kinda useless will prob remove
+
+var FP1Ready = 1,
+	FP2Ready = 1,
+	C3Ready = 1,
+	C4Ready = 1,
+	TempoCounterReady = 1;
+
+var FP1NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(FP1NoteType)],
+	FP2NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(FP2NoteType)],
+	C3NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C3NoteType)],
+	C4NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C4NoteType)];
+
+const MidiWriter = require('midi-writer-js');
+
+const trackFP1 = new MidiWriter.Track();
+const trackFP2 = new MidiWriter.Track();
+const trackC3 = new MidiWriter.Track();
+const trackC4 = new MidiWriter.Track();
+
+var noteFP1, noteFP2, noteC3, noteC4;
 
 
+// ------------------------------------------------------------------------------ USER-DEFINED VARIABLES ------------------------------------------------------------------------------
+
+
+// Feel free to change all of these! That's their purpose!
+
+var quickNoteType = "quarter"; // sixteenth, eighth, quarter, half, or whole. Don't forget the ""! Currently not used but available if-need be.
+
+// The instrument that each channel will be "playing" SineWave as a default unless changed from GUI
+var FP1Instrument = instrumentEnums.SineWave,
+	FP2Instrument = instrumentEnums.SineWave,
+	C3Instrument = instrumentEnums.SineWave,
+	C4Instrument = instrumentEnums.SineWave;
+
+//Default volume value
+const DEFAULT_VOLUME = 0.1;
+
+//These values will determine all instrument volume which is changed in GUI
+var FP1VolChange = 0, FP2VolChange = 0, C3VolChange = 0, C4VolChange = 0
+
+var FP1Volume = DEFAULT_VOLUME - FP1VolChange,
+	FP2Volume = DEFAULT_VOLUME -  FP2VolChange,
+	C3Volume = DEFAULT_VOLUME - C3VolChange,
+	C4Volume = DEFAULT_VOLUME - C4VolChange;
+
+var keySignature = KEY_SIGNATURES[scale][keyNum];
+
+var UUIDArray = new Array();
+	
 // ------------------------------------------------------------------------------ CUSTOM HELPER FUNCTIONS ------------------------------------------------------------------------------
 
 
@@ -826,13 +757,13 @@ function getMilliecondsFromBPM(bpm) {
 // This creates the array in which different "increments" for notes are housed. I already sort-of explained this
 // near the top of this file in the comment for "var incrementArr".
 function InitIncrementArr() {
-	var incrementAmount = MIN_MAX_AMPLITUDE_DIFFERENCE / NUM_NOTES; // Dividing the total range by the number of notes
+	var incrementAmount = MIN_MAX_AMPLITUDE_DIFFERENCE / numNotes; // Dividing the total range by the number of notes
 
 	incrementArr[0] = 0; // First index will always be 0
-	incrementArr[NUM_NOTES - 1] = MAX_AMPLITUDE + AMPLITUDE_OFFSET; // Last index will always be the max value + the offset that was used to remove negative numbers.
+	incrementArr[numNotes - 1] = MAX_AMPLITUDE + AMPLITUDE_OFFSET; // Last index will always be the max value + the offset that was used to remove negative numbers.
 
 	// Fill out the array so that each index is populated with incrementAmount * index
-	for (var i = 1; i < NUM_NOTES - 1; i++)
+	for (var i = 1; i < numNotes - 1; i++)
 		incrementArr[i] = incrementAmount * i + AMPLITUDE_OFFSET;
 }
 
@@ -843,7 +774,7 @@ function NoteDeclarationRaw(ampValue, sensor) {
 
 	// For every possible note, check to see if ampValue falls between two array positions. If so, return that position.
 	// If not, it will be treated as a rest (returning -1).
-	for (var i = 0; i <= NUM_NOTES - 1; i++) {
+	for (var i = 0; i <= numNotes - 1; i++) {
 		if (ampValue2 >= incrementArr[i] && ampValue2 <= incrementArr[i + 1])
 			return i;
 	}
@@ -861,17 +792,17 @@ function GetNoteWRTKey(note) {
 	// If the note is valid and greater than 7
 	else {
 		var noteMod = note % 7; // Mod by 7 to find note increment
-		var noteDiv = Math.floor(note / 7); // Divide by 7 to find octave WRT NUM_NOTES/3.
+		var noteDiv = Math.floor(note / 7); // Divide by 7 to find octave WRT numNotes/3.
 		return { note: keySignature[noteMod], octave: noteDiv };
 	}
 }
 
-// Returns the lowest octave necessary for this song, using NUM_NOTES to determine.
+// Returns the lowest octave necessary for this song, using numNotes to determine.
 // Octave 5 is used as the center/default octave.
 function GetFloorOctave() {
-	if (NUM_NOTES == 7 || NUM_NOTES == 14)
+	if (numNotes == 7 || numNotes == 14)
 		return 5;
-	if (NUM_NOTES == 21)
+	if (numNotes == 21)
 		return 4;
 }
 
@@ -1548,3 +1479,127 @@ function instrumentWave(numSamples, frequency, ctx, soundType) {
 	// Aggregate tuba notes
 	var tuba = [tuba_note0, tuba_note1, tuba_note2, tuba_note3, tuba_note4, tuba_note5, tuba_note6, tuba_note7, tuba_note8, tuba_note9, tuba_note10, tuba_note11, tuba_note12, tuba_note13, tuba_note14, tuba_note15, tuba_note16, tuba_note17, tuba_note18, tuba_note19, tuba_note20, tuba_note21, tuba_note22, tuba_note23, tuba_note24, tuba_note25, tuba_note26, tuba_note27, tuba_note28, tuba_note29, tuba_note30];
 }
+	//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    return (
+      <>
+        <div style={st}>
+          <table style={{ width: "100%" }}>
+            <tr>
+              <td style={{ width: "25%", textAlign: "center" }}>
+                <div style={{ color: "white" }}>Key Signature</div>
+
+                <select onChange={(e) => setKey(e.target.value)} value={keyNum}>
+                  <option value={0}>C</option>
+                  <option value={1}>C#/Db</option>
+                  <option value={2}>D</option>
+                  <option value={3}>D#/Eb</option>
+                  <option value={4}>E</option>
+                  <option value={5}>F</option>
+                  <option value={6}>F#/Gb</option>
+                  <option value={7}>G</option>
+                  <option value={8}>G#/Ab</option>
+                  <option value={9}>A</option>
+				  <option value={10}>A#/Bb</option>
+                  <option value={11}>B</option>
+                </select>
+                <div style={{ color: "white" }}>Scale</div>
+                <select onChange={(e) => setScale(e.target.value)} value={scale}>
+                  <option value={0}>Major</option>
+                  <option value={1}>Minor</option>
+                </select>
+				<button onClick={handleStuff}>HE</button>
+              </td>
+              <td style={{ width: "22%", textAlign: "left" }}>
+			  	<select onChange={(e) => FP1Instrument = e.target.value}>
+                  <option value={-3}>SineWave</option>
+                  <option value={-2}>TriangleWave</option>
+				  <option value={-1}>SquareWave</option>
+                  <option value={0}>Flute</option>
+				  <option value={1}>Oboe</option>
+                  <option value={2}>Clarinet</option>
+				  <option value={3}>Bassoon</option>
+                  <option value={4}>Trumpet</option>
+				  <option value={5}>FrenchHorn</option>
+                  <option value={6}>Trombone</option>
+				  <option value={7}>Tuba</option>
+            	</select>
+				<select onChange={(e) => FP2Instrument = e.target.value}>
+                  <option value={-3}>SineWave</option>
+                  <option value={-2}>TriangleWave</option>
+				  <option value={-1}>SquareWave</option>
+                  <option value={0}>Flute</option>
+				  <option value={1}>Oboe</option>
+                  <option value={2}>Clarinet</option>
+				  <option value={3}>Bassoon</option>
+                  <option value={4}>Trumpet</option>
+				  <option value={5}>FrenchHorn</option>
+                  <option value={6}>Trombone</option>
+				  <option value={7}>Tuba</option>
+            	</select>
+				<select onChange={(e) => C3Instrument = e.target.value}>
+                  <option value={-3}>SineWave</option>
+                  <option value={-2}>TriangleWave</option>
+				  <option value={-1}>SquareWave</option>
+                  <option value={0}>Flute</option>
+				  <option value={1}>Oboe</option>
+                  <option value={2}>Clarinet</option>
+				  <option value={3}>Bassoon</option>
+                  <option value={4}>Trumpet</option>
+				  <option value={5}>FrenchHorn</option>
+                  <option value={6}>Trombone</option>
+				  <option value={7}>Tuba</option>
+            	</select>
+				<select onChange={(e) => C4Instrument = e.target.value}>
+                  <option value={-3}>SineWave</option>
+                  <option value={-2}>TriangleWave</option>
+				  <option value={-1}>SquareWave</option>
+                  <option value={0}>Flute</option>
+				  <option value={1}>Oboe</option>
+                  <option value={2}>Clarinet</option>
+				  <option value={3}>Bassoon</option>
+                  <option value={4}>Trumpet</option>
+				  <option value={5}>FrenchHorn</option>
+                  <option value={6}>Trombone</option>
+				  <option value={7}>Tuba</option>
+            	</select>
+				<select onChange={(e) => numNotes = e.target.value * 7} >
+                  <option value={1}>1</option>
+                  <option value={2}>2</option>
+				  <option value={3}>3</option>
+            	</select>
+				
+				
+              </td>
+              <td style={{ textAlign: "left" }}>
+			  
+				 <div id="buttons">
+                      <button
+                        id="ganglion"
+                        className="recordButton"
+                      >
+                        Connect
+                      </button>
+					  <button
+                        id="disconnect"
+                        className="recordButton"
+                      >
+                        disconnect
+                      </button>
+                    </div>
+
+              </td>
+              <td style={{ width: "25%", textAlign: "center" }}>
+                <div style={{ color: "white" }}>Tempo</div>
+                <input type="text" defaultValue={BPM} onChange={(e) => BPM = e.target.value} />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </>
+    );
+
+}
+
+export default Record;
+
+
