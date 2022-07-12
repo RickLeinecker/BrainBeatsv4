@@ -42,7 +42,9 @@ router.get('/findMidi', async (req, res) => {
 
 // Get BPM values
 router.get('/getBPMValues', async (req, res) => {
-    res.json(musicUtils.getBPMValues());
-})
+    const bpmValues = await musicUtils.getBPMValues();
+    console.log(bpmValues);
+    res.json(bpmValues);
+});
 
 module.exports = router;

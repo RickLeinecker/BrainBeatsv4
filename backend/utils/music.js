@@ -6,6 +6,6 @@ async function getBPMValues() {
     return bpmValues;
 }
 
-modules.exports = {
+module.exports = {
     getBPMValues: getBPMValues
 }
