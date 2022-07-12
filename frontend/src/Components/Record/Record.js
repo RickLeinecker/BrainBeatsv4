@@ -542,12 +542,14 @@ function Setting() {
 		};
 
 		const downloadData = () => {
-			//   console.log(JSON.stringify(allData));
+			// Alter exponential values to get a more accurate readings
+			// //   console.log(JSON.stringify(allData));
 			var workbook = XLSX.utils.book_new();
 			const worksheet = XLSX.utils.json_to_sheet(allData);
 			XLSX.utils.sheet_add_aoa(worksheet, [["channel", "signal"]]);
 			XLSX.utils.book_append_sheet(workbook, worksheet, "SheetJS");
-			XLSX.writeFile(workbook, "sheetjs.xlsx", { compression: true });
+			XLSX.writeFile(workbook, "sheetjs.csv", { compression: true });
+
 		}
 
 		// Acquisition function
@@ -720,6 +722,13 @@ function Setting() {
                       </button>
 					  <button
                         id="disconnect"
+                        className="recordButton"
+                      >
+                        disconnect
+                      </button>
+
+					  <button
+                        id="downloadBtn"
                         className="recordButton"
                       >
                         disconnect

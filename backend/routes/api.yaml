@@ -815,30 +815,30 @@ definitions:
 
 
   # ***** User Verification ***** #
-    sendVerificationEmail:
-
     loginUser:
-    required: 
-    - email
-    - password
-    properties:
-      email:
-        type: string
-        example: JohnDoe@gmail.com
-      password:
-        type: string
-        example: JohnDoePassword
-    required:
-    - email
-    - subject
-    - text
-    properties:
-      email:
-        type: string
-        example: JohnDoe@gmail.com
-      subject:
-        type: string
-        example: Verification Email Alert
-      text:
-        type: string
-        example: Sending you a message in an e-mail!
+      required: 
+      - email
+      - password
+      properties:
+        email:
+          type: string
+          example: JohnDoe@gmail.com
+        password:
+          type: string
+          example: JohnDoePassword
+          
+    sendVerificationEmail:
+      required:
+      - email
+      - subject
+      - text
+      properties:
+        email:
+          type: string
+          example: JohnDoe@gmail.com
+        subject:
+          type: string
+          example: Verification Email Alert
+        text:
+          type: string
+          example: Sending you a message in an e-mail!
