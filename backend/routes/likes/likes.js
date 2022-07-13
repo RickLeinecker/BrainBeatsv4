@@ -50,8 +50,10 @@ router.delete('/removeUserLike', async (req, res) => {
     try {
         const deleteLike = await prisma.like.delete({
             where: { 
-                userID: req.body.userID,
-                postID: req.body.postID
+                userLike: {
+                    postID: req.body.postID,
+                    userID: req.body.userID,
+                },
             }
         });
         res.status(200).send({ msg: "Deleted a user like" });
@@ -65,12 +67,27 @@ router.get('/getUserLike', async (req, res) => {
     try {
         const likeStatus = await prisma.like.findUnique({
             where: {
-                userID: req.body.userID,
-                postID: req.body.postID
+                userLike: {
+                    postID: req.body.postID,
+                    userID: req.body.userID,
+                },
             }
         });
 
         res.json(likeStatus);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+});
+
+// Get all user likes
+router.post('/getAllUserLikes', async (req, res) => {
+    try {
+        const allLikes = await prisma.like.findMany({
+            where: { userID: req.body.userID }
+        });
+
+        res.json(allLikes);
     } catch (err) {
         res.status(500).send(err);
     }

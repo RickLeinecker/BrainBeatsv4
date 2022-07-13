@@ -45,6 +45,13 @@ router.post('/createPost', async (req, res) => {
 router.post('/getUserPostsByUsername', async (req, res) => {
     try {
         const username = req.body.username
+
+        if (username === "") {
+            const allPosts = await prisma.post.findMany();
+            res.json(allPosts);
+            return;
+        }
+
         const userExists = await prisma.user.findUnique({
             where: { username }
         });

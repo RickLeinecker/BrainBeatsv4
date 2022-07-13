@@ -60,9 +60,11 @@ model PlaylistPost {
 }
 
 model Like {
-  postID Int         @id
+  postID Int         
   post Post          @relation(fields: [postID], references: [id], onDelete: Cascade)
   userID String
   user User          @relation(fields: [userID], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+
+  @@id([postID, userID])
 }
