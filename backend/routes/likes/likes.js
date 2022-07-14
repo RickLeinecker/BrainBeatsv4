@@ -50,9 +50,9 @@ router.delete('/removeUserLike', async (req, res) => {
     try {
         const deleteLike = await prisma.like.delete({
             where: { 
-                userLike: {
-                    postID: req.body.postID,
-                    userID: req.body.userID,
+                postID_userID: {
+                    postID: req.query.postID,
+                    userID: req.query.userID,
                 },
             }
         });
@@ -67,7 +67,7 @@ router.get('/getUserLike', async (req, res) => {
     try {
         const likeStatus = await prisma.like.findUnique({
             where: {
-                userLike: {
+                postID_userID: {
                     postID: req.query.postID,
                     userID: req.query.userID,
                 },
@@ -81,7 +81,7 @@ router.get('/getUserLike', async (req, res) => {
 });
 
 // Get all user likes
-router.post('/getAllUserLikes', async (req, res) => {
+router.get('/getAllUserLikes', async (req, res) => {
     try {
         const allLikes = await prisma.like.findMany({
             where: { userID: req.query.userID }
