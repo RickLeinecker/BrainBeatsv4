@@ -9,6 +9,7 @@ import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/
 import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js"; // Data acquisition
 import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // Device drivers
 import * as XLSX from 'xlsx';
+import MidiPlayer from 'midi-player-js';
 
 function Record() {
     //Set onLoad to link
@@ -688,6 +689,30 @@ function Setting() {
 	// ------------------------------------------------------------------------------ CUSTOM HELPER FUNCTIONS ------------------------------------------------------------------------------
 
 
+	function playMidiFile(uri)
+	{
+		//var MidiPlayer = require('midi-player-js');
+
+		// Initialize player and register event handler
+		var Player = new MidiPlayer.Player(function(event) {
+			//console.log(event);
+		});
+
+		// Load a MIDI file
+		Player.loadDataUri(uri);
+		Player.play();
+
+		var eventCount = 0;
+
+		Player.on('midiEvent', function(event) {
+			// Do something when a MIDI event is fired.
+			console.log("WHAOAISHHASABSJHGAK " + eventCount);
+			eventCount++;
+			// (this is the same as passing a function to MidiPlayer.Player() when instantiating.
+		});
+	}
+
+
 	function getNoteLengthStringFromInt(input)
 	{
 		if (input == 0) return "whole";
@@ -713,7 +738,9 @@ function Setting() {
 	function generateAndDownloadMIDIFile()
 	{
 		const write = new MidiWriter.Writer([trackFP1, trackFP2, trackC3, trackC4]);
-		downloadURI(write.dataUri(), "BrainBeatsMasterpiece");
+		var writeURI = write.dataUri()
+		downloadURI(writeURI, "BrainBeatsMasterpiece");
+		playMidiFile(writeURI);
 		//console.log(write.dataUri());
 	}
 
@@ -1644,7 +1671,6 @@ function Setting() {
             	</select>
               </td>
               <td style={{ textAlign: "left" }}>
-			  
 				 <div id="buttons">
                       <button
                         id="ganglion"
@@ -1669,7 +1695,7 @@ function Setting() {
 			  <td>
 				<div style={{ color: "white" }}>Helpful Buttons</div>
 				<button onClick={handleStuff}>Print Debug Stuff</button> <br></br>
-				<button onClick={generateAndDownloadMIDIFile}>Download MIDI File</button>
+				<button onClick={generateAndDownloadMIDIFile}>Download MIDI and play WIP</button>
               </td>
 			  
             </tr>
