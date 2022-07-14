@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import RecordButton from './RecordButton';
 import { Carousel } from "react-responsive-carousel";
 import { SliderPicker } from 'react-color'
@@ -9,7 +9,11 @@ import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/
 import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js"; // Data acquisition
 import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // Device drivers
 import * as XLSX from 'xlsx';
+<<<<<<< Updated upstream
 import MidiPlayer from 'midi-player-js';
+=======
+import {cloneDeep} from 'lodash'
+>>>>>>> Stashed changes
 
 function Record() {
     //Set onLoad to link
@@ -134,17 +138,30 @@ function VidLink(link) {
 }
 
 function ScriptThing(shown) {
-    const [script, setScript] = useState('');
-    const [speed, setSpeed] = useState(1000);
-    const [background, setBackground] = useState('#fff')
-    const [textColor, setTextColor] = useState('#000')
+    const [words, setWords] = useState('');
     const [stage, setStage] = useState(0)
+	const [currentSlide, setCurrentSlide] = useState(0)
+	const [autoplay, setAutoPlay] = useState(false);
 
-    let words = script.split(', ');
+	//let words = script.split(', ');
+
+	const [slides, setSlides] = useState([{word:'',speed:1000,background:'',textColor:''}])
+
+    const createSlides = useCallback(() =>{
+		
+		let tempSlides = [];
+		for(const word of words.split(', ')){
+			console.log(word)
+			tempSlides.push({word: word,speed:1000,background:'#fff',textColor:'#000'})
+		}
+		setSlides(tempSlides);
+	},[words])
 
     //Go to next step in recording
     const goNext = (e) => {
         e.preventDefault()
+		if(stage == 0)
+			createSlides()
         setStage(stage + 1)
     }
     //Go back a step in recording
@@ -153,6 +170,12 @@ function ScriptThing(shown) {
         setStage(stage - 1)
 
     }
+	const editSlide = useCallback((slideIdx, updatedSlide) =>{
+		console.log('UPDATED: ',updatedSlide)
+		setSlides((slides) => {const tempSlides = cloneDeep(slides); tempSlides.splice(slideIdx, 1, updatedSlide); return tempSlides})
+	},[])
+
+	
     if (shown.show) {
         return <>
             {stage == 0 && (
@@ -161,10 +184,7 @@ function ScriptThing(shown) {
 
                         <p className='textColor'>Script Setting</p>
                         <br />
-                        <textarea value={script} className='scriptTextBox' rows='5' cols='50' placeholder='Wordbox (seperate inputs by commas and spaces)' onChange={(e) => setScript(e.target.value)} />
-                        <br />
-                        <label className='textColor'>Slideshow Speed</label> <br />
-                        <input value={speed / 1000} type='number' placeholder='(seconds)' onChange={(e) => setSpeed(e.target.value * 1000)} />
+                        <textarea value={words} className='scriptTextBox' rows='5' cols='50' placeholder='Wordbox (seperate inputs by commas and spaces)' onChange={(e) => setWords(e.target.value)} />
                         <br />
                         <button className='nextButton' onClick={goNext}>RECORD {<FaAngleRight />}</button>
 
@@ -183,21 +203,37 @@ function ScriptThing(shown) {
 
                 </div>
             )}
+			
             {stage == 1 && words != '' && (
                 <>
                     <div className='container'>
                         <div className='row'>
                             <div className='col'>
-                                <ValidScript scripts={[words, speed, background, textColor]} />
+                                <ValidScript setCurrentSlide={setCurrentSlide} slides={slides} autoplay={autoplay} currentSlide={currentSlide} />
                             </div>
                             <div className='col scriptBox'>
                                 <label className='textColor'>Slideshow Background</label>
-                                <SliderPicker color={background} onChangeComplete={(e) => setBackground(e.hex)} />
+                                <SliderPicker color={slides[currentSlide].background} onChangeComplete={(e) => {
+									const tempSlide = slides[currentSlide];
+									tempSlide.background = e.hex;
+									editSlide(currentSlide,tempSlide)}} />
+
                                 <label className='textColor'>Text color</label>
-                                <SliderPicker color={textColor} onChangeComplete={(e) => setTextColor(e.hex)} />
+                                <SliderPicker color={slides[currentSlide].textColor} onChangeComplete={(e) => {
+									const tempSlide = slides[currentSlide];
+									tempSlide.textColor = e.hex;
+									editSlide(currentSlide,tempSlide)}} />
+
+								<label className='textColor'>Slideshow Speed</label> <br />
+                        		<input value={slides[currentSlide].speed / 1000} type='number' placeholder='(seconds)' onChange={(e) => {
+									const tempSlide = slides[currentSlide];
+									tempSlide.speed = e.target.value * 1000;
+									editSlide(currentSlide, tempSlide);
+								}} />
+                        
+								<button onClick={(e) => setAutoPlay(!autoplay)}>{autoplay ? 'true' : 'false'}</button>
                                 <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
                                 <button className='nextButton' onClick={goNext}>POST {<FaAngleRight />}</button>
-
                             </div>
                         </div>
                     </div>
@@ -209,26 +245,26 @@ function ScriptThing(shown) {
     return <></>;
 }
 
-function ValidScript(scripts) {
+function ValidScript({slides, setCurrentSlide, currentSlide, autoplay}) {
 
-    let wordArray = scripts.scripts[0];
-    let speed = scripts.scripts[1];
-    let backgroundCol = scripts.scripts[2];
-    let textColor = scripts.scripts[3];
-
+	const changeCarosel = useCallback((slide) => {
+		setCurrentSlide(slide)
+	},[])
 
     return (
         <>
             <div>
                 To start click left or right side of slideshow
             </div>
-            <Carousel autoPlay width={700} showThumbs={false} showIndicators={false}
-                infiniteLoop={true} dynamicHeight={true} interval={speed}>
-                {wordArray.map(
-                    (word) =>
-                        <div style={{ background: `${backgroundCol}`, color: `${textColor}`, padding: '250px' }}>
-                            {word}
-                        </div>)}
+            <Carousel autoPlay={autoplay} width={700} showThumbs={false} showIndicators={false}
+                infiniteLoop={true} dynamicHeight={true} interval={slides[currentSlide].speed} onChange={changeCarosel}>
+                {slides.map(
+                    (slide,index) =>
+                        {console.log(autoplay)
+							
+						return <div key={index} style={{ background: `${slide.background}`, color: `${slide.textColor}`, padding: '250px' }}>
+                            {slide.word}
+                        </div>})}
             </Carousel>
 
         </>
@@ -239,7 +275,7 @@ function ValidScript(scripts) {
 
 function Setting() {
     let st = {
-        height: '500px',
+        height: '100px',
         position: 'fixed',
         bottom: '0%',
         width: '100%',

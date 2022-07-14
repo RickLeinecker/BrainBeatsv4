@@ -88,7 +88,10 @@ const SeachComp = () => {
                           setData(item.data); //store this items midi string to Data
                           setShowMedia(true); //reveal midi player
                         }}><FaPlayCircle size={90} /></button>
-
+                        <button className='cardHeartButton'>
+                          <FaHeart />
+                        </button>
+                        
                       </Card.Body>
                     </Card>
                   </div>

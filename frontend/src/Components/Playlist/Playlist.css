@@ -1,3 +1,15 @@
+.mainContainer {
+    background: #36393f; 
+    overflow: hidden;
+    height: 600px;
+    width:80%; 
+    padding: 15px; 
+    margin-top: 20px; 
+    border-radius: 70px; 
+    border: 4px solid #9c3b7f;
+    flex-wrap: wrap;
+}
+
 .container {
     position: relative;
 }
@@ -23,16 +35,6 @@
     display: none;
 }
 
-.cardHeartButton {
-    position: absolute;
-    background: none;
-    color: rgb(239, 70, 70);
-    border: 0;
-    top: 200px;
-    left: 175px;
-    
-}
-
 .playButtonIconStyle {
     color: #fff;
     size: 100;
@@ -56,24 +58,3 @@
     left: -10px;
     top: -15px
 }
-
-.mediaPlayer {
-    position: fixed;
-    bottom: 0px;
-    overflow: hidden;
-    width: 100%;
-    height: 0px;
-    transition: .5s ease-in-out;
-}
-.mediaPlayerAct {
-    position: fixed;
-    bottom: 0px;
-    left: 0;
-    right: 0;
-    background: #7d3b9c;
-    overflow: hidden;
-    width: 100%;
-    height: 40px;
-    transition: .5s ease-in-out;
-}
-  

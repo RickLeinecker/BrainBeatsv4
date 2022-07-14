@@ -47,19 +47,26 @@ router.post('/createUserLike', async (req, res) => {
 
 // Remove a user like
 router.delete('/removeUserLike', async (req, res) => { 
-    try {
+    //try {
+        console.log(req.body.userID, req.body.postID);
         const deleteLike = await prisma.like.delete({
             where: { 
                 postID_userID: {
+<<<<<<< Updated upstream
                     postID: req.query.postID,
                     userID: req.query.userID,
+=======
+                    postID: req.body.postID,
+                    userID: req.body.userID,
+>>>>>>> Stashed changes
                 },
             }
         });
+        console.log(deleteLike);
         res.status(200).send({ msg: "Deleted a user like" });
-    } catch (err) {
-        res.status(500).send(err);
-    }
+    //} catch (err) {
+        //res.status(500).send(err);
+    //}
 });
 
 // Get user like status

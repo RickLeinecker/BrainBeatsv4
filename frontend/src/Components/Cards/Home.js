@@ -1,7 +1,7 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { Card, Button, Container } from 'react-bootstrap';
 import { CardList } from './CardList';
-import { FaHeart, FaPlayCircle } from 'react-icons/fa';
+import { FaHeart, FaPlayCircle, FaRegHeart } from 'react-icons/fa';
 import MidiPlayer from 'react-midi-player';
 import './homepage.css';
 import { AuthContext } from '../context/AuthContext';
@@ -23,17 +23,18 @@ const Cards = () => {
 
     const path = require('../Path');
 
+    const [liked, setLiked] = useState([]);
 
     useEffect(() => {
         //always run this api for homepage
-        // let config = {
-        //     method: 'get',
-        //     url: path.buildPath('posts/getUserPostsByUsername'),
-        // }
-        // axios(config)
-        //     .then((response) => {
-        //         setAllPost(response.data);
-        //     })
+        let config = {
+            method: 'get',
+            url: path.buildPath('/posts/getAllPosts'),
+        }
+        axios(config)
+            .then((response) => {
+                setAllPost(response.data);
+            })
         //only run this api if user is logged in
         if(user){
             const dataBody = {
@@ -52,12 +53,64 @@ const Cards = () => {
                 .catch((err) => {
                     setLog(err);
                 })
+
+            let config2 = {
+                method: 'post',
+                url: path.buildPath('/likes/getAllUserLikes'),
+                body:{
+                    "userID": user.id
+                }
+            }
+            axios(config2)
+                .then((res) => {
+                    setLiked(res.data);
+                })
         }
-    }, [allPost])
+    }, [])
 
     // if(user){
     //     setUserPost(user.post);
     // }
+
+    const onLike = useCallback((post) => {
+
+        let bodyData = {
+            userID: user.id,
+            postID: post
+        }
+        let config = {
+            method: 'post',
+            url: path.buildPath('/likes/createUserLike'),
+            data: bodyData,
+        }
+        axios(config)
+            .then((res) => {
+                setLiked((l) => [... l,res.data])
+                console.log(res.data)
+            })
+            .catch((err) => {
+                console.log(err.data)
+            })
+    },[])
+
+    const onRemove = useCallback((post) => {
+        console.log(post)
+        let bodyData = {
+            userID: user.id,
+            postID: post
+        }
+        let config = {
+            method: 'delete',
+            url: path.buildPath('/likes/removeUserLike'),
+            data: bodyData,
+        }
+        axios(config)
+            .then((res) => {
+                setLiked((l) => l.filter((p) => p.postID !== post))})
+            .catch((err) => {
+                console.log(err.data)
+            })
+    },[])
 
     const endPlay = () => {
         setData('');
@@ -68,9 +121,7 @@ const Cards = () => {
         console.log(user);
     }
     const handle = () => {
-        console.log(user.id)
-        console.log(userPost)
-        console.log(log)
+        console.log(liked)
     }
     return (
         <>
@@ -88,6 +139,7 @@ const Cards = () => {
                             {allPost.map((item, index) => {
                                 return (
                                     <div key={index}>
+                                        
                                         <Card className='cardStyle'>
                                             <Card.Img variant="top" className='playhover' src='https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png' />
                                             <Card.Body>
@@ -99,6 +151,9 @@ const Cards = () => {
                                                     setData(item.data); //store this items midi string to Data
                                                     setShowMedia(true); //reveal midi player
                                                 }}><FaPlayCircle size={90} /></button>
+                                                <button className='cardHeartButton'>
+                                                    {liked.filter((like) => like.postID === item.id).length ? <FaHeart onClick={()=>onRemove(item.id)}/> : <FaRegHeart onClick={() => onLike(item.id)}/>}
+                                                </button>
 
                                             </Card.Body>
                                         </Card>
@@ -128,6 +183,9 @@ const Cards = () => {
                                                         //setData(item.data); //store this items midi string to Data
                                                         //setShowMedia(true); //reveal midi player
                                                     }}><FaPlayCircle size={90} /></button>
+                                                    <button className='cardHeartButton'>
+                                                    {liked.filter((like) => like.postID === item.id).length ? <FaHeart onClick={()=>onRemove(item.id)}/> : <FaRegHeart onClick={() => onLike(item.id)}/>}
+                                                    </button>
             
                                                 </Card.Body>
                                             </Card>
