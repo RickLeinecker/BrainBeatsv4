@@ -485,7 +485,7 @@ function Setting() {
 			}
 
 			// Generate a data URI
-			//generateMIDIFileForDownload(MidiWriter, trackFP1, trackFP2, trackC3, trackC4);
+			//generateAndDownloadMIDIFile(MidiWriter, trackFP1, trackFP2, trackC3, trackC4);
 
 			if (tracky.contentHint.localeCompare("FP1") == 0)
 				FP1Ready = 1;
@@ -507,13 +507,19 @@ function Setting() {
 			else if (button.id === "downloadBtn") {
 				button.onclick = () => downloadData();
 			}
-			else if (button.id === 'disconnect'){
+			else if (button.id === 'Disconnect'){
 				button.onclick = () => {rec=false;console.log("I GOT CLICKED" + rec)};
 			}
 	},[])
 
 	const handleStuff = () => {
-		console.log(numNotes);
+		console.log("----------------- DEBUG INFO -----------------");
+		console.log("Tempo (BPM): " + BPM);
+		console.log("Number of notes: " + numNotes);
+		console.log("Notes in key signature: " + keySignature);
+		console.log("FP1, FP2, C3, C4 Instruments: " + getInstrumentNameFromInt(FP1Instrument), ", " + getInstrumentNameFromInt(FP2Instrument) + ", "
+			+ getInstrumentNameFromInt(C3Instrument) + ", " + getInstrumentNameFromInt(C4Instrument));
+		console.log("FP1, FP2, C3, C4 Note Types: " + FP1NoteType, ", " + FP2NoteType + ", " + C3NoteType + ", " + C4NoteType);
 	}
 	// ------------------------------------------------------------------------------ CONSTANTS AND GLOBAL VARIABLES ------------------------------------------------------------------------------
 
@@ -562,6 +568,7 @@ function Setting() {
 			["B", "C#", "D", "E", "F#", "G", "A"] // 12 done
 		];
 	const KEY_SIGNATURES = [KEY_SIGNATURES_MAJOR, KEY_SIGNATURES_MINOR]
+
 	// Constant to hold the sample rate in hz. May remove. Not sure if we need it. We'll see...
 	const SAMPLE_RATE = 44100
 
@@ -594,9 +601,7 @@ function Setting() {
 	// that aren't multiples of 7. Works best with 7, 14, and 21. Do not ever exceed 63.
 	// NOTE: This software works using 7-note octaves, meaning that the root note's octave jump is not included in
 	//       the scale. For example, C major is C, D, E, F, G, A, B. It does NOT include the C of the next octave.
-
 	var numNotes = 7;
-
 
 	const instrumentEnums =
 	{
@@ -683,6 +688,16 @@ function Setting() {
 	// ------------------------------------------------------------------------------ CUSTOM HELPER FUNCTIONS ------------------------------------------------------------------------------
 
 
+	function getNoteLengthStringFromInt(input)
+	{
+		if (input == 0) return "whole";
+		else if (input == 1) return "half";
+		else if (input == 2) return "quarter";
+		else if (input == 3) return "eighth";
+		else if (input == 4) return "sixteenth";
+	}
+
+	// Stolen from https://stackoverflow.com/questions/3916191/download-data-url-file, thanks!
 	function downloadURI(uri, name) {
 		var link = document.createElement("a");
 		link.download = name;
@@ -690,14 +705,16 @@ function Setting() {
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
-		//delete link;
+
+		// I don't know what this line is supposed to do, but it causes an error. Don't uncomment pls <3
+		// delete link; 
 	  }
 
-	function generateMIDIFileForDownload()
+	function generateAndDownloadMIDIFile()
 	{
 		const write = new MidiWriter.Writer([trackFP1, trackFP2, trackC3, trackC4]);
-		console.log(write.dataUri());
-		downloadURI(write.dataUri());
+		downloadURI(write.dataUri(), "BrainBeatsMasterpiece");
+		//console.log(write.dataUri());
 	}
 
 	function initMIDIWriterParams()
@@ -1494,8 +1511,12 @@ function Setting() {
 		// Aggregate tuba notes
 		var tuba = [tuba_note0, tuba_note1, tuba_note2, tuba_note3, tuba_note4, tuba_note5, tuba_note6, tuba_note7, tuba_note8, tuba_note9, tuba_note10, tuba_note11, tuba_note12, tuba_note13, tuba_note14, tuba_note15, tuba_note16, tuba_note17, tuba_note18, tuba_note19, tuba_note20, tuba_note21, tuba_note22, tuba_note23, tuba_note24, tuba_note25, tuba_note26, tuba_note27, tuba_note28, tuba_note29, tuba_note30];
 	}
+
+
 	//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    return (
+    
+	
+	return (
       <>
         <div style={st}>
           <table style={{ width: "100%" }}>
@@ -1522,10 +1543,9 @@ function Setting() {
                   <option value={0}>Major</option>
                   <option value={1}>Minor</option>
                 </select>
-				<button onClick={handleStuff}>HE</button>
-				<button onClick={generateMIDIFileForDownload}>Download MIDI File</button>
               </td>
               <td style={{ width: "22%", textAlign: "left" }}>
+			  	<div style={{ color: "white" }}>FP1 Instrument</div>
 			  	<select onChange={(e) => FP1Instrument = e.target.value}>
                   <option value={-3}>SineWave</option>
                   <option value={-2}>TriangleWave</option>
@@ -1539,6 +1559,7 @@ function Setting() {
                   <option value={6}>Trombone</option>
 				  <option value={7}>Tuba</option>
             	</select>
+				<div style={{ color: "white" }}>FP2 Instrument</div>
 				<select onChange={(e) => FP2Instrument = e.target.value}>
                   <option value={-3}>SineWave</option>
                   <option value={-2}>TriangleWave</option>
@@ -1552,6 +1573,7 @@ function Setting() {
                   <option value={6}>Trombone</option>
 				  <option value={7}>Tuba</option>
             	</select>
+				<div style={{ color: "white" }}>C3 Instrument</div>
 				<select onChange={(e) => C3Instrument = e.target.value}>
                   <option value={-3}>SineWave</option>
                   <option value={-2}>TriangleWave</option>
@@ -1565,6 +1587,7 @@ function Setting() {
                   <option value={6}>Trombone</option>
 				  <option value={7}>Tuba</option>
             	</select>
+				<div style={{ color: "white" }}>C4 Instrument</div>
 				<select onChange={(e) => C4Instrument = e.target.value}>
                   <option value={-3}>SineWave</option>
                   <option value={-2}>TriangleWave</option>
@@ -1578,13 +1601,47 @@ function Setting() {
                   <option value={6}>Trombone</option>
 				  <option value={7}>Tuba</option>
             	</select>
+				<div style={{ color: "white" }}>Number of Octaves</div>
 				<select onChange={(e) => numNotes = e.target.value * 7} >
                   <option value={1}>1</option>
                   <option value={2}>2</option>
 				  <option value={3}>3</option>
             	</select>
-				
-				
+			  </td>
+			
+			  <td style={{ width: "22%", textAlign: "left" }}>
+			  	<div style={{ color: "white" }}>FP1 Note Type</div>
+			  	<select onChange={(e) => FP1NoteType = getNoteLengthStringFromInt(e.target.value)}>
+					<option value={0}>Whole</option>
+					<option value={1}>Half</option>
+					<option value={2}>Quarter</option>
+					<option value={3}>Eighth</option>
+					<option value={4}>Sixteenth</option>
+            	</select>
+				<div style={{ color: "white" }}>FP2 Note Type</div>
+				<select onChange={(e) => FP2NoteType = getNoteLengthStringFromInt(e.target.value)}>
+					<option value={0}>Whole</option>
+					<option value={1}>Half</option>
+					<option value={2}>Quarter</option>
+					<option value={3}>Eighth</option>
+					<option value={4}>Sixteenth</option>
+            	</select>
+				<div style={{ color: "white" }}>C3 Note Type</div>
+				<select onChange={(e) => C3NoteType = getNoteLengthStringFromInt(e.target.value)}>
+					<option value={0}>Whole</option>
+                  	<option value={1}>Half</option>
+				  	<option value={2}>Quarter</option>
+                  	<option value={3}>Eighth</option>
+				  	<option value={4}>Sixteenth</option>
+            	</select>
+				<div style={{ color: "white" }}>C4 Note Type</div>
+				<select onChange={(e) => C4NoteType = getNoteLengthStringFromInt(e.target.value)}>
+				<option value={0}>Whole</option>
+                  	<option value={1}>Half</option>
+				  	<option value={2}>Quarter</option>
+                  	<option value={3}>Eighth</option>
+				  	<option value={4}>Sixteenth</option>
+            	</select>
               </td>
               <td style={{ textAlign: "left" }}>
 			  
@@ -1596,10 +1653,10 @@ function Setting() {
                         Connect
                       </button>
 					  <button
-                        id="disconnect"
+                        id="Disconnect"
                         className="recordButton"
                       >
-                        disconnect
+                        Disconnect
                       </button>
                     </div>
 
@@ -1608,6 +1665,13 @@ function Setting() {
                 <div style={{ color: "white" }}>Tempo</div>
                 <input type="text" defaultValue={BPM} onChange={(e) => BPM = e.target.value} />
               </td>
+
+			  <td>
+				<div style={{ color: "white" }}>Helpful Buttons</div>
+				<button onClick={handleStuff}>Print Debug Stuff</button> <br></br>
+				<button onClick={generateAndDownloadMIDIFile}>Download MIDI File</button>
+              </td>
+			  
             </tr>
           </table>
         </div>
