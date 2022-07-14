@@ -42,9 +42,9 @@ router.post('/createPost', async (req, res) => {
 });
 
 // Get all posts based on a username
-router.post('/getUserPostsByUsername', async (req, res) => {
+router.get('/getUserPostsByUsername', async (req, res) => {
     try {
-        const username = req.body.username
+        const username = req.query.username
 
         if (username === "") {
             const allPosts = await prisma.post.findMany();
@@ -81,11 +81,11 @@ router.post('/getUserPostsByUsername', async (req, res) => {
 });
 
 // Get all posts based on a user ID
-router.post('/getUserPostsByID', async (req, res) => {
+router.get('/getUserPostsByID', async (req, res) => {
     //res.json([req.body, 'hello'])
     try {
         const userPosts = await prisma.post.findMany({
-            where: { userID: req.body.userID },
+            where: { userID: req.query.userID },
         });
         //res.json([req.body, "hello"])
 
@@ -163,65 +163,6 @@ router.put('/updatePost', async (req, res) => {
 
     catch (err) {
         res.status(500).send(err);
-    }
-
-});
-
-// ****** SwaggerUI calls ******
-
-// Get all posts based on a username 
-router.post('/getUsersPostsByUsername', async (req, res) => {
-    try {
-        const username = req.body.username
-        
-        const userExists = await prisma.user.findUnique({
-            where: { username }
-        });
-
-        if (!userExists) {
-            return res.status(400).json({
-                msg: "User not found"
-            })
-        } else {
-            // Find the records
-            const userPosts = await prisma.post.findMany({
-                where: { userID: userExists.id }
-            });
-
-            if (!userPosts) {
-                return res.status(400).json({
-                    msg: "Posts not found"
-                })
-            }
-
-            res.json(userPosts);
-        }
-    }
-    catch (err) {
-        res.status(500).send({ msg: err })
-    }
-});
-
-// Get all posts based on a user ID
-router.post('/getUsersPostsByID', async (req, res) => {
-    //res.json([req.body, 'hello'])
-    try {
-        const userPosts = await prisma.post.findMany({
-            where: { userID: req.body.userID },
-        });
-
-        //res.json([req.body, "hello"])
-
-        if (!userPosts) {
-            return res.status(400).json({
-                msg: "User ID not found"
-            })
-        }
-
-        res.json(userPosts)
-    }
-    catch (err) {
-        res.status(500).send({ msg: err })
     }
 
 });

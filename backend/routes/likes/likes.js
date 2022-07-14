@@ -68,8 +68,8 @@ router.get('/getUserLike', async (req, res) => {
         const likeStatus = await prisma.like.findUnique({
             where: {
                 userLike: {
-                    postID: req.body.postID,
-                    userID: req.body.userID,
+                    postID: req.query.postID,
+                    userID: req.query.userID,
                 },
             }
         });
@@ -84,7 +84,7 @@ router.get('/getUserLike', async (req, res) => {
 router.post('/getAllUserLikes', async (req, res) => {
     try {
         const allLikes = await prisma.like.findMany({
-            where: { userID: req.body.userID }
+            where: { userID: req.query.userID }
         });
 
         res.json(allLikes);

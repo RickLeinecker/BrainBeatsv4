@@ -91,7 +91,7 @@ router.get('/getUserByUsername', async (req, res) => {
 
     try {
         const findUser = await prisma.user.findUnique({
-            where: { username: req.body.username }
+            where: { username: req.query.username }
         });
 
         if (!findUser) {
@@ -112,7 +112,7 @@ router.get('/getUserByID', async (req, res) => {
 
     try {
         const findUser = await prisma.user.findUnique({
-            where: { id: req.body.id }
+            where: { id: req.query.id }
         });
 
         if (!findUser) {
