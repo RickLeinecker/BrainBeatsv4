@@ -88,7 +88,7 @@ router.get('/getAllUsers', async (req, res) => {
 
 // Get user by username
 router.get('/getUserByUsername', async (req, res) => {
-
+    console.log(req.query.username)
     try {
         const findUser = await prisma.user.findUnique({
             where: { username: req.query.username }
@@ -183,50 +183,6 @@ router.delete('/deleteUser', async (req, res) => {
     }
     catch (err) {
         res.status(500).send(err);
-    }
-
-});
-
-// ****** SwaggerUI calls ******
-
-// Get user by user ID (SwaggerHubUI)
-router.post('/getUserByUserID', async (req, res) => {
-
-    try {
-        const findUser = await prisma.user.findUnique({
-            where: { id: req.body.id }
-        });
-
-        if (!findUser) {
-            return res.status(400).json({
-                msg: "User does not exist"
-            })
-        }
-        res.json(findUser)
-    }
-    catch (err) {
-        res.status(500).send({ msg: err })
-    }
-
-});
-
-// Get user by username (SwaggerHubUI)
-router.post('/getUserByUserName', async (req, res) => {
-
-    try {
-        const findUser = await prisma.user.findUnique({
-            where: { username: req.body.username }
-        });
-
-        if (!findUser) {
-            return res.status(400).json({
-                msg: "Username does not exist"
-            })
-        }
-        res.json(findUser)
-    }
-    catch (err) {
-        res.status(500).send({ msg: err })
     }
 
 });

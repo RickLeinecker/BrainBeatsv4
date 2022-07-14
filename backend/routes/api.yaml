@@ -1,4 +1,4 @@
-swagger: "2.0"
+openapi: 3.0.1
 info:
   title: BrainBeatsWeb API 
   description: This is a BrainBeatsWeb API documentation form
@@ -87,25 +87,26 @@ paths:
             description: URL Not Found
 
   # Find user by username
-    /api/users/getUserByUserName:
-      post:
+    /api/users/getUserByUsername:
+      get:
         tags:
           - Users
         summary: Search a user by with their username
-        operationId: getUserByUserName
+        operationId: getUserByUsername
         description: Search a user in the database
         consumes: 
         - application/json
         produces:
         - application/json
         parameters:
-        - in: body
-          name: getUserByUserName
+        - in: query
+          name: getUserByUsername
           required: true
+          type: string
           description: Find a user by their username
           schema:
             type: string
-            $ref: '#/definitions/getUserByUserName'
+            $ref: '#/definitions/getUserByUsername'
         responses:
           200:
             description: OK
@@ -595,7 +596,7 @@ definitions:
           type: string
           example: JohnDoePassword
 
-    getUserByUserName:
+    getUserByUsername:
       required: 
       - username
       properties:

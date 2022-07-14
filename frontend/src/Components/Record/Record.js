@@ -336,7 +336,7 @@ function Setting() {
 							allData.push(
 								[
 									track.contentHint,
-									`${data[0]}`,
+									Math.round(`${data[0]}` * 10000000) / 10000000,
 								]
 							);
 						}
@@ -348,7 +348,7 @@ function Setting() {
 							allData.push(
 								[
 									track.contentHint,
-									`${data[0]}`,
+									Math.round(`${data[0]}` * 10000000) / 10000000,
 								]
 							);
 						}
@@ -360,7 +360,7 @@ function Setting() {
 							allData.push(
 								[
 									track.contentHint,
-									`${data[0]}`,
+									Math.round(`${data[0]}` * 10000000) / 10000000,
 								]
 							);
 						}
@@ -372,7 +372,7 @@ function Setting() {
 							allData.push(
 								[
 									track.contentHint,
-									`${data[0]}`,
+									Math.round(`${data[0]}` * 10000000) / 10000000,
 								]
 							);
 						}
@@ -934,7 +934,6 @@ function Setting() {
 		This theoretically should mean that we are never going over Chrome's limit, so our audio should never cut off even if the
 		program is running for a large amount of time, while also ensuring that AudioContexts will exist for as long as possible so
 		that we can minimize the chance of cutting off notes that are still playing.
-
 		queueOfAudio and killOldestAudioContextIfNecessary() were NOT taken from Microtonality.net and is a custom way of handling the 
 		removal of old AudioContexts. It is in the Microtonality.net section of this file for ease-of-reading and because the 
 		Microtonality.net functions had to be tweaked to work with this new queue system. 								              */
@@ -1684,6 +1683,12 @@ function Setting() {
                       >
                         Disconnect
                       </button>
+					  <button
+                        id="Download"
+                        className="downloadBtn"
+                      >
+                        Download
+                      </button>
                     </div>
 
               </td>
@@ -1707,5 +1712,3 @@ function Setting() {
 }
 
 export default Record;
-
-
