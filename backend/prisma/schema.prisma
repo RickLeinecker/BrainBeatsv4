@@ -27,7 +27,7 @@ model User {
 }
 
 model Post {
-  id       Int       @id @default(autoincrement())
+  id       String    @id @default(uuid())
   title    String
   bpm      Int       @db.Int
   key      String    @db.VarChar(255)
@@ -42,7 +42,7 @@ model Post {
 }
 
 model Playlist {
-  id       Int       @id @default(autoincrement())
+  id       String    @id @default(uuid())
   name     String
   thumbnail String?  @db.LongText // Store file path in database instead of the actual image
   user User          @relation(fields: [userID], references: [id], onDelete: Cascade)
@@ -51,16 +51,16 @@ model Playlist {
 }
 
 model PlaylistPost {
-  postID Int
+  postID String
   post Post @relation(fields: [postID], references: [id], onDelete: Cascade)
-  playlistID Int
+  playlistID String
   playlist Playlist @relation(fields: [playlistID], references: [id], onDelete: Cascade)
   
   @@id([postID, playlistID])
 }
 
 model Like {
-  postID Int         
+  postID String         
   post Post          @relation(fields: [postID], references: [id], onDelete: Cascade)
   userID String
   user User          @relation(fields: [userID], references: [id], onDelete: Cascade)
