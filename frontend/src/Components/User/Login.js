@@ -38,6 +38,7 @@ const Login = () => {
                 let res = response.data;
                 //login works, pass data into useContext
                 dispatch({ type: 'LOGIN_SUCCESS', payload: res });
+                
             })
             .catch(function (err) {
                 //login fails send error msg

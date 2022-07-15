@@ -1,6 +1,6 @@
 import React from 'react'
 import Navbar from '../Components/Navbar/Navbar'
-import Cards from '../Components/Cards/Home'
+import Cards from '../Components/Home/Home'
 import Carousel from '../Components/Carousel/Carousel'
 
 import "react-responsive-carousel/lib/styles/carousel.min.css"

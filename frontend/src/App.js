@@ -28,7 +28,7 @@ function App() {
           <Route path='/Record' element={user ? <Record /> : <Navigate to='/Login' />} />
           <Route path='/Profile' element={user ? <Profile /> : <Navigate to='/Login' />} />
           <Route path='/Search' element={user ? <Search /> : <Navigate to='/Login' />} />
-          <Route path='/Playlist' element={user ? <Playlist /> : <Navigate to='/Login' />} />
+          <Route path='/Playlist' element={<Playlist />} />
           <Route path='/Register' element={<Register />} />
           <Route path='/Forgot' element={<Forgot />} />
           <Route path='/Test' element={<Test />} />

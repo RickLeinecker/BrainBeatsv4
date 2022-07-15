@@ -48,6 +48,16 @@
     display: none;
 }
 
+.cardHeartButton {
+    position: absolute;
+    background: none;
+    color: rgb(239, 70, 70);
+    border: 0;
+    top: 200px;
+    left: 175px;
+    
+}
+
 .playButtonIconStyle {
     color: #fff;
     size: 100;
