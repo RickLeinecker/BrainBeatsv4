@@ -52,13 +52,8 @@ router.delete('/removeUserLike', async (req, res) => {
         const deleteLike = await prisma.like.delete({
             where: { 
                 postID_userID: {
-<<<<<<< Updated upstream
-                    postID: req.query.postID,
-                    userID: req.query.userID,
-=======
                     postID: req.body.postID,
                     userID: req.body.userID,
->>>>>>> Stashed changes
                 },
             }
         });

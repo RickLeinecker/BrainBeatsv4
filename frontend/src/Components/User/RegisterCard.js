@@ -14,6 +14,7 @@ const RegisterCard = () => {
     const [dob, setdob] = useState("");
     const [stage, setStage] = useState(0);
     const [errorMsg, setErrorMsg] = useState('');
+    const [creationSuccess, setCreateSuccess] = useState('');
 
 
     const emptyField = () => {
@@ -44,7 +45,6 @@ const RegisterCard = () => {
             "username": username,
             "password": password
         };
-        console.log(newUser);
         //create a json to pass into axois
         let config = {
             method: "post",
@@ -56,7 +56,8 @@ const RegisterCard = () => {
         };
         //axios command
         axios(config).then(function (res) {
-            console.log(res.data);
+            setCreateSuccess("Account Created!")
+
         })
             .catch(function (err) {
                 setErrorMsg(err.response.data.msg);
@@ -173,6 +174,7 @@ const RegisterCard = () => {
                                     </div>
 
                                     <p className="errMsg">{errorMsg}</p>
+                                    <p>{creationSuccess}</p>
 
                                     <div id="HASH">
                                         <Button type="button" className='text-left' onClick={(e) => (e.preventDefault(), setStage(0))}>Prev</Button>

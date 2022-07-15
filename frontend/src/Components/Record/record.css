@@ -1,10 +1,11 @@
 .scriptBox {
     background: #36393f; 
     overflow: hidden;
-    height: 40%;
+    height: 50%;
     width:60%; 
     padding: 15px; 
     margin-top: 20px; 
+    padding-bottom: 30px;
     border-radius: 70px; 
     border: 4px solid #9c3b7f;
 }
@@ -30,6 +31,14 @@
     border: none;
     color: white;
     opacity: 40%;
+}
+.arrowButtonMain{
+  padding-top: 20px;
+  font-size: 20px;
+  background:none;
+  border: none;
+  color: #7d3b9c;
+  opacity: 90%;
 }
 .textColor{
     color: white;
@@ -161,9 +170,7 @@
   }
   .switch-label {
     background: #cc68ae;
-    
   }
-  
   .switch-label:before {
     color:#FFF
   }

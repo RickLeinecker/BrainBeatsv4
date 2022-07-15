@@ -34,9 +34,9 @@ const SeachComp = () => {
       'username': search
   }
   let config = {
-      method: 'post',
+      method: 'get',
       url: path.buildPath('/posts/getUserPostsByUsername'),
-      data: dataBody,
+      params: dataBody,
   }
   axios(config)
       .then((res) => {

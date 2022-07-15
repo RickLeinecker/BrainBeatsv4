@@ -45,7 +45,6 @@ router.post('/createPost', async (req, res) => {
 router.get('/getUserPostsByUsername', async (req, res) => {
     try {
         const username = req.query.username
-
         if (username === "") {
             const allPosts = await prisma.post.findMany();
             res.json(allPosts);
@@ -57,9 +56,9 @@ router.get('/getUserPostsByUsername', async (req, res) => {
         });
 
         if (!userExists) {
-            return res.status(400).json({
-                msg: "User not found"
-            })
+            //return empty if no user is found
+            res.json([])
+            return 
         } else {
             // Find the records
             const userPosts = await prisma.post.findMany({
@@ -119,6 +118,7 @@ router.get('/getAllPosts', async (req, res) => {
 // Delete a post
 router.delete('/deletePost', async (req, res) => {
     try {
+        console.log(req.body.id)
         const deletePost = await prisma.post.delete({
             where: { id: req.body.id }
         })

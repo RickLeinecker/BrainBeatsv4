@@ -41,9 +41,9 @@ const Cards = () => {
                 'userID': user.id
             }
             let config = {
-                method: 'post',
+                method: 'get',
                 url: path.buildPath('/posts/getUserPostsByID'),
-                data: dataBody,
+                params: dataBody,
             }
             axios(config)
                 .then((res) => {
@@ -86,7 +86,6 @@ const Cards = () => {
         axios(config)
             .then((res) => {
                 setLiked((l) => [... l,res.data])
-                console.log(res.data)
             })
             .catch((err) => {
                 console.log(err.data)
@@ -94,7 +93,6 @@ const Cards = () => {
     },[])
 
     const onRemove = useCallback((post) => {
-        console.log(post)
         let bodyData = {
             userID: user.id,
             postID: post
@@ -125,7 +123,6 @@ const Cards = () => {
     }
     return (
         <>
-            <button onClick={handle}>he</button>
             {//if user is logged in dont display carousel
                 !user ? <div style={{ width: '50%', marginLeft: '25%' }}>
                     <Carousel />

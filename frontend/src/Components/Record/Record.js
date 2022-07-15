@@ -9,37 +9,290 @@ import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/
 import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js"; // Data acquisition
 import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // Device drivers
 import * as XLSX from 'xlsx';
-<<<<<<< Updated upstream
 import MidiPlayer from 'midi-player-js';
-=======
 import {cloneDeep} from 'lodash'
->>>>>>> Stashed changes
+import { buildPath } from '../Path';
+import axios from 'axios';
 
 function Record() {
-    //Set onLoad to link
-    const [type, setType] = useState('link');
+    //needed states
     const { user } = useContext(AuthContext);
     const [checked, setChecked] = useState(false);
+	const [stage, setStage] = useState(0);
+	const [numNotes, setNumNotes] = useState(7);
+	const [FP1, setFP1Inst] = useState(-3);
+	const [FP2, setFP2Inst] = useState(-3);
+	const [C3, setC3Inst] = useState(-3);
+	const [C4, setC4Inst] = useState(-3);
+	const [FP1Note, setFP1Note] = useState(0);
+	const [FP2Note, setFP2Note] = useState(0);
+	const [C3Note, setC3Note] = useState(0);
+	const [C4Note, setC4Note] = useState(0);
+	const [keyNum, setKey] = useState(0);
+	const [scale, setScale] = useState(0);
+	const [BPMArray, setBPMArray] = useState([]);
+	const [BPM, setBPM] = useState(120);
+	const [vis, setVis] = useState(true);
+	const [title, setTitle] = useState('');
+	const [msg, setMsg] = useState('');
+	
+	//passing these to Music Generation
+	const instrumentList = [FP1, FP2, C3, C4];
+	const noteDuration = [FP1Note, FP2Note, C3Note, C4Note];
+
+	const path = require('../Path')
+	const KEY=
+		[
+			"C", "C#", "D","D#", "E", "F","F#", "G", "G#", "A","A#","B"
+		];
+
+	//get BPM from database
+	useEffect(()=>{
+		let config={
+			method: 'get',
+			url: path.buildPath('/music/getBPMValues'),
+		}
+		axios(config)
+			.then((res) =>{
+				setBPMArray(res.data);
+			})
+			.catch((err) =>{
+				console.log(err);
+			})
+	},[])
 
     const handleChange = () => {
         setChecked(!checked);
       };
+	const goNext = () => {
+		setStage(stage + 1)
+	}
+	const goBack = () => {
+		setStage(stage - 1)
+	}
+	const handle = () => {
+		console.log(numNotes)
+		console.log(instrumentList);
+		console.log(noteDuration);
+		console.log(keyNum);
+		console.log(scale);
+		console.log(BPM);
+		console.log(BPMArray)
+	}
+	const postFile = () => {
+		const bodyData ={
+			"userID": 'de0463ea-1745-4f47-a789-82a9d7eae746',
+  			"title": title,
+  			"bpm": BPM,
+  			"key": KEY[scale],
+  			"visibility": vis
+		}
+		console.log(bodyData)
+		const config = {
+			method: 'post',
+			url: path.buildPath('/posts/createPost'),
+			data: bodyData
+		}
+		axios(config)
+			.then((res) =>{
+				setMsg('Song posted')
+			})
+	}
+    return <>
+		{stage == 0 && (
+			<>
+			<div className='container scriptBox'>
+				<button onClick={handle}>HE</button>
+				<div>
+				<div className='row'>
+					<p className='textColor'>Music Setting</p>
+				</div>
+				<div className='row'>
+				<div className='col'>
+					<div style={{ color: "white" }}>FP1 Instrument</div>
+			  			<select onChange={(e) => setFP1Inst(e.target.value)}>
+                  			<option value={-3}>SineWave</option>
+                  			<option value={-2}>TriangleWave</option>
+				  			<option value={-1}>SquareWave</option>
+							<option value={0}>Flute</option>
+							<option value={1}>Oboe</option>
+							<option value={2}>Clarinet</option>
+							<option value={3}>Bassoon</option>
+							<option value={4}>Trumpet</option>
+							<option value={5}>FrenchHorn</option>
+							<option value={6}>Trombone</option>
+							<option value={7}>Tuba</option>
+            			</select>
+					<div style={{ color: "white" }}>FP2 Instrument</div>
+						<select onChange={(e) => setFP2Inst(e.target.value)}>
+							<option value={-3}>SineWave</option>
+							<option value={-2}>TriangleWave</option>
+							<option value={-1}>SquareWave</option>
+							<option value={0}>Flute</option>
+							<option value={1}>Oboe</option>
+							<option value={2}>Clarinet</option>
+							<option value={3}>Bassoon</option>
+							<option value={4}>Trumpet</option>
+							<option value={5}>FrenchHorn</option>
+							<option value={6}>Trombone</option>
+							<option value={7}>Tuba</option>
+            			</select>
+					<div style={{ color: "white" }}>C3 Instrument</div>
+						<select onChange={(e) => setC3Inst(e.target.value)}>
+							<option value={-3}>SineWave</option>
+							<option value={-2}>TriangleWave</option>
+							<option value={-1}>SquareWave</option>
+							<option value={0}>Flute</option>
+							<option value={1}>Oboe</option>
+							<option value={2}>Clarinet</option>
+							<option value={3}>Bassoon</option>
+							<option value={4}>Trumpet</option>
+							<option value={5}>FrenchHorn</option>
+							<option value={6}>Trombone</option>
+							<option value={7}>Tuba</option>
+            			</select>
+					<div style={{ color: "white" }}>C4 Instrument</div>
+						<select onChange={(e) => setC4Inst(e.target.value)}>
+							<option value={-3}>SineWave</option>
+							<option value={-2}>TriangleWave</option>
+							<option value={-1}>SquareWave</option>
+							<option value={0}>Flute</option>
+							<option value={1}>Oboe</option>
+							<option value={2}>Clarinet</option>
+							<option value={3}>Bassoon</option>
+							<option value={4}>Trumpet</option>
+							<option value={5}>FrenchHorn</option>
+							<option value={6}>Trombone</option>
+							<option value={7}>Tuba</option>
+            			</select>
 
-    return (
-        <div>
+				</div>
+				<div className='col'>
+					<div style={{ color: "white" }}>FP1 Note Type</div>
+							<select onChange={(e) => setFP1Note(e.target.value)}>
+								<option value={0}>Whole</option>
+								<option value={1}>Half</option>
+								<option value={2}>Quarter</option>
+								<option value={3}>Eighth</option>
+								<option value={4}>Sixteenth</option>
+							</select>
+						<div style={{ color: "white" }}>FP2 Note Type</div>
+							<select onChange={(e) => setFP2Note(e.target.value)}>
+								<option value={0}>Whole</option>
+								<option value={1}>Half</option>
+								<option value={2}>Quarter</option>
+								<option value={3}>Eighth</option>
+								<option value={4}>Sixteenth</option>
+							</select>
+						<div style={{ color: "white" }}>C3 Note Type</div>
+							<select onChange={(e) => setC3Note(e.target.value)}>
+								<option value={0}>Whole</option>
+								<option value={1}>Half</option>
+								<option value={2}>Quarter</option>
+								<option value={3}>Eighth</option>
+								<option value={4}>Sixteenth</option>
+							</select>
+						<div style={{ color: "white" }}>C4 Note Type</div>
+							<select onChange={(e) => setC4Note(e.target.value)}>
+								<option value={0}>Whole</option>
+								<option value={1}>Half</option>
+								<option value={2}>Quarter</option>
+								<option value={3}>Eighth</option>
+								<option value={4}>Sixteenth</option>
+							</select>
+				</div>
+				<div className='col'>
+						<div style={{ color: "white" }}>Number of Octaves</div>
+							<select onChange={(e) =>  setNumNotes(e.target.value * 7)} >
+                  				<option value={1}>1</option>
+                  				<option value={2}>2</option>
+				  				<option value={3}>3</option>
+            				</select>
+					<div style={{ color: "white" }}>Tempo</div>
+					<select onChange={(e) => setBPM(BPMArray[e.target.value])}>
+						{BPMArray.map((item, index) => {
+							return (	
+								<option value={index}>{item}</option>
+							)
+						})}
+					</select>
+					<div style={{ color: "white" }}>Key Signature</div>
+
+						<select onChange={(e) => setKey(e.target.value)} value={keyNum}>
+							<option value={0}>C</option>
+							<option value={1}>C#/Db</option>
+							<option value={2}>D</option>
+							<option value={3}>D#/Eb</option>
+							<option value={4}>E</option>
+							<option value={5}>F</option>
+							<option value={6}>F#/Gb</option>
+							<option value={7}>G</option>
+							<option value={8}>G#/Ab</option>
+							<option value={9}>A</option>
+							<option value={10}>A#/Bb</option>
+							<option value={11}>B</option>
+						</select>
+                	<div style={{ color: "white" }}>Scale</div>
+						<select onChange={(e) => setScale(e.target.value)} value={scale}>
+							<option value={0}>Major</option>
+							<option value={1}>Minor</option>
+						</select>
+				</div>
+				</div>
+				</div>
+        </div>
+						<button className='arrowButtonMain' onClick={goNext}>Next {<FaAngleRight />}</button>
+			</>
+		)}
+        {stage == 1 && (
+			<div>
             <div className="">
                 <label className="switch">
                     <input type="checkbox" className="switch-input" checked={checked} onChange={handleChange}/>
                     <span className="switch-label" data-on="Script" data-off="Link"></span>
                     <span className="switch-handle"></span>
-                    <button id="ganglion">Connect</button>
                 </label>
             </div>
             <ScriptThing show={checked === true} />
             <LinkThing show={checked === false} />
-            <Setting />
-        </div>
-    );
+            <Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} key={keyNum} scale={scale} BPM={BPM}/>
+			
+			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Music Setting </button>
+			<button className='arrowButtonMain' onClick={goNext}>Post {<FaAngleRight />}</button>
+
+		</div>
+		)}
+		{stage == 2 && (
+			<>
+			<div className='container scriptBox'>
+				<div className='row'>
+					<p className='textColor'>Posting</p>
+					<p style={{ color: "white" }}>{msg}</p>	
+				</div>
+				<div className='row'>
+					<div className='col'>
+						<label style={{ color: "white" }}>Title</label>
+						<br />
+						<input type='text' onChange={(e) => setTitle(e.target.value)}/>
+					</div>
+					<div className='col'>
+						<label style={{ color: "white" }}>Visibility</label>
+						<br />
+						<label className='switch'>
+							<input type='checkbox' className='switch-input' checked={vis} onChange={() => setVis(!vis)}/>
+							<span className="switch-label" data-on="Public" data-off="Private"></span>
+                    		<span className="switch-handle"></span>
+						</label>
+						
+					</div>
+				</div>				
+			</div>
+			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Record </button>
+			<button className='arrowButtonMain' onClick={postFile}>Finish {<FaAngleRight />}</button>
+			</>
+		)}
+	</>
+		
 }
 
 function LinkThing(shown) {
@@ -67,9 +320,7 @@ function LinkThing(shown) {
                 <>
                     <div className='container scriptBox'>
 
-                        <p className='textColor'>Script Setting</p>
-                        <br />
-                        <label className='textColor'>Youtube LInk</label>
+                        <p className='textColor'>Link Script</p>
                         <br />
                         <input placeholder='Youtube Link' onChange={(e) => setId(e.target.value)} />
                         <br />
@@ -182,7 +433,7 @@ function ScriptThing(shown) {
                 <>
                     <div className='container scriptBox'>
 
-                        <p className='textColor'>Script Setting</p>
+                        <p className='textColor'>Build Script</p>
                         <br />
                         <textarea value={words} className='scriptTextBox' rows='5' cols='50' placeholder='Wordbox (seperate inputs by commas and spaces)' onChange={(e) => setWords(e.target.value)} />
                         <br />
@@ -273,7 +524,7 @@ function ValidScript({slides, setCurrentSlide, currentSlide, autoplay}) {
 
 }
 
-function Setting() {
+function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
     let st = {
         height: '100px',
         position: 'fixed',
@@ -283,13 +534,14 @@ function Setting() {
         opacity: '1',
     }
 
+	console.log(numNotes)
+	console.log(instrumentArr)
+	console.log(noteDuration)
+	console.log(scale)
+	console.log(keyNum)
+	console.log(BPM)
     const [record, setRecord] = useState(false);
-	const [FP1, setFP1Inst] = useState();
-	const [FP2, setFP2Inst] = useState();
-	const [C3, setC3Inst] = useState();
-	const [C4, setC4Inst] = useState();
-	const [keyNum, setKey] = useState(0);
-	const [scale, setScale] = useState(0)
+
 
 	//this rec is to stop the infinite loop from track.subscribe
 	let rec;
@@ -566,10 +818,10 @@ function Setting() {
 
 	// This isnt a constant its a user variable but it needs to be at the top I'm sorry I can move it later probably hopefully
 	// The type of note for each channel. sixteenth, eighth, quarter, half, or whole. Don't forget the ""!
-	var FP1NoteType = "eighth",
-		FP2NoteType = "quarter",
-		C3NoteType = "half",
-		C4NoteType = "whole";
+	var FP1NoteType = getNoteLengthStringFromInt(noteDuration[0]),
+		FP2NoteType = getNoteLengthStringFromInt(noteDuration[1]),
+		C3NoteType = getNoteLengthStringFromInt(noteDuration[2]),
+		C4NoteType = getNoteLengthStringFromInt(noteDuration[3]);
 
 	// 2D arrays that hold every note in each key signature, starting from C. 
 
@@ -638,7 +890,7 @@ function Setting() {
 	// that aren't multiples of 7. Works best with 7, 14, and 21. Do not ever exceed 63.
 	// NOTE: This software works using 7-note octaves, meaning that the root note's octave jump is not included in
 	//       the scale. For example, C major is C, D, E, F, G, A, B. It does NOT include the C of the next octave.
-	var numNotes = 7;
+	//var numNotes = 7;
 
 	const instrumentEnums =
 	{
@@ -702,10 +954,10 @@ function Setting() {
 	var quickNoteType = "quarter"; // sixteenth, eighth, quarter, half, or whole. Don't forget the ""! Currently not used but available if-need be.
 
 	// The instrument that each channel will be "playing" SineWave as a default unless changed from GUI
-	var FP1Instrument = instrumentEnums.SineWave,
-		FP2Instrument = instrumentEnums.SineWave,
-		C3Instrument = instrumentEnums.SineWave,
-		C4Instrument = instrumentEnums.SineWave;
+	var FP1Instrument = instrumentArr[0],
+		FP2Instrument = instrumentArr[1],
+		C3Instrument = instrumentArr[2],
+		C4Instrument = instrumentArr[3];
 
 	//Default volume value
 	const DEFAULT_VOLUME = 0.1;
@@ -1584,126 +1836,14 @@ function Setting() {
           <table style={{ width: "100%" }}>
             <tr>
               <td style={{ width: "25%", textAlign: "center" }}>
-                <div style={{ color: "white" }}>Key Signature</div>
-
-                <select onChange={(e) => setKey(e.target.value)} value={keyNum}>
-                  <option value={0}>C</option>
-                  <option value={1}>C#/Db</option>
-                  <option value={2}>D</option>
-                  <option value={3}>D#/Eb</option>
-                  <option value={4}>E</option>
-                  <option value={5}>F</option>
-                  <option value={6}>F#/Gb</option>
-                  <option value={7}>G</option>
-                  <option value={8}>G#/Ab</option>
-                  <option value={9}>A</option>
-				  <option value={10}>A#/Bb</option>
-                  <option value={11}>B</option>
-                </select>
-                <div style={{ color: "white" }}>Scale</div>
-                <select onChange={(e) => setScale(e.target.value)} value={scale}>
-                  <option value={0}>Major</option>
-                  <option value={1}>Minor</option>
-                </select>
+                
               </td>
               <td style={{ width: "22%", textAlign: "left" }}>
-			  	<div style={{ color: "white" }}>FP1 Instrument</div>
-			  	<select onChange={(e) => FP1Instrument = e.target.value}>
-                  <option value={-3}>SineWave</option>
-                  <option value={-2}>TriangleWave</option>
-				  <option value={-1}>SquareWave</option>
-                  <option value={0}>Flute</option>
-				  <option value={1}>Oboe</option>
-                  <option value={2}>Clarinet</option>
-				  <option value={3}>Bassoon</option>
-                  <option value={4}>Trumpet</option>
-				  <option value={5}>FrenchHorn</option>
-                  <option value={6}>Trombone</option>
-				  <option value={7}>Tuba</option>
-            	</select>
-				<div style={{ color: "white" }}>FP2 Instrument</div>
-				<select onChange={(e) => FP2Instrument = e.target.value}>
-                  <option value={-3}>SineWave</option>
-                  <option value={-2}>TriangleWave</option>
-				  <option value={-1}>SquareWave</option>
-                  <option value={0}>Flute</option>
-				  <option value={1}>Oboe</option>
-                  <option value={2}>Clarinet</option>
-				  <option value={3}>Bassoon</option>
-                  <option value={4}>Trumpet</option>
-				  <option value={5}>FrenchHorn</option>
-                  <option value={6}>Trombone</option>
-				  <option value={7}>Tuba</option>
-            	</select>
-				<div style={{ color: "white" }}>C3 Instrument</div>
-				<select onChange={(e) => C3Instrument = e.target.value}>
-                  <option value={-3}>SineWave</option>
-                  <option value={-2}>TriangleWave</option>
-				  <option value={-1}>SquareWave</option>
-                  <option value={0}>Flute</option>
-				  <option value={1}>Oboe</option>
-                  <option value={2}>Clarinet</option>
-				  <option value={3}>Bassoon</option>
-                  <option value={4}>Trumpet</option>
-				  <option value={5}>FrenchHorn</option>
-                  <option value={6}>Trombone</option>
-				  <option value={7}>Tuba</option>
-            	</select>
-				<div style={{ color: "white" }}>C4 Instrument</div>
-				<select onChange={(e) => C4Instrument = e.target.value}>
-                  <option value={-3}>SineWave</option>
-                  <option value={-2}>TriangleWave</option>
-				  <option value={-1}>SquareWave</option>
-                  <option value={0}>Flute</option>
-				  <option value={1}>Oboe</option>
-                  <option value={2}>Clarinet</option>
-				  <option value={3}>Bassoon</option>
-                  <option value={4}>Trumpet</option>
-				  <option value={5}>FrenchHorn</option>
-                  <option value={6}>Trombone</option>
-				  <option value={7}>Tuba</option>
-            	</select>
-				<div style={{ color: "white" }}>Number of Octaves</div>
-				<select onChange={(e) => numNotes = e.target.value * 7} >
-                  <option value={1}>1</option>
-                  <option value={2}>2</option>
-				  <option value={3}>3</option>
-            	</select>
+			  	
 			  </td>
 			
 			  <td style={{ width: "22%", textAlign: "left" }}>
-			  	<div style={{ color: "white" }}>FP1 Note Type</div>
-			  	<select onChange={(e) => FP1NoteType = getNoteLengthStringFromInt(e.target.value)}>
-					<option value={0}>Whole</option>
-					<option value={1}>Half</option>
-					<option value={2}>Quarter</option>
-					<option value={3}>Eighth</option>
-					<option value={4}>Sixteenth</option>
-            	</select>
-				<div style={{ color: "white" }}>FP2 Note Type</div>
-				<select onChange={(e) => FP2NoteType = getNoteLengthStringFromInt(e.target.value)}>
-					<option value={0}>Whole</option>
-					<option value={1}>Half</option>
-					<option value={2}>Quarter</option>
-					<option value={3}>Eighth</option>
-					<option value={4}>Sixteenth</option>
-            	</select>
-				<div style={{ color: "white" }}>C3 Note Type</div>
-				<select onChange={(e) => C3NoteType = getNoteLengthStringFromInt(e.target.value)}>
-					<option value={0}>Whole</option>
-                  	<option value={1}>Half</option>
-				  	<option value={2}>Quarter</option>
-                  	<option value={3}>Eighth</option>
-				  	<option value={4}>Sixteenth</option>
-            	</select>
-				<div style={{ color: "white" }}>C4 Note Type</div>
-				<select onChange={(e) => C4NoteType = getNoteLengthStringFromInt(e.target.value)}>
-				<option value={0}>Whole</option>
-                  	<option value={1}>Half</option>
-				  	<option value={2}>Quarter</option>
-                  	<option value={3}>Eighth</option>
-				  	<option value={4}>Sixteenth</option>
-            	</select>
+			  	
               </td>
               <td style={{ textAlign: "left" }}>
 				 <div id="buttons">
@@ -1729,14 +1869,9 @@ function Setting() {
 
               </td>
               <td style={{ width: "25%", textAlign: "center" }}>
-                <div style={{ color: "white" }}>Tempo</div>
-                <input type="text" defaultValue={BPM} onChange={(e) => BPM = e.target.value} />
-              </td>
-
-			  <td>
 				<div style={{ color: "white" }}>Helpful Buttons</div>
-				<button onClick={handleStuff}>Print Debug Stuff</button> <br></br>
-				<button onClick={generateAndDownloadMIDIFile}>Download MIDI and play WIP</button>
+					<button onClick={handleStuff}>Print Debug Stuff</button> <br></br>
+					<button onClick={generateAndDownloadMIDIFile}>Download MIDI and play WIP</button>
               </td>
 			  
             </tr>
