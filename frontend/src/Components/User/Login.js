@@ -2,9 +2,12 @@ import React, { Component, useContext, useState } from "react";
 import './Login.css'
 import { AuthContext } from '../context/AuthContext'
 import axios from "axios";
+import { useRecoilState } from "recoil";
+import {userModeState} from '../context/GlobalState'
 
 const Login = () => {
 
+    const [userMode, setUserMode] = useRecoilState(userModeState)
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errMsg, setErrMsg] = useState('');
@@ -12,10 +15,8 @@ const Login = () => {
 
 
     const loginAccount = (event) => {
-
-        //allows form to work without problems on start and submit
-        event.preventDefault();
-
+        //need this else form will not work
+        event.preventDefault()
         //starting path for API endpoint
         const path = require('../Path');
 
@@ -36,8 +37,9 @@ const Login = () => {
         axios(config)
             .then(function (response) {
                 let res = response.data;
+                setUserMode(res)
                 //login works, pass data into useContext
-                dispatch({ type: 'LOGIN_SUCCESS', payload: res });
+                //dispatch({ type: 'LOGIN_SUCCESS', payload: res });
                 
             })
             .catch(function (err) {

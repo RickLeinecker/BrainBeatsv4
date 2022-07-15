@@ -1,12 +1,13 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Button, Container } from 'react-bootstrap';
-import { CardList } from './CardList';
 import { FaHeart, FaPlayCircle, FaRegHeart } from 'react-icons/fa';
 import MidiPlayer from 'react-midi-player';
 import './homepage.css';
-import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
 import Carousel from '../Carousel/Carousel';
+import { useRecoilValue } from 'recoil';
+
+import {userModeState} from '../context/GlobalState'
 
 const Cards = () => {
     //post array
@@ -17,7 +18,7 @@ const Cards = () => {
     const [data, setData] = useState('');
     //boolean for botton nav
     const [showMedia, setShowMedia] = useState(false);
-    const { user } = useContext(AuthContext);
+    const user = useRecoilValue(userModeState)
     //Load data to be sent to MidiPlayer
     let _data = atob(data);
 
@@ -174,7 +175,7 @@ const Cards = () => {
                                                 <Card.Body>
             
                                                     <Card.Title className='cardText'>{item.title}</Card.Title>
-                                                    <Card.Subtitle className='cardText'>{item.artist}</Card.Subtitle>
+                                                    <Card.Subtitle className='cardText'>{item.user.username}</Card.Subtitle>
                                                     <button className='cardPlayButton' onClick={(e) => {
                                                         e.preventDefault();
                                                         //setData(item.data); //store this items midi string to Data

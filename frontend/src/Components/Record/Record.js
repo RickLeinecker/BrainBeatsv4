@@ -44,9 +44,13 @@ function Record() {
 
 	const path = require('../Path')
 	const KEY=
-		[
-			"C", "C#", "D","D#", "E", "F","F#", "G", "G#", "A","A#","B"
-		];
+	[
+		"C", "C#", "D","D#", "E", "F","F#", "G", "G#", "A","A#","B"
+	];
+	const SCALE =
+	[
+		'Major', 'Minor'
+	]
 
 	//get BPM from database
 	useEffect(()=>{
@@ -284,17 +288,32 @@ function Record() {
 						<br />
 						<input type='text' onChange={(e) => setTitle(e.target.value)}/>
 					</div>
+					
+				</div>	
+				<br />
+				<div className='row'>
 					<div className='col'>
 						<label style={{ color: "white" }}>Visibility</label>
 						<br />
 						<label className='switch'>
 							<input type='checkbox' className='switch-input' checked={vis} onChange={() => setVis(!vis)}/>
 							<span className="switch-label" data-on="Public" data-off="Private"></span>
-                    		<span className="switch-handle"></span>
+							<span className="switch-handle"></span>
 						</label>
-						
 					</div>
-				</div>				
+					<div className='col'>
+						<label style={{ color: "white" }}>Key</label>
+						<input value={KEY[keyNum]} disabled />
+					</div>
+					<div className='col'>
+						<label style={{ color: "white" }}>Scale</label>
+						<input value={SCALE[scale]} disabled />
+					</div>
+					<div className='col'>
+						<label style={{ color: "white" }}>BPM</label>
+						<input value={BPM} disabled />
+					</div>
+				</div>			
 			</div>
 			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Record </button>
 			<button className='arrowButtonMain' onClick={postFile}>Finish {<FaAngleRight />}</button>

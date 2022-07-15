@@ -60,7 +60,8 @@ const RegisterCard = () => {
         };
         //axios command
         axios(config).then(function (res) {
-            setCreateSuccess("Account Created!")
+            setCreateSuccess("Account Created!");
+            setErrorMsg("");
 
         })
             .catch(function (err) {

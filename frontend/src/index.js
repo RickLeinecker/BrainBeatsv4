@@ -4,11 +4,14 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {AuthContextProvider} from './Components/context/AuthContext';
+import {RecoilRoot} from 'recoil'
 
 ReactDOM.render(
   <React.StrictMode>
     <AuthContextProvider>
-    <App />
+      <RecoilRoot>
+      <App />
+      </RecoilRoot>
     </AuthContextProvider>    
   </React.StrictMode>,
   document.getElementById('root')

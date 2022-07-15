@@ -1,11 +1,12 @@
-import React, { useContext } from 'react'
+import {React} from 'react'
 import { Link } from 'react-router-dom'
 import { Navbar, Container, Nav, Button, NavDropdown } from 'react-bootstrap'
-import { AuthContext } from '../context/AuthContext'
 import Logo from './Logo.jpg'
 import { FaHome, FaUserEdit, FaRegPlayCircle, FaDoorOpen, FaSearch, FaMusic, FaRegArrowAltCircleRight
 ,FaBars } from 'react-icons/fa';
 import './Nav.css'
+import { useRecoilState } from 'recoil';
+import {userModeState} from '../context/GlobalState'
 
 let imgStyle = {
     width: '70px',
@@ -20,7 +21,11 @@ let navLink = {
 }
 
 const Navbars = () => {
-    const { user } = useContext(AuthContext);
+    const [user, setUser]  = useRecoilState(userModeState)
+
+    const Logout = () => {
+        setUser(null)
+    }
 
     return (
         <>
@@ -48,7 +53,7 @@ const Navbars = () => {
                                 <NavDropdown.Item ><Link to='/Record' style={{ textDecoration: 'none' }}><FaRegPlayCircle />Record</Link></NavDropdown.Item>
                                 <NavDropdown.Item ><Link to='/Playlist' style={{ textDecoration: 'none' }}><FaMusic />Playlist</Link></NavDropdown.Item>
                                 <NavDropdown.Divider />
-                                <NavDropdown.Item href='/'><FaDoorOpen />Logout</NavDropdown.Item>
+                                <NavDropdown.Item onClick={Logout}><FaDoorOpen />Logout</NavDropdown.Item>
                             </NavDropdown>
                             :
                             <NavDropdown title={<FaBars size={30}/>} style={{paddingLeft:'100px'}}>

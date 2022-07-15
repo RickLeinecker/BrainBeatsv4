@@ -4,10 +4,13 @@ import { AuthContext } from '../context/AuthContext';
 import axios from "axios";
 import './profile.css'
 
+import { useRecoilValue } from 'recoil';
+import {userModeState} from '../context/GlobalState'
+
 const Profile = () => {
 
-    let user = useContext(AuthContext);
-    user = user.user;
+    const user = useRecoilValue(userModeState);
+    
 
     // //useStates to get required fields
     const [email, setEmail] = useState("");
@@ -100,7 +103,6 @@ const Profile = () => {
 
     return (
         <div className='content-fluid'>
-            <button onClick={handle}>HE</button>
             <div className='row'>
                 <div className='col-md-8'>
                     <div className='editCard'>
