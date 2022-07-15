@@ -12,7 +12,8 @@ router.post('/createPlaylist', async (req, res) => {
 
     try {
         const { name, userID } = req.body;
-
+        console.log(name)
+        console.log(userID)
         const userExists = await prisma.user.findUnique({
             where: { id: userID }
         });

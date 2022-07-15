@@ -55,7 +55,7 @@ const Cards = () => {
                 })
 
             let config2 = {
-                method: 'post',
+                method: 'get',
                 url: path.buildPath('/likes/getAllUserLikes'),
                 body:{
                     "userID": user.id
