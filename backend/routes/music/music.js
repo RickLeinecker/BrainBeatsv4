@@ -14,7 +14,7 @@ const musicUtils = require("../../utils/music");
 router.get('/findMidi', async (req, res) => {
 
     const { username } = req.body;
-    const userExist = await prisma.user.findUnique({
+    const userExist = await prisma.User.findUnique({
         where: { username },
     });
 
@@ -24,7 +24,7 @@ router.get('/findMidi', async (req, res) => {
         })
     } else {
 
-        const posts = await prisma.user.findUnique({
+        const posts = await prisma.User.findUnique({
             where: { username: username },
             select: {
                 posts: {

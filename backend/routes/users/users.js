@@ -14,12 +14,12 @@ router.post('/createUser', async (req, res) => {
         const { firstName, lastName, dob, email, username, password } = req.body;
 
         // Check if the email already exists in db
-        const userEmailExists = await prisma.user.findUnique({
+        const userEmailExists = await prisma.User.findUnique({
             where: { email },
         });
 
         // Check if the username already exists in db
-        const userNameExists = await prisma.user.findUnique({
+        const userNameExists = await prisma.User.findUnique({
             where: { username },
         });
 
@@ -33,7 +33,7 @@ router.post('/createUser', async (req, res) => {
             encryptedPassword = await bcrypt.hash(password, 10);
 
             //Create a single record
-            const newUser = await prisma.user.create({
+            const newUser = await prisma.User.create({
                 data: {
                     firstName,
                     lastName,
@@ -75,7 +75,7 @@ router.post('/createUser', async (req, res) => {
 router.get('/getAllUsers', async (req, res) => {
 
     try {
-        const users = await prisma.user.findMany();
+        const users = await prisma.User.findMany();
         res.json(users)
         // FIND THE LENGTH OF USERS IN MYSQL USER TABLE
         // res.json(users.length)
@@ -90,7 +90,7 @@ router.get('/getAllUsers', async (req, res) => {
 router.get('/getUserByUsername', async (req, res) => {
     console.log(req.query.username)
     try {
-        const findUser = await prisma.user.findUnique({
+        const findUser = await prisma.User.findUnique({
             where: { username: req.query.username }
         });
 
@@ -111,7 +111,7 @@ router.get('/getUserByUsername', async (req, res) => {
 router.get('/getUserByID', async (req, res) => {
 
     try {
-        const findUser = await prisma.user.findUnique({
+        const findUser = await prisma.User.findUnique({
             where: { id: req.query.id }
         });
 
@@ -141,7 +141,7 @@ router.put('/updateUser', async (req, res) => {
     try {
         const { id, firstName, lastName, dob, email, username, bio, profilePicture } = req.body
         // Check if the id already exists in db
-        const userIDExists = await prisma.user.findUnique({
+        const userIDExists = await prisma.User.findUnique({
             where: { id },
         });
 
@@ -150,7 +150,7 @@ router.put('/updateUser', async (req, res) => {
                 msg: "User ID not found"
             })
         } else {
-        const updateUser = await prisma.user.update({
+        const updateUser = await prisma.User.update({
             where: { id },
             data: {
                 firstName: firstName,
@@ -176,7 +176,7 @@ router.put('/updateUser', async (req, res) => {
 router.delete('/deleteUser', async (req, res) => {
 
     try {
-        const deleteUser = await prisma.user.delete({
+        const deleteUser = await prisma.User.delete({
             where: { id: req.body.id }
         })
         res.status(200).send({ msg: "Deleted a user" });

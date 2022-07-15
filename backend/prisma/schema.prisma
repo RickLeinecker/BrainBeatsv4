@@ -55,6 +55,7 @@ model PlaylistPost {
   post Post @relation(fields: [postID], references: [id], onDelete: Cascade)
   playlistID String
   playlist Playlist @relation(fields: [playlistID], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
   
   @@id([postID, playlistID])
 }

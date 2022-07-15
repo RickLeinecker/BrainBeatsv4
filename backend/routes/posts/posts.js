@@ -12,7 +12,7 @@ router.post('/createPost', async (req, res) => {
 
     try {
         const { userID, title, bpm, key, visibility} = req.body
-        const userExists = await prisma.user.findUnique({
+        const userExists = await prisma.User.findUnique({
             where: { id: userID }
         });
 
@@ -22,7 +22,7 @@ router.post('/createPost', async (req, res) => {
             })
         } else {
             //Create a single record
-            const newPost = await prisma.post.create({
+            const newPost = await prisma.Post.create({
                 data: {
                     userID: userID,
                     title: title,
@@ -46,12 +46,12 @@ router.get('/getUserPostsByUsername', async (req, res) => {
     try {
         const username = req.query.username
         if (username === "") {
-            const allPosts = await prisma.post.findMany();
+            const allPosts = await prisma.Post.findMany();
             res.json(allPosts);
             return;
         }
 
-        const userExists = await prisma.user.findUnique({
+        const userExists = await prisma.User.findUnique({
             where: { username }
         });
 
@@ -61,7 +61,7 @@ router.get('/getUserPostsByUsername', async (req, res) => {
             return 
         } else {
             // Find the records
-            const userPosts = await prisma.post.findMany({
+            const userPosts = await prisma.Post.findMany({
                 where: { userID: userExists.id }
             });
 
@@ -83,7 +83,7 @@ router.get('/getUserPostsByUsername', async (req, res) => {
 router.get('/getUserPostsByID', async (req, res) => {
     //res.json([req.body, 'hello'])
     try {
-        const userPosts = await prisma.post.findMany({
+        const userPosts = await prisma.Post.findMany({
             where: { userID: req.query.userID },
         });
         //res.json([req.body, "hello"])
@@ -105,7 +105,7 @@ router.get('/getUserPostsByID', async (req, res) => {
 // Get all posts
 router.get('/getAllPosts', async (req, res) => {
     try {
-        const posts = await prisma.post.findMany();
+        const posts = await prisma.Post.findMany();
 
         res.json(posts)
     }
@@ -119,7 +119,7 @@ router.get('/getAllPosts', async (req, res) => {
 router.delete('/deletePost', async (req, res) => {
     try {
         console.log(req.body.id)
-        const deletePost = await prisma.post.delete({
+        const deletePost = await prisma.Post.delete({
             where: { id: req.body.id }
         })
         res.status(200).send({ msg: "Deleted a user post" });
@@ -136,7 +136,7 @@ router.put('/updatePost', async (req, res) => {
         const { id, title, visibility, bio, thumbnail, likeCount} = req.body
 
         // Check if the id already exists in db
-        const userIDExists = await prisma.post.findUnique({
+        const userIDExists = await prisma.Post.findUnique({
             where: { id },
         });
 
@@ -146,7 +146,7 @@ router.put('/updatePost', async (req, res) => {
             })
         } else {
             
-        const updatePost = await prisma.post.update({
+        const updatePost = await prisma.Post.update({
             where: { id },
             data: {
                 title: title,

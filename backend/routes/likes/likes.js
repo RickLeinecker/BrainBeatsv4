@@ -12,11 +12,11 @@ router.post('/createUserLike', async (req, res) => {
 
     try {
         const { userID, postID} = req.body
-        const userExists = await prisma.user.findUnique({
+        const userExists = await prisma.User.findUnique({
             where: { id: userID },
         });
 
-        const postExists = await prisma.post.findUnique({
+        const postExists = await prisma.Post.findUnique({
             where: { id: postID },
         });
 
@@ -30,7 +30,7 @@ router.post('/createUserLike', async (req, res) => {
             })
         } else {
             // Create a like
-            const newLike = await prisma.like.create({
+            const newLike = await prisma.Like.create({
                 data: {
                     userID: userID,
                     postID: postID
@@ -49,7 +49,7 @@ router.post('/createUserLike', async (req, res) => {
 router.delete('/removeUserLike', async (req, res) => { 
     //try {
         console.log(req.body.userID, req.body.postID);
-        const deleteLike = await prisma.like.delete({
+        const deleteLike = await prisma.Like.delete({
             where: { 
                 postID_userID: {
                     postID: req.body.postID,
@@ -67,7 +67,7 @@ router.delete('/removeUserLike', async (req, res) => {
 // Get user like status
 router.get('/getUserLike', async (req, res) => {
     try {
-        const likeStatus = await prisma.like.findUnique({
+        const likeStatus = await prisma.Like.findUnique({
             where: {
                 postID_userID: {
                     postID: req.query.postID,
@@ -85,7 +85,7 @@ router.get('/getUserLike', async (req, res) => {
 // Get all user likes
 router.get('/getAllUserLikes', async (req, res) => {
     try {
-        const allLikes = await prisma.like.findMany({
+        const allLikes = await prisma.Like.findMany({
             where: { userID: req.query.userID }
         });
 
