@@ -85,6 +85,7 @@ router.get('/getUserPostsByID', async (req, res) => {
     try {
         const userPosts = await prisma.Post.findMany({
             where: { userID: req.query.userID },
+            include: {user: true}
         });
         //res.json([req.body, "hello"])
 

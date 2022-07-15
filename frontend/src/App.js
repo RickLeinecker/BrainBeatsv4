@@ -25,7 +25,7 @@ function App() {
         <Routes>
           <Route exact path='/' element={<Home />} />
           <Route path='/Login' element={user? <Home /> : <Login />}/>
-          <Route path='/Record' element={user ? <Record /> : <Navigate to='/Login' />} />
+          <Route path='/Record' element={<Record />} />
           <Route path='/Profile' element={user ? <Profile /> : <Navigate to='/Login' />} />
           <Route path='/Search' element={user ? <Search /> : <Navigate to='/Login' />} />
           <Route path='/Playlist' element={<Playlist />} />

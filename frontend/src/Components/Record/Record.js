@@ -37,8 +37,8 @@ function Record() {
 	const [msg, setMsg] = useState('');
 	
 	//passing these to Music Generation
-	const instrumentList = [FP1, FP2, C3, C4];
-	const noteDuration = [FP1Note, FP2Note, C3Note, C4Note];
+	const instrumentList = [parseInt(FP1), parseInt(FP2), parseInt(C3), parseInt(C4)];
+	const noteDuration = [parseInt(FP1Note), parseInt(FP2Note), parseInt(C3Note), parseInt(C4Note)];
 
 	const path = require('../Path')
 	const KEY=
@@ -212,7 +212,7 @@ function Record() {
 					<select onChange={(e) => setBPM(BPMArray[e.target.value])}>
 						{BPMArray.map((item, index) => {
 							return (	
-								<option value={index}>{item}</option>
+								<option value={index} key={index}>{item}</option>
 							)
 						})}
 					</select>
@@ -255,7 +255,7 @@ function Record() {
             </div>
             <ScriptThing show={checked === true} />
             <LinkThing show={checked === false} />
-            <Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} key={keyNum} scale={scale} BPM={BPM}/>
+            <Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} keyNum={keyNum} scale={scale} BPM={BPM}/>
 			
 			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Music Setting </button>
 			<button className='arrowButtonMain' onClick={goNext}>Post {<FaAngleRight />}</button>
