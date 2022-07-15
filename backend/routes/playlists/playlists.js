@@ -139,12 +139,13 @@ router.delete('/deletePlaylist', async (req, res) => {
 // Put post in playlist
 router.post('/addPostToPlaylist', async (req, res) => {
     try {
+        const { playlistID, postID } = req.body;
         const playlist = await prisma.playlist.findUnique({
-            where: { playlistID: req.body.playlistID }
+            where: { id: playlistID }
         });
 
         const post = await prisma.post.findUnique({
-            where: { postID: req.body.postID }
+            where: { id: postID }
         });
 
         if (!playlist) {
@@ -158,8 +159,8 @@ router.post('/addPostToPlaylist', async (req, res) => {
         } else {
             const newPost = await prisma.playlistpost.create({
                 data: {
-                    postID: req.body.postID,
-                    playlistID: req.body.playlistID
+                    postID: postID,
+                    playlistID: playlistID
                 }
             });
 
