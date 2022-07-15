@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import { Navbar, Container, Nav, Button, NavDropdown } from 'react-bootstrap'
 import { AuthContext } from '../context/AuthContext'
 import Logo from './Logo.jpg'
-import { FaHome, FaUserEdit, FaRegPlayCircle, FaDoorOpen, FaSearch, FaMusic } from 'react-icons/fa';
+import { FaHome, FaUserEdit, FaRegPlayCircle, FaDoorOpen, FaSearch, FaMusic, FaRegArrowAltCircleRight
+,FaBars } from 'react-icons/fa';
 import './Nav.css'
 
 let imgStyle = {
@@ -45,14 +46,17 @@ const Navbars = () => {
                                 <NavDropdown.Item ><Link to='/Search' style={{ textDecoration: 'none' }}><FaSearch /> Search</Link></NavDropdown.Item>
                                 <NavDropdown.Item ><Link to='/Profile' style={{ textDecoration: 'none' }} ><FaUserEdit /> Profile</Link></NavDropdown.Item>
                                 <NavDropdown.Item ><Link to='/Record' style={{ textDecoration: 'none' }}><FaRegPlayCircle />Record</Link></NavDropdown.Item>
-                                <NavDropdown.Item ><Link to='/Playlist' style={{ textDecoration: 'none' }}><FaMusic />Record</Link></NavDropdown.Item>
+                                <NavDropdown.Item ><Link to='/Playlist' style={{ textDecoration: 'none' }}><FaMusic />Playlist</Link></NavDropdown.Item>
                                 <NavDropdown.Divider />
                                 <NavDropdown.Item href='/'><FaDoorOpen />Logout</NavDropdown.Item>
                             </NavDropdown>
                             :
-                            <Navbar.Text>
-                                <Button> <a href='/Login'>Login</a></Button>
-                            </Navbar.Text>}
+                            <NavDropdown title={<FaBars size={30}/>} style={{paddingLeft:'100px'}}>
+                                <NavDropdown.Item ><Link to='/' style={{ textDecoration: 'none' }}><FaHome /> Home</Link></NavDropdown.Item>
+                                <NavDropdown.Item ><Link to='/Login' style={{ textDecoration: 'none' }}><FaRegArrowAltCircleRight /> Login</Link></NavDropdown.Item>
+                                <NavDropdown.Item ><Link to='/Search' style={{ textDecoration: 'none' }}><FaSearch /> Search</Link></NavDropdown.Item>
+                                <NavDropdown.Item ><Link to='/Playlist' style={{ textDecoration: 'none' }} ><FaUserEdit /> Playlist</Link></NavDropdown.Item>
+                            </NavDropdown>}
 
                     </Navbar.Collapse>
                 </Container>

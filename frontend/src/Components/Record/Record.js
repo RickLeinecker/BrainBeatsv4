@@ -35,6 +35,8 @@ function Record() {
 	const [vis, setVis] = useState(true);
 	const [title, setTitle] = useState('');
 	const [msg, setMsg] = useState('');
+
+	const [finishRec, setFinishRec] = useState();
 	
 	//passing these to Music Generation
 	const instrumentList = [parseInt(FP1), parseInt(FP2), parseInt(C3), parseInt(C4)];
@@ -65,7 +67,15 @@ function Record() {
         setChecked(!checked);
       };
 	const goNext = () => {
-		setStage(stage + 1)
+		if(stage < 2)
+		{
+			setStage(stage + 1)
+			console.log(stage)
+		}	
+		if(stage == 1)
+		{
+			console.log(finishRec)
+		}
 	}
 	const goBack = () => {
 		setStage(stage - 1)
@@ -102,7 +112,6 @@ function Record() {
 		{stage == 0 && (
 			<>
 			<div className='container scriptBox'>
-				<button onClick={handle}>HE</button>
 				<div>
 				<div className='row'>
 					<p className='textColor'>Music Setting</p>
@@ -212,7 +221,7 @@ function Record() {
 					<select onChange={(e) => setBPM(BPMArray[e.target.value])}>
 						{BPMArray.map((item, index) => {
 							return (	
-								<option value={index} key={index}>{item}</option>
+								<option value={index}>{item}</option>
 							)
 						})}
 					</select>
@@ -253,8 +262,8 @@ function Record() {
                     <span className="switch-handle"></span>
                 </label>
             </div>
-            <ScriptThing show={checked === true} />
-            <LinkThing show={checked === false} />
+            <ScriptThing show={checked === true} finish={finishRec} setFinish={setFinishRec}/>
+            <LinkThing show={checked === false} finish={finishRec} setFinish={setFinishRec}/>
             <Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} keyNum={keyNum} scale={scale} BPM={BPM}/>
 			
 			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Music Setting </button>
@@ -295,7 +304,7 @@ function Record() {
 		
 }
 
-function LinkThing(shown) {
+function LinkThing({show, finish, setFinishRec}) {
     //Link test
     //https://www.youtube.com/watch?v=l0jJGlalLh8
 
@@ -308,13 +317,15 @@ function LinkThing(shown) {
     const goNext = (e) => {
         e.preventDefault()
         setStage(stage + 1)
+		setFinishRec(stage)
     }
     const goBack = (e) => {
         e.preventDefault()
         setStage(stage - 1)
+		setFinishRec(stage)
 
     }
-    if (shown.show) {
+    if (show) {
         return <>
             {stage == 0 && (
                 <>
@@ -351,7 +362,7 @@ function LinkThing(shown) {
                         <br />
                         <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
 
-                        <button className='nextButton' onClick={goNext}>POST {<FaAngleRight />}</button>
+                        <button className='nextButton'>FINISH</button>
 
                     </div>
                 </>
@@ -388,7 +399,7 @@ function VidLink(link) {
     )
 }
 
-function ScriptThing(shown) {
+function ScriptThing({show, finish, setFinishRec}) {
     const [words, setWords] = useState('');
     const [stage, setStage] = useState(0)
 	const [currentSlide, setCurrentSlide] = useState(0)
@@ -414,11 +425,14 @@ function ScriptThing(shown) {
 		if(stage == 0)
 			createSlides()
         setStage(stage + 1)
+		setFinishRec(stage)
+		
     }
     //Go back a step in recording
     const goBack = (e) => {
         e.preventDefault()
         setStage(stage - 1)
+		setFinishRec(stage)
 
     }
 	const editSlide = useCallback((slideIdx, updatedSlide) =>{
@@ -427,7 +441,7 @@ function ScriptThing(shown) {
 	},[])
 
 	
-    if (shown.show) {
+    if (show) {
         return <>
             {stage == 0 && (
                 <>
@@ -484,7 +498,7 @@ function ScriptThing(shown) {
                         
 								<button onClick={(e) => setAutoPlay(!autoplay)}>{autoplay ? 'true' : 'false'}</button>
                                 <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
-                                <button className='nextButton' onClick={goNext}>POST {<FaAngleRight />}</button>
+                                <div className='nextButton' >FINISH</div>
                             </div>
                         </div>
                     </div>

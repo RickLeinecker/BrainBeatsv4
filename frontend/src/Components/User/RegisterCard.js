@@ -32,6 +32,10 @@ const RegisterCard = () => {
             setStage(0);
             return;
         }
+        if(ageCheck()){
+            setErrorMsg("You are to young");
+            return;
+        }
 
         //starting path for API endpoint
         const path = require('../Path');
@@ -72,6 +76,19 @@ const RegisterCard = () => {
         }
         else {
             return true;
+        }
+    }
+
+    const ageCheck = () => {
+        var today = new Date();
+        var birthDate = new Date(dob);
+        var age = today.getFullYear() - birthDate.getFullYear();
+        console.log("IN AGE CHECK")
+        if(age < 13)
+        {
+            return true
+        }else{
+            return false
         }
     }
 
@@ -172,7 +189,6 @@ const RegisterCard = () => {
                                             onChange={(event) => setdob(event.target.value)}
                                         />
                                     </div>
-
                                     <p className="errMsg">{errorMsg}</p>
                                     <p>{creationSuccess}</p>
 
