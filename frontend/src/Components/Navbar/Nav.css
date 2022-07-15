@@ -1,0 +1,20 @@
+@media (max-width: 600px) {
+    .element-to-hide {
+      display: none;
+    }
+  }
+
+.homeImg {
+    width: 70px;
+    height: 70px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 50%;
+    margin: 10px;
+}
+
+.titleNav {
+    margin: 10px;
+    font-size: 40px;
+    text-decoration: none;
+}

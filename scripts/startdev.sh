@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Starting development..."
+
 # Start MySQL
 mysql.server start
 

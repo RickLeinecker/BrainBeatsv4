@@ -1,0 +1,79 @@
+.container {
+    position: relative;
+}
+  
+.containerOverflow {
+    height: 250px;
+    overflow-x: auto; 
+    overflow-y: hidden; 
+}
+
+.playhover {
+    position: 'absolute';
+    width: 200px;
+    height: 200px;
+}
+.cardPlayButton{
+    position: absolute;
+    background: none;
+    color: #fff;
+    border: 0;
+    top: 55px;
+    left: 50px;
+    display: none;
+}
+
+.cardHeartButton {
+    position: absolute;
+    background: none;
+    color: rgb(239, 70, 70);
+    border: 0;
+    top: 200px;
+    left: 175px;
+    
+}
+
+.playButtonIconStyle {
+    color: #fff;
+    size: 100;
+}
+
+.cardStyle:hover .cardPlayButton{
+    display: block;
+}
+.cardStyle {
+    display: block; 
+    background: none;
+    width: 200px; 
+    height: 0px;
+    border-radius: 15px; 
+    margin-left: 5px;
+}
+
+.cardText {
+    position: relative;
+    text-align: left;
+    left: -10px;
+    top: -15px
+}
+
+.mediaPlayer {
+    position: fixed;
+    bottom: 0px;
+    overflow: hidden;
+    width: 100%;
+    height: 0px;
+    transition: .5s ease-in-out;
+}
+.mediaPlayerAct {
+    position: fixed;
+    bottom: 0px;
+    left: 0;
+    right: 0;
+    background: #7d3b9c;
+    overflow: hidden;
+    width: 100%;
+    height: 40px;
+    transition: .5s ease-in-out;
+}
+  
