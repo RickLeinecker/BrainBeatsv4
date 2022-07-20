@@ -6,6 +6,9 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
+const multer  = require('multer')
+const upload = multer()
+const fs = require('fs');
 
 // Create a new user
 router.post('/createUser', async (req, res) => {
@@ -136,10 +139,15 @@ router.get('/getUserByID', async (req, res) => {
 //   };
 
 // Update user info 
-router.put('/updateUser', async (req, res) => {
+router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
 
-    try {
-        const { id, firstName, lastName, dob, email, username, bio, profilePicture } = req.body
+    // try{
+        const { id, firstName, lastName, dob, email, username, bio } = req.body;
+
+        // Required field for profilePicture as an entry
+        
+        const profilePicture = req.file;
+                
         // Check if the id already exists in db
         const userIDExists = await prisma.User.findUnique({
             where: { id },
@@ -156,20 +164,24 @@ router.put('/updateUser', async (req, res) => {
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
+                dob: new Date(dob).toISOString(),
                 username: username,
-                bio: bio,
-                profilePicture: profilePicture
+                bio: bio
             }
-        })
-        //   res.status(200).send({msg: "Updated OK"});
-        res.json(updateUser);
+        });    
+        
+        const uploadPath = "../images/profilePicture/" + id;
+
+        fs.writeFile(uploadPath, profilePicture.buffer, function(err) {
+            if (err) throw new Error('Unable to save images');
+        });
+        // const profilepic2 = fs.readFile(uploadPath);
+        // console.log(profilepic2);
+        res.status(200).send({msg: "Updated OK"});
         }
-    }
-
-    catch (err) {
-        res.status(500).send(err);
-    }
-
+    // } catch (err) {
+    //     res.status(500).send(err);
+    // }
 });
 
 // Delete user by ID

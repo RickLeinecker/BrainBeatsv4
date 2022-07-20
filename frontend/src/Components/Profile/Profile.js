@@ -20,10 +20,11 @@ const Profile = () => {
     const [dob, setDob] = useState();
     const [stage, setStage] = useState(0);
     const [bio, setBio] = useState("");
+    const [profilePicture, setProfilePicture] = useState("");
     const [errorMsg, setErrorMsg] = useState('');
 
     const emptyField = () => {
-        return (!email || !username || !firstName || !lastName || !bio)
+        return (!email || !username || !firstName || !lastName || !bio || !profilePicture)
     }
     
     const UpdateProfile = (event) => {
@@ -41,15 +42,30 @@ const Profile = () => {
         const path = require('../Path');
 
         //put all input fields into a json object
-        const newUser = {
-            "id": user.id,
-            "firstName": firstName,
-            "lastName": lastName,
-            'dob': dob,
-            "email": email,
-            "username": username,
-            "bio": bio
-        };
+        // const newUser = {
+        //     "id": user.id,
+        //     "firstName": firstName,
+        //     "lastName": lastName,
+        //     'dob': dob,
+        //     "email": email,
+        //     "username": username,
+        //     "bio": bio,
+        //     "profilePicture": profilePicture
+        // };
+
+        var newUser = new FormData();
+        newUser.append('id', user.id);
+        newUser.append('firstName', firstName);
+        newUser.append('lastName', lastName);
+        newUser.append('dob', dob);
+        newUser.append('email', email);
+        newUser.append('username', username);
+        newUser.append('bio', bio);
+        newUser.append('profilePicture', profilePicture);
+
+        // for (const value of newUser.values()) {
+        //     console.log(value);
+        //   }
 
         console.log(newUser);
 
@@ -58,7 +74,7 @@ const Profile = () => {
             method: "put",
             url: path.buildPath('/users/updateUser'),
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "multipart/form-data"
             },
             data: newUser
         };
@@ -149,6 +165,14 @@ const Profile = () => {
                                     <div className="form-group">
                                         <label>About Me</label>
                                         <textarea cols="80" placeholder={user.bio ? user.bio : 'User bio'} onChange = {(event) => setBio(event.target.value)} rows="5" className="form-control" value={bio}></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='row'>
+                                <div className="col-md-6">
+                                    <div className="form-group">
+                                        <label>Upload Image</label>
+                                        <input type="file" onChange = {(event) => setProfilePicture(event.target.files[0])} className="form-control" />
                                     </div>
                                 </div>
                             </div>
