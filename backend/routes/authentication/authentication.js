@@ -21,11 +21,11 @@ const transporter = nodemailer.createTransport({
 
 router.get('/getLoginJWT', async (req, res) => {
     try {
-        const username = req.query.username;
+        const email = req.query.email;
         const inputPassword = req.query.password;
 
         const userExists = await prisma.user.findUnique({
-            where: { username: username }
+            where: { email: email }
         });
 
         if (!userExists) {
@@ -43,8 +43,8 @@ router.get('/getLoginJWT', async (req, res) => {
 
 router.get('/getSignUpJWT', async (req, res) => {
     try {
-        const { id, email, username } = req.query;
-        res.send(jwt.getSignUpJWT(id, email, username));
+        const { id, email } = req.query;
+        res.send(jwt.getSignUpJWT(id, email));
     } catch (err) {
         res.status(500).send(err);
     }

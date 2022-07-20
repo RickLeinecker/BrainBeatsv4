@@ -32,8 +32,7 @@ async function getLoginJWT(user, password) {
         if (bcrypt.compareSync(password, user.password)) {
             const token = jwt.sign({
                 id: user.id,
-                email: user.email,
-                username: user.username
+                email: user.email
             }, process.env.NEXT_PUBLIC_JWT_KEY, {
                 expiresIn: '30d'
             });
@@ -47,11 +46,10 @@ async function getLoginJWT(user, password) {
     }
 }
 
-async function getSignUpJWT(id, email, username) {
+async function getSignUpJWT(id, email) {
     const token = jwt.sign({
         id: id,
-        email: email,
-        username: username
+        email: email
     }, process.env.NEXT_PUBLIC_JWT_KEY, {
         expiresIn: '30d'
     });
