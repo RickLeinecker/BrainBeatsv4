@@ -29,8 +29,12 @@
     color: rgb(239, 70, 70);
     border: 0;
     top: 200px;
-    left: 175px;
-    
+    left: 175px; 
+}
+
+.errMsg{
+    color:red;
+    font-size: 40px;
 }
 
 .playButtonIconStyle {

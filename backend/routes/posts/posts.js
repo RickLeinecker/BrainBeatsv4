@@ -46,7 +46,9 @@ router.get('/getUserPostsByUsername', async (req, res) => {
     try {
         const username = req.query.username
         if (username === "") {
-            const allPosts = await prisma.Post.findMany();
+            const allPosts = await prisma.Post.findMany({
+                include: {user : true}
+            });
             res.json(allPosts);
             return;
         }
@@ -57,12 +59,15 @@ router.get('/getUserPostsByUsername', async (req, res) => {
 
         if (!userExists) {
             //return empty if no user is found
-            res.json([])
-            return 
+            return res.status(400).json({
+                msg: "User ID not found"
+            }) 
         } else {
             // Find the records
             const userPosts = await prisma.Post.findMany({
-                where: { userID: userExists.id }
+                where: { userID: userExists.id },
+                include: {user: true}
+                
             });
 
             if (!userPosts) {
@@ -106,7 +111,9 @@ router.get('/getUserPostsByID', async (req, res) => {
 // Get all posts
 router.get('/getAllPosts', async (req, res) => {
     try {
-        const posts = await prisma.Post.findMany();
+        const posts = await prisma.Post.findMany({
+            include: {user: true}
+        });
 
         res.json(posts)
     }

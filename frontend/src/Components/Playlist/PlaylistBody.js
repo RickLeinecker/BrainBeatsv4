@@ -1,12 +1,15 @@
 import axios from 'axios';
 import React, { useState, useContext } from 'react'
 import { Button } from 'react-bootstrap';
-import { AuthContext } from '../context/AuthContext';
 import './Playlist.css'
+
+import { useRecoilValue } from 'recoil';
+
+import { userModeState } from '../context/GlobalState'
 
 const PlaylistBody = () => {
   const [toggle, setToggle] = useState(false);
-  const {user} = useContext(AuthContext)
+  const user = useRecoilValue(userModeState)
   return (
     <>
       <label className='switch'>

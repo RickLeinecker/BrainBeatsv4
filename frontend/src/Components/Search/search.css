@@ -94,4 +94,20 @@
     height: 40px;
     transition: .5s ease-in-out;
 }
+
+.PostHeader {
+    height: 30px;
+    background: #9c3b7f;
+    border: 2px solid #7d3b9c;
+    color: white;
+}
+.postItem{
+    color: white;
+    height: 40px
+}
+.HeartButton {
+    background: none;
+    color: rgb(239, 70, 70);
+    border: 0;
+}
   
