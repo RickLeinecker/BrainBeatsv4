@@ -19,9 +19,50 @@ const transporter = nodemailer.createTransport({
     secure: true,
 });
 
+router.get('/getLoginJWT', async (req, res) => {
+    try {
+        const username = req.query.username;
+        const inputPassword = req.query.password;
+
+        const userExists = await prisma.user.findUnique({
+            where: { username: username }
+        });
+
+        if (!userExists) {
+            // Error here
+            return res.status(400).json({
+                msg: "User does not exist."
+            });
+        } else {
+            res.send(jwt.getLoginJWT(userExists, inputPassword));
+        }
+    } catch (err) {
+        res.status(500).send(err);
+    }
+});
+
+router.get('/getSignUpJWT', async (req, res) => {
+    try {
+        const { id, email, username } = req.query;
+        res.send(jwt.getSignUpJWT(id, email, username));
+    } catch (err) {
+        res.status(500).send(err);
+    }
+});
+
+
+router.get('/verifyJWT', async (req, res) => {
+    try {
+        const jwt = req.query.jwt;
+        res.json(jwt.verifyJWT(jwt));
+    } catch (err) {
+        res.status(500).send(err);
+    }
+});
+
 
 // Send Email to user to verify login
-router.post('/sendVerificationEmail', async (req, res) => {
+/*router.post('/sendVerificationEmail', async (req, res) => {
     try {
         const { email, subject, text } = req.body;
         const userExists = await prisma.user.findUnique({
@@ -66,7 +107,7 @@ router.post('/jwtStuff', async (req, res) => {
         console.log(err)
         res.status(500).json({ msg: "Unable to create JWT token" })
     }
-})
+})*/
 
 // Login an existing user
 router.post('/loginUser', async (req, res) => {

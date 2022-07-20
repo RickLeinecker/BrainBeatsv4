@@ -1,3 +1,4 @@
+const { prisma } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const {getUser} = require('./database/users');
@@ -10,7 +11,7 @@ function verifyJWT(jwtToken) {
     if (jwtToken) {
         token = jwtToken;
     } else {
-        token = getJWT();
+        // TODO : Error
     }
 
     return jwt.verify(token, process.env.NEXT_PUBLIC_JWT_KEY, function (err, decoded) {
@@ -19,7 +20,6 @@ function verifyJWT(jwtToken) {
             return false;
         } else {
             if (decoded) {
-                console.log("Decoded", decoded);
                 return decoded;
             }
         }
@@ -27,17 +27,17 @@ function verifyJWT(jwtToken) {
 }
 
 // Checks the user exists and then creates and saves a JWT onto their machine's local storage
-async function giveLoginJWT(loginCred, password) {
-    const user = await getUser(loginCred);
+async function getLoginJWT(user, password) {
     if (user) {
         if (bcrypt.compareSync(password, user.password)) {
             const token = jwt.sign({
                 id: user.id,
-                email: user.email
+                email: user.email,
+                username: user.username
             }, process.env.NEXT_PUBLIC_JWT_KEY, {
                 expiresIn: '30d'
             });
-            saveJWT(token);
+            
             return token;
         } else {
             return false;
@@ -47,14 +47,14 @@ async function giveLoginJWT(loginCred, password) {
     }
 }
 
-async function giveSignUpJWT(id, email) {
+async function getSignUpJWT(id, email, username) {
     const token = jwt.sign({
         id: id,
-        email: email
+        email: email,
+        username: username
     }, process.env.NEXT_PUBLIC_JWT_KEY, {
         expiresIn: '30d'
     });
-    saveJWT(token);
     return token;
 }
 
@@ -79,8 +79,8 @@ function removeJWT() {
 module.exports = {
     verifyJWT: verifyJWT,
     saveJWT: saveJWT,
-    giveLoginJWT: giveLoginJWT,
-    giveSignUpJWT: giveSignUpJWT,
+    getLoginJWT: getLoginJWT,
+    getSignUpJWT: getSignUpJWT,
     getJWT: getJWT,
     removeJWT: removeJWT
 }
