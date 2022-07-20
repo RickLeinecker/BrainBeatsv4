@@ -704,17 +704,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 			
 		};
 
-		const downloadData = () => {
-			// Alter exponential values to get a more accurate readings
-			// //   console.log(JSON.stringify(allData));
-			var workbook = XLSX.utils.book_new();
-			const worksheet = XLSX.utils.json_to_sheet(allData);
-			XLSX.utils.sheet_add_aoa(worksheet, [["channel", "signal"]]);
-			XLSX.utils.book_append_sheet(workbook, worksheet, "SheetJS");
-			XLSX.writeFile(workbook, "sheetjs.csv", { compression: true });
-
-		}
-
 		// Acquisition function
 		const startAcquisition = async (label) => {
 			// Get device stream
@@ -826,9 +815,9 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 			if (button.id === "ganglion") {
 				button.onclick = () => {rec=true;console.log(rec);startAcquisition(button.id)};
 			}
-			else if (button.id === "downloadBtn") {
-				button.onclick = () => downloadData();
-			}
+			// else if (button.id === "downloadBtn") {
+			// 	button.onclick = () => downloadData();
+			// }
 			else if (button.id === 'Disconnect'){
 				button.onclick = () => {rec=false;console.log("I GOT CLICKED" + rec)};
 			}
@@ -1063,6 +1052,18 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 		downloadURI(writeURI, "BrainBeatsMasterpiece");
 		playMidiFile(writeURI);
 		//console.log(write.dataUri());
+	}
+
+	function downloadData() 
+	{
+		// Alter exponential values to get a more accurate readings
+		// //   console.log(JSON.stringify(allData));
+		var workbook = XLSX.utils.book_new();
+		const worksheet = XLSX.utils.json_to_sheet(allData);
+		XLSX.utils.sheet_add_aoa(worksheet, [["channel", "signal"]]);
+		XLSX.utils.book_append_sheet(workbook, worksheet, "SheetJS");
+		XLSX.writeFile(workbook, "sheetjs.csv", { compression: true });
+
 	}
 
 	function initMIDIWriterParams()
@@ -1892,12 +1893,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
                       >
                         Disconnect
                       </button>
-					  <button
-                        id="Download"
-                        className="downloadBtn"
-                      >
-                        Download
-                      </button>
                     </div>
 
               </td>
@@ -1905,6 +1900,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 				<div style={{ color: "white" }}>Helpful Buttons</div>
 					<button onClick={handleStuff}>Print Debug Stuff</button> <br></br>
 					<button onClick={generateAndDownloadMIDIFile}>Download MIDI and play WIP</button>
+					<button onClick={downloadData}>Print Raw Data</button> <br></br>
               </td>
 			  
             </tr>
