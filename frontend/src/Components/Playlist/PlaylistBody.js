@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useState, useContext } from 'react'
 import { Button } from 'react-bootstrap';
 import './Playlist.css'

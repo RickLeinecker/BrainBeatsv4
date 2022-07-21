@@ -1,6 +1,5 @@
 import React, { Component, useContext, useState } from "react";
 import './Login.css'
-import axios from "axios";
 import { useRecoilState } from "recoil";
 import {userModeState, userJWT} from '../context/GlobalState'
 import sendAPI from "../sendAPI";

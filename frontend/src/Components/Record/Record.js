@@ -10,7 +10,6 @@ import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/
 import * as XLSX from 'xlsx';
 import MidiPlayer from 'midi-player-js';
 import {cloneDeep} from 'lodash'
-import axios from 'axios';
 
 import { useRecoilValue } from "recoil";
 import {userJWT, userModeState} from '../context/GlobalState'

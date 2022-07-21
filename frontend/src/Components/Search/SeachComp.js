@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import axios from 'axios';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import MidiPlayer from 'react-midi-player';
 import './search.css'
@@ -41,7 +40,6 @@ const SeachComp = () => {
     setData('');
     setShowMedia(false);
   }
-  //axios call for finding post
   const searchPost = () => {
     const dataBody = {
       'username': search,
@@ -104,7 +102,6 @@ const SeachComp = () => {
             //the reason search is not a use state is setState is asyncronous which
             //messes with live search
             search = event.target.value;
-            //call axios
             searchPost();
           }} />
 
