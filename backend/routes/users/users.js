@@ -9,6 +9,7 @@ const { user, post } = new PrismaClient();
 const multer  = require('multer')
 const upload = multer()
 const fs = require('fs');
+const jwtAPI = require("../../utils/jwt");
 
 // Create a new user
 router.post('/createUser', async (req, res) => {
@@ -36,7 +37,7 @@ router.post('/createUser', async (req, res) => {
             encryptedPassword = await bcrypt.hash(password, 10);
 
             //Create a single record
-            const newUser = await prisma.User.create({
+            const newUser = prisma.User.create({
                 data: {
                     firstName,
                     lastName,
@@ -49,27 +50,50 @@ router.post('/createUser', async (req, res) => {
 
             // Create token
 
-            // const token = jwtAPI.giveSignUpJWT(newUser.id, newUser.email);
+            const token = jwtAPI.getJWT(newUser.id, newUser.email);
 
-            //----COMMENTED OUT TO CLOSE USER LOOP----\\ 
-            // const token = jwt.sign(
-            //     { userId: newUser.id, email },
-            //     process.env.NEXT_PUBLIC_JWT_KEY,
-            //     {
-            //         expiresIn: "1h",
-            //     }
-            //     );
+            const data = {
+                user: newUser,
+                token: token
+            }
 
-            // // save user token
-            // newUser.token = token;
-
-            res.json(newUser);
+            res.json(data);
         }
 
     }
     catch (err) {
         console.log(err)
         res.status(500).json({ msg: "Unable to create user" })
+    }
+
+});
+
+// Login an existing user
+router.post('/loginUser', async (req, res) => {
+
+    try {
+
+        // Get user input
+        const { email, password } = req.body;
+
+        // Validate if user exists in our database
+        const user = await prisma.user.findUnique({
+            where: { email: email }
+        });
+
+        // If password is related to the email console log a successful login
+        if (user && (bcrypt.compare(password, user.password))) {
+            const token = jwtAPI.getJWT(newUser.id, newUser.email);
+            const data = {
+                user: user,
+                token: token
+            }
+            res.json(data);
+        } else {
+            return res.status(400).send("Invalid Credentials");
+        }
+    } catch (err) {
+        console.log(err)
     }
 
 });
