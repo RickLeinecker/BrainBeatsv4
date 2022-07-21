@@ -6,12 +6,23 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
+const jwtAPI = require("../../utils/jwt");
+
 
 // Create a user like
 router.post('/createUserLike', async (req, res) => {
 
     try {
-        const { userID, postID} = req.body
+        const { userID, postID, token } = req.body;
+
+        const decoded = jwtAPI.verifyJWT(token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
+
         const userExists = await prisma.User.findUnique({
             where: { id: userID },
         });
@@ -47,8 +58,15 @@ router.post('/createUserLike', async (req, res) => {
 
 // Remove a user like
 router.delete('/removeUserLike', async (req, res) => { 
-    //try {
-        console.log(req.body.userID, req.body.postID);
+    try {
+        const decoded = jwtAPI.verifyJWT(req.body.token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
+
         const deleteLike = await prisma.Like.delete({
             where: { 
                 postID_userID: {
@@ -59,9 +77,9 @@ router.delete('/removeUserLike', async (req, res) => {
         });
         console.log(deleteLike);
         res.status(200).send({ msg: "Deleted a user like" });
-    //} catch (err) {
-        //res.status(500).send(err);
-    //}
+    } catch (err) {
+        res.status(500).send(err);
+    }
 });
 
 // Get user like status

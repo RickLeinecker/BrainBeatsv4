@@ -70,7 +70,6 @@ router.post('/createUser', async (req, res) => {
 
 // Login an existing user
 router.post('/loginUser', async (req, res) => {
-
     try {
 
         // Get user input
@@ -166,7 +165,15 @@ router.get('/getUserByID', async (req, res) => {
 router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
 
     // try{
-        const { id, firstName, lastName, dob, email, username, bio } = req.body;
+        const { id, firstName, lastName, dob, email, username, bio, token } = req.body;
+
+        const decoded = jwtAPI.verifyJWT(token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
 
         // Required field for profilePicture as an entry
         
@@ -180,7 +187,7 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
         if (!userIDExists) {
             return res.status(400).json({
                 msg: "User ID not found"
-            })
+            });
         } else {
         const updateUser = await prisma.User.update({
             where: { id },
@@ -210,6 +217,13 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
 
 // Delete user by ID
 router.delete('/deleteUser', async (req, res) => {
+    const decoded = jwtAPI.verifyJWT(res.body.token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
 
     try {
         const deleteUser = await prisma.User.delete({

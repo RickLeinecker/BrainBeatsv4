@@ -11,7 +11,7 @@ function verifyJWT(jwtToken) {
     if (jwtToken) {
         token = jwtToken;
     } else {
-        // TODO : Error
+        return false;
     }
 
     return jwt.verify(token, process.env.NEXT_PUBLIC_JWT_KEY, function (err, decoded) {

@@ -6,12 +6,22 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
+const jwtAPI = require("../../utils/jwt");
+
 
 // Create a new playlist
 router.post('/createPlaylist', async (req, res) => {
 
     try {
-        const { name, userID } = req.body;
+        const { name, userID, token } = req.body;
+
+        const decoded = jwtAPI.verifyJWT(token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
 
         const userExists = await prisma.User.findUnique({
             where: { id: userID }
@@ -128,6 +138,14 @@ router.get('/getPostsByPlaylistID', async (req, res) => {
 router.delete('/deletePlaylist', async (req, res) => {
 
     try {
+        const decoded = jwtAPI.verifyJWT(req.body.token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
+
         const deletePlaylist = await prisma.Playlist.delete({
             where: { id: req.body.id }
         })
@@ -143,8 +161,16 @@ router.delete('/deletePlaylist', async (req, res) => {
 // Put post in playlist
 router.post('/addPostToPlaylist', async (req, res) => {
     try {
-        
-        const { playlistID, postID } = req.body;
+        const { playlistID, postID, token } = req.body;
+
+        const decoded = jwtAPI.verifyJWT(token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
+
         const playlistExists = await prisma.Playlist.findUnique({
             where: { id: playlistID },
         });
@@ -179,7 +205,16 @@ router.post('/addPostToPlaylist', async (req, res) => {
 // Remove a post from a playlist
 router.delete('/removePostFromPlaylist', async (req, res) => {
     try {
-        const { postID, playlistID } = req.body;
+        const { postID, playlistID, token } = req.body;
+
+        const decoded = jwtAPI.verifyJWT(token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
+
         const removePost = await prisma.PlaylistPost.delete({
             where: {
                 postID_playlistID: {
@@ -200,14 +235,23 @@ router.delete('/removePostFromPlaylist', async (req, res) => {
 router.put('/updatePlaylist', async (req, res) => {
 
     try {
-        const { id, name, thumbnail} = req.body
+        const { id, name, thumbnail, token} = req.body;
+
+        const decoded = jwtAPI.verifyJWT(token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
+
         const updateUser = await prisma.Playlist.update({
             where: { id },
             data: {
                 name: name,
                 thumbnail: thumbnail
             }
-        })
+        });
         //   res.status(200).send({msg: "Updated OK"});
         res.json(updateUser);
     }

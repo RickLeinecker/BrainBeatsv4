@@ -6,12 +6,23 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
+const jwtAPI = require("../../utils/jwt");
+
 
 // Create a post
 router.post('/createPost', async (req, res) => {
 
     try {
-        const { userID, title, bpm, key, visibility} = req.body
+        const { userID, title, bpm, key, visibility, token} = req.body
+
+        const decoded = jwtAPI.verifyJWT(token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
+
         const userExists = await prisma.User.findUnique({
             where: { id: userID }
         });
@@ -126,7 +137,14 @@ router.get('/getAllPosts', async (req, res) => {
 // Delete a post
 router.delete('/deletePost', async (req, res) => {
     try {
-        console.log(req.body.id)
+        const decoded = jwtAPI.verifyJWT(req.body.token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
+
         const deletePost = await prisma.Post.delete({
             where: { id: req.body.id }
         })
@@ -141,7 +159,15 @@ router.delete('/deletePost', async (req, res) => {
 router.put('/updatePost', async (req, res) => {
 
     try {
-        const { id, title, visibility, bio, thumbnail, likeCount} = req.body
+        const { id, title, visibility, bio, thumbnail, likeCount, token} = req.body
+
+        const decoded = jwtAPI.verifyJWT(token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
 
         // Check if the id already exists in db
         const userIDExists = await prisma.Post.findUnique({
