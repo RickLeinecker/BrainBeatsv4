@@ -1,16 +1,18 @@
 require("dotenv").config();
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
+const multer  = require('multer')
+const upload = multer()
+const fs = require('fs');
+const jwtAPI = require("../../utils/jwt");
 const dbUtil = require("../../utils/database");
 
 // Create a new user
 router.post('/createUser', async (req, res) => {
-
     try {
         const { firstName, lastName, dob, email, username, password } = req.body;
 
@@ -23,7 +25,6 @@ router.post('/createUser', async (req, res) => {
                 msg: "Email or username already exists. Please try again."
             });
         } else {
-
             //Encrypt user password
             encryptedPassword = await bcrypt.hash(password, 10);
 
@@ -39,9 +40,8 @@ router.post('/createUser', async (req, res) => {
                 }
             });
 
-            // Create token
-
-            // const token = jwtAPI.giveSignUpJWT(newUser.id, newUser.email);
+            // Create JWT
+            const token = jwtAPI.getJWT(newUser.id, newUser.email);
 
             //----COMMENTED OUT TO CLOSE USER LOOP----\\ 
             // const token = jwt.sign(
@@ -52,14 +52,13 @@ router.post('/createUser', async (req, res) => {
             //     }
             //     );
 
-            // // save user token
-            // newUser.token = token;
-
-            res.json(newUser);
+            res.json(data);
         }
     } catch (err) {
-        res.status(500).json({ msg: "Unable to create user" });
-    } 
+        return res.status(400).json({
+            msg: "Could not create user."
+        });
+    }
 });
 
 // Login an existing user
@@ -86,11 +85,11 @@ router.post('/loginUser', async (req, res) => {
         }
 
     } catch (err) {
-        res.status(500).json({ msg: "Unable to create user" });
+        res.status(500).send({ msg: err });
     }
 });
 
-// Get all users with all records
+// Get all users in the database
 router.get('/getAllUsers', async (req, res) => {
     try {
         const users = await prisma.User.findMany();
@@ -127,26 +126,25 @@ router.get('/getUserByID', async (req, res) => {
             });
         }
         res.json(userExists);
-    }
-    catch (err) {
-        res.status(500).send({ msg: err })
+    } catch (err) {
+        res.status(500).send({ msg: err });
     }
 });
 
-// for (let i = 0; i <= user.length; i++) {
-//     title: 'Song ' + i;
-//     artist: user.lastName + user.lastName;
-//     time: user.createdAt;
-//     data: user.data;
-//   };
-
 // Update user info 
 router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
-    try {
-        const { id, firstName, lastName, dob, email, username, bio } = req.body;
+    try{
+        const { id, firstName, lastName, dob, email, username, bio, token } = req.body;
+
+        const decoded = jwtAPI.verifyJWT(token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
 
         // Required field for profilePicture as an entry
-        
         const profilePicture = req.file;
                 
         // Check if the user already exists in db
@@ -167,16 +165,16 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
                     username: username,
                     bio: bio
                 }
-            });
+            });    
         
             const uploadPath = "../images/profilePicture/" + id;
 
             fs.writeFile(uploadPath, profilePicture.buffer, function(err) {
-                if (err) throw new Error('Unable to save image');
+                if (err) throw new Error('Unable to save images');
             });
             // const profilepic2 = fs.readFile(uploadPath);
             // console.log(profilepic2);
-            res.status(200).send({msg: "Updated OK"});
+            res.status(200).send({msg: "User was successfully updated"});
         }
     } catch (err) {
         res.status(500).send(err);
@@ -185,16 +183,22 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
 
 // Delete user by ID
 router.delete('/deleteUser', async (req, res) => {
+    const decoded = jwtAPI.verifyJWT(res.body.token);
+
+    if (!decoded) {
+        return res.status(400).json({
+            msg: "Invalid token"
+        });
+    }
 
     try {
         const deleteUser = await prisma.User.delete({
             where: { id: req.body.id }
-        })
+        });
         res.status(200).send({ msg: "Deleted a user" });
     } catch (err) {
         res.status(500).send(err);
     }
-
 });
 
 module.exports = router;
