@@ -1,6 +1,4 @@
 require("dotenv").config();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -8,16 +6,7 @@ const { user, post } = new PrismaClient();
 var nodemailer = require("nodemailer");
 const jwtAPI = require("../../utils/jwt");
 // const { JSON } = require("express");
-
-const transporter = nodemailer.createTransport({
-    port: 465,               // true for 465, false for other ports
-    host: "smtp.gmail.com",
-    auth: {
-        user: 'brainbeatsdev@gmail.com',
-        pass: process.env.EMAIL_PASSWORD,
-    },
-    secure: true,
-});
+const dbUtil = require("../../utils/database");
 
 router.get('/verifyJWT', async (req, res) => {
     try {
@@ -28,9 +17,18 @@ router.get('/verifyJWT', async (req, res) => {
     }
 });
 
+/*const transporter = nodemailer.createTransport({
+    port: 465,               // true for 465, false for other ports
+    host: "smtp.gmail.com",
+    auth: {
+        user: 'brainbeatsdev@gmail.com',
+        pass: process.env.EMAIL_PASSWORD,
+    },
+    secure: true,
+});
 
 // Send Email to user to verify login
-/*router.post('/sendVerificationEmail', async (req, res) => {
+router.post('/sendVerificationEmail', async (req, res) => {
     try {
         const { email, subject, text } = req.body;
         const userExists = await prisma.user.findUnique({
@@ -63,19 +61,7 @@ router.get('/verifyJWT', async (req, res) => {
         console.log(err)
         res.status(500).json({ msg: "User does not exist." })
     }
-});
-
-
-router.post('/jwtStuff', async (req, res) => {
-    try {
-
-
-    }
-    catch (err) {
-        console.log(err)
-        res.status(500).json({ msg: "Unable to create JWT token" })
-    }
-})*/
+});*/
 
 
 module.exports = router;

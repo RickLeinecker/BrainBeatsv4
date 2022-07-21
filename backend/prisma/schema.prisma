@@ -31,6 +31,8 @@ model Post {
   title    String
   bpm      Int       @db.Int
   key      String    @db.VarChar(255)
+  instruments Json
+  noteTypes Json
   likeCount Int
   thumbnail String?   @db.LongText // Store file path in database instead of the actual image
   visibility Boolean

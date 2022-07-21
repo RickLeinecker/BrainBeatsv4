@@ -1,17 +1,14 @@
 require("dotenv").config();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
 const jwtAPI = require("../../utils/jwt");
-
+const dbUtil = require("../../utils/database");
 
 // Create a user like
 router.post('/createUserLike', async (req, res) => {
-
     try {
         const { userID, postID, token } = req.body;
 
@@ -20,16 +17,12 @@ router.post('/createUserLike', async (req, res) => {
         if (!decoded) {
             return res.status(400).json({
                 msg: "Invalid token"
-                });
+            });
         }
 
-        const userExists = await prisma.User.findUnique({
-            where: { id: userID },
-        });
+        const userExists = dbUtil.getUserExists(userID, "id");
 
-        const postExists = await prisma.Post.findUnique({
-            where: { id: postID },
-        });
+        const postExists = dbUtil.getPostExists(postID, "id");
 
         if (!userExists) {
             return res.status(400).json({
@@ -38,7 +31,7 @@ router.post('/createUserLike', async (req, res) => {
         } else if (!postExists) { 
             return res.status(400).json({
                 msg: "Post not found"
-            })
+            });
         } else {
             // Create a like
             const newLike = await prisma.Like.create({
@@ -51,9 +44,8 @@ router.post('/createUserLike', async (req, res) => {
             res.json(newLike);
         }
     } catch (err) {
-        res.status(500).send({ msg: err })
+        res.status(500).send({ msg: err });
     }
-
 });
 
 // Remove a user like
@@ -64,7 +56,7 @@ router.delete('/removeUserLike', async (req, res) => {
         if (!decoded) {
             return res.status(400).json({
                 msg: "Invalid token"
-                });
+            });
         }
 
         const deleteLike = await prisma.Like.delete({

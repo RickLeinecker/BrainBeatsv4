@@ -1,13 +1,11 @@
 require("dotenv").config();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
 const jwtAPI = require("../../utils/jwt");
-
+const dbUtil = require("../../utils/database");
 
 // Create a new playlist
 router.post('/createPlaylist', async (req, res) => {
@@ -20,19 +18,16 @@ router.post('/createPlaylist', async (req, res) => {
         if (!decoded) {
             return res.status(400).json({
                 msg: "Invalid token"
-                });
+            });
         }
 
-        const userExists = await prisma.User.findUnique({
-            where: { id: userID }
-        });
+        const userExists = userUtil.getUserExists(id, "id");
 
         if (!userExists) {
             return res.status(400).json({
                 msg: "User not found"
-            })
+            });
         } else {
-
             const newPlaylist = await prisma.Playlist.create({
                 data: {
                     name: name,
@@ -43,41 +38,34 @@ router.post('/createPlaylist', async (req, res) => {
             res.json(newPlaylist);
         }
     } catch (err) {
-        res.status(500).send({ msg: err })
+        res.status(500).send({ msg: err });
     }
-
 });
 
 
 // Get all playlists
 router.get('/getAllPlaylists', async (req, res) => {
-
     try {
         const playlists = await prisma.Playlist.findMany();
         res.json(playlists);
+    } catch (err) {
+        res.status(500).send({ msg: err });
     }
-    catch (err) {
-        res.status(500).send({ msg: err })
-    }
-
 });
 
 // Get playlist by ID
 router.get('/getPlaylistByID', async (req, res) => {
     try {
-        const playlist = await prisma.Playlist.findUnique({
-            where: { id: req.query.id }
-        });
+        const playlistExists = dbUtil.getPlaylistExists(req.query.id, "id");
 
-        if (!playlist) {
+        if (!playlistExists) {
             return res.status(400).json({
                 msg: "Playlist does not exist."
             });
         }
 
-        res.json(playlist);
-    }
-    catch (err) {
+        res.json(playlistExists);
+    } catch (err) {
         res.status(500).send({ msg: err })
     }
 });
@@ -101,8 +89,7 @@ router.get('/getPlaylistsByPostID', async (req, res) => {
         }
 
         res.json(playlists);
-    }
-    catch (err) {
+    } catch (err) {
         res.status(500).send({ msg: err })
     }
 
@@ -111,11 +98,9 @@ router.get('/getPlaylistsByPostID', async (req, res) => {
 // Get all posts in a playlist
 router.get('/getPostsByPlaylistID', async (req, res) => {
     try {
-        const playlist = await prisma.Playlist.findUnique({
-            where: { id: req.query.id }
-        });
+        const playlistExists = dbUtil.getPlaylistExists(req.query.id, "id");
 
-        if (!playlist) {
+        if (!playlistExists) {
             return res.status(400).json({
                 msg: "Playlist does not exist."
             });
@@ -128,9 +113,8 @@ router.get('/getPostsByPlaylistID', async (req, res) => {
         }
 
         res.json(playlist);
-    }
-    catch (err) {
-        res.status(500).send({ msg: err })
+    } catch (err) {
+        res.status(500).send({ msg: err });
     }
 });
 
@@ -148,7 +132,8 @@ router.delete('/deletePlaylist', async (req, res) => {
 
         const deletePlaylist = await prisma.Playlist.delete({
             where: { id: req.body.id }
-        })
+        });
+
         res.status(200).send({ msg: "Deleted a user playlist" });
     }
     catch (err) {
@@ -168,16 +153,12 @@ router.post('/addPostToPlaylist', async (req, res) => {
         if (!decoded) {
             return res.status(400).json({
                 msg: "Invalid token"
-                });
+            });
         }
 
-        const playlistExists = await prisma.Playlist.findUnique({
-            where: { id: playlistID },
-        });
+        const playlistExists = dbUtil.getPlaylistExists(playlistID, "id");
 
-        const postExists = await prisma.Post.findUnique({
-            where: { id: postID },
-        });
+        const postExists = dbUtil.getPostExists(postID, "id");
 
         if (!playlistExists) {
             return res.status(400).json({
@@ -198,7 +179,7 @@ router.post('/addPostToPlaylist', async (req, res) => {
         }
     }
     catch (err) {
-        res.status(500).send({ msg: err })
+        res.status(500).send({ msg: err });
     }
 });
 
@@ -212,7 +193,7 @@ router.delete('/removePostFromPlaylist', async (req, res) => {
         if (!decoded) {
             return res.status(400).json({
                 msg: "Invalid token"
-                });
+            });
         }
 
         const removePost = await prisma.PlaylistPost.delete({
@@ -228,12 +209,10 @@ router.delete('/removePostFromPlaylist', async (req, res) => {
     catch (err) {
         res.status(500).send(err);
     }
-
 });
 
 // TODO : Update a playlist
 router.put('/updatePlaylist', async (req, res) => {
-
     try {
         const { id, name, thumbnail, token} = req.body;
 
@@ -245,7 +224,7 @@ router.put('/updatePlaylist', async (req, res) => {
                 });
         }
 
-        const updateUser = await prisma.Playlist.update({
+        const updatePlaylist = await prisma.Playlist.update({
             where: { id },
             data: {
                 name: name,
@@ -253,13 +232,12 @@ router.put('/updatePlaylist', async (req, res) => {
             }
         });
         //   res.status(200).send({msg: "Updated OK"});
-        res.json(updateUser);
+        res.json(updatePlaylist);
     }
 
     catch (err) {
         res.status(500).send(err);
     }
-
 });
 
 module.exports = router;
