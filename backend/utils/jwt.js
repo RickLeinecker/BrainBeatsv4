@@ -14,7 +14,7 @@ function verifyJWT(jwtToken) {
         return false;
     }
 
-    return jwt.verify(token, process.env.NEXT_PUBLIC_JWT_KEY, function (err, decoded) {
+    return jwt.verify(token, process.env.NEXT_JWT_KEY, function (err, decoded) {
         if (err) {
             console.log(err);
             return false;
@@ -31,7 +31,7 @@ async function getJWT(id, email) {
     const token = jwt.sign({
         id: id,
         email: email
-    }, process.env.NEXT_PUBLIC_JWT_KEY, {
+    }, process.env.NEXT_JWT_KEY, {
         expiresIn: '30d'
     });
     

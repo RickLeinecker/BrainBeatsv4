@@ -1,25 +1,25 @@
 import React, { useContext, useState } from 'react'
-import { Card } from 'react-bootstrap'
-import { AuthContext } from '../context/AuthContext';
 import axios from "axios";
 import './profile.css'
 
 import { useRecoilValue } from 'recoil';
-import {userModeState} from '../context/GlobalState'
+import {userJWT, userModeState} from '../context/GlobalState'
+import sendAPI from '../sendAPI';
 
 const Profile = () => {
 
     const user = useRecoilValue(userModeState);
+    const jwt = useRecoilValue(userJWT);
     
 
     // //useStates to get required fields
-    const [email, setEmail] = useState("");
-    const [username, setUsername] = useState("");
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [dob, setDob] = useState();
+    const [email, setEmail] = useState(user.email);
+    const [username, setUsername] = useState(user.username);
+    const [firstName, setFirstName] = useState(user.firstName);
+    const [lastName, setLastName] = useState(user.lastName);
+    const [dob, setDob] = useState(user.dob);
     const [stage, setStage] = useState(0);
-    const [bio, setBio] = useState("");
+    const [bio, setBio] = useState(user.bio);
     const [profilePicture, setProfilePicture] = useState("");
     const [errorMsg, setErrorMsg] = useState('');
 
@@ -62,6 +62,7 @@ const Profile = () => {
         newUser.append('username', username);
         newUser.append('bio', bio);
         newUser.append('profilePicture', profilePicture);
+        newUser.append('token', jwt)
 
         // for (const value of newUser.values()) {
         //     console.log(value);
@@ -69,20 +70,10 @@ const Profile = () => {
 
         console.log(newUser);
 
-        //create a json to pass into axois
-        let config = {
-            method: "put",
-            url: path.buildPath('/users/updateUser'),
-            headers: {
-                "Content-Type": "multipart/form-data"
-            },
-            data: newUser
-        };
-
-        //axios command
-        axios(config).then(function (res) {
-            console.log(res.data);
-        })
+        sendAPI('put', '/users/updateUser', newUser)
+            .then(function (res) {
+                console.log(res.data);
+            })
             .catch(function (err) {
                 setErrorMsg(err.response.data.msg);
             })

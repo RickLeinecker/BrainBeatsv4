@@ -5,11 +5,14 @@ import './Playlist.css'
 
 import { useRecoilValue } from 'recoil';
 
-import { userModeState } from '../context/GlobalState'
+import { userJWT, userModeState } from '../context/GlobalState'
+import sendAPI from '../sendAPI';
 
 const PlaylistBody = () => {
   const [toggle, setToggle] = useState(false);
-  const user = useRecoilValue(userModeState)
+  const user = useRecoilValue(userModeState);
+  const jtw = useRecoilValue(userJWT);
+
   return (
     <>
       <label className='switch'>
@@ -36,17 +39,14 @@ function CreatePlayList({id}){
   const makePlaylist = () => {
     const bodyData = {
       'name': name,
-      'userID': id
+      'userID': id,
+      'token': jwt
     }
-    const config={
-      method: 'post',
-      url: path.buildPath('/playlists/createPlaylist'),
-      data: bodyData,
-    }
-    axios(config)
+    sendAPI('post', '/playlists/createPlaylist', bodyData)
       .then((res) => {
         setMsg("Playlist created");
       })
+      
   }
 
   return(

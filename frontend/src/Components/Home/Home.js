@@ -7,7 +7,8 @@ import axios from 'axios';
 import Carousel from '../Carousel/Carousel';
 import { useRecoilValue } from 'recoil';
 
-import {userModeState} from '../context/GlobalState'
+import {userJWT, userModeState} from '../context/GlobalState'
+import sendAPI from '../sendAPI';
 
 const Cards = () => {
     //post array
@@ -19,34 +20,22 @@ const Cards = () => {
     //boolean for botton nav
     const [showMedia, setShowMedia] = useState(false);
     const user = useRecoilValue(userModeState)
-    //Load data to be sent to MidiPlayer
-    let _data = atob(data);
-
-    const path = require('../Path');
+    const jwt = useRecoilValue(userJWT);
 
     const [liked, setLiked] = useState([]);
 
     useEffect(() => {
         //always run this api for homepage
-        let config = {
-            method: 'get',
-            url: path.buildPath('/posts/getAllPosts'),
-        }
-        axios(config)
-            .then((response) => {
-                setAllPost(response.data);
+        sendAPI('get', '/posts/getAllPosts')
+            .then((res) => {
+                setAllPost(res.data)
             })
         //only run this api if user is logged in
         if(user){
             const dataBody = {
-                'userID': user.id
+                'userID': user.id,
             }
-            let config = {
-                method: 'get',
-                url: path.buildPath('/posts/getUserPostsByID'),
-                params: dataBody,
-            }
-            axios(config)
+            sendAPI('get', '/posts/getUserPostsByID', dataBody)
                 .then((res) => {
                     setUserPost(res.data);
                     setLog(res);
@@ -54,36 +43,27 @@ const Cards = () => {
                 .catch((err) => {
                     setLog(err);
                 })
-
-            let config2 = {
-                method: 'get',
-                url: path.buildPath('/likes/getAllUserLikes'),
-                body:{
-                    "userID": user.id
-                }
+                
+            const dataBody2 = {
+                "userID": user.id
             }
-            axios(config2)
+            sendAPI('get', '/likes/getAllUserLikes', dataBody2)
                 .then((res) => {
                     setLiked(res.data);
                 })
+                
         }
     }, [])
 
-    // if(user){
-    //     setUserPost(user.post);
-    // }
 
     const onLike = useCallback((post) => {
 
         let bodyData = {
             userID: user.id,
-            postID: post
+            postID: post,
+            token: jwt,
         }
-        let config = {
-            method: 'post',
-            url: path.buildPath('/likes/createUserLike'),
-            data: bodyData,
-        }
+        sendAPI('post', '/likes/createUserLike', bodyData)
         axios(config)
             .then((res) => {
                 setLiked((l) => [... l,res.data])
@@ -96,19 +76,16 @@ const Cards = () => {
     const onRemove = useCallback((post) => {
         let bodyData = {
             userID: user.id,
-            postID: post
+            postID: post,
+            token: jwt,
         }
-        let config = {
-            method: 'delete',
-            url: path.buildPath('/likes/removeUserLike'),
-            data: bodyData,
-        }
-        axios(config)
-            .then((res) => {
-                setLiked((l) => l.filter((p) => p.postID !== post))})
-            .catch((err) => {
-                console.log(err.data)
-            })
+        sendAPI('delete', '/likes/removeUserLike', bodyData)
+        .then((res) => {
+            setLiked((l) => l.filter((p) => p.postID !== post))})
+        .catch((err) => {
+            console.log(err.data)
+        })
+ 
     },[])
 
     const endPlay = () => {
@@ -197,7 +174,7 @@ const Cards = () => {
                 <div className='row' style={{ height: '50px' }}>
                     <div className={`${showMedia ? 'mediaPlayerAct' : 'mediaPlayer'}`}>
                         <div>
-                            <MidiPlayer data={_data} autoplay onEnd={endPlay} />
+                            <MidiPlayer autoplay onEnd={endPlay} />
                         </div>
                     </div>
                 </div>
@@ -205,23 +182,4 @@ const Cards = () => {
         </>
     )
 }
-
-// const LoggedIn = (prop) => {
-    
-//     const path = require('../Path');
-
-//     useEffect(() => {
-        
-        
-//     }, [userPost])
-
-//     const handle = () => {
-
-
-//         console.log(prop.prop.id)
-//         console.log(userPost)
-//         console.log(log)
-//     }
-    
-// }
 export default Cards

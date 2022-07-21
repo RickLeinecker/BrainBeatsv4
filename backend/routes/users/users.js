@@ -76,13 +76,13 @@ router.post('/loginUser', async (req, res) => {
         const { email, password } = req.body;
 
         // Validate if user exists in our database
-        const user = await prisma.user.findUnique({
+        const user = await prisma.User.findUnique({
             where: { email: email }
         });
 
         // If password is related to the email console log a successful login
         if (user && (bcrypt.compare(password, user.password))) {
-            const token = jwtAPI.getJWT(newUser.id, newUser.email);
+            const token = jwtAPI.getJWT(user.id, user.email);
             const data = {
                 user: user,
                 token: token

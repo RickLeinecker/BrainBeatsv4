@@ -4,19 +4,22 @@ import { Carousel } from "react-responsive-carousel";
 import { SliderPicker } from 'react-color'
 import './record.css'
 import { FaAngleRight, FaAngleLeft, FaRegPlayCircle, FaRegPauseCircle } from "react-icons/fa";
-import { AuthContext } from '../context/AuthContext';
 import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/dist/index.esm.js"; // UI
 import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js"; // Data acquisition
 import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // Device drivers
 import * as XLSX from 'xlsx';
 import MidiPlayer from 'midi-player-js';
 import {cloneDeep} from 'lodash'
-import { buildPath } from '../Path';
 import axios from 'axios';
+
+import { useRecoilValue } from "recoil";
+import {userJWT, userModeState} from '../context/GlobalState'
+import sendAPI from '../sendAPI';
 
 function Record() {
     //needed states
-    const { user } = useContext(AuthContext);
+    const user = useRecoilValue(userModeState);
+	const jwt = useRecoilValue(userJWT);
     const [checked, setChecked] = useState(false);
 	const [stage, setStage] = useState(0);
 	const [numNotes, setNumNotes] = useState(7);
@@ -54,11 +57,9 @@ function Record() {
 
 	//get BPM from database
 	useEffect(()=>{
-		let config={
-			method: 'get',
-			url: path.buildPath('/music/getBPMValues'),
-		}
-		axios(config)
+
+		
+		sendAPI('get', '/music/getBPMValues')
 			.then((res) =>{
 				setBPMArray(res.data);
 			})
@@ -99,15 +100,12 @@ function Record() {
   			"title": title,
   			"bpm": BPM,
   			"key": KEY[scale],
-  			"visibility": vis
+  			"visibility": vis,
+			'token': jwt,
 		}
 		console.log(bodyData)
-		const config = {
-			method: 'post',
-			url: path.buildPath('/posts/createPost'),
-			data: bodyData
-		}
-		axios(config)
+
+		sendAPI('post', '/posts/createPost', bodyData)
 			.then((res) =>{
 				setMsg('Song posted')
 			})

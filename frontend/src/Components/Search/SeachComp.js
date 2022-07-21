@@ -5,10 +5,12 @@ import MidiPlayer from 'react-midi-player';
 import './search.css'
 import { useRecoilValue } from 'recoil';
 
-import { userModeState } from '../context/GlobalState'
+import { userJWT, userModeState } from '../context/GlobalState'
+import sendAPI from '../sendAPI';
 
 const SeachComp = () => {
   const user = useRecoilValue(userModeState);
+  const jwt = useRecoilValue(userJWT);
   let search = '';
   const [Post, setPost] = useState([]);
   const [liked, setLiked] = useState([]);
@@ -24,14 +26,10 @@ const SeachComp = () => {
   useEffect(() => {
     searchPost()
     if (user) {
-      let config = {
-        method: 'get',
-        url: path.buildPath('/likes/getAllUserLikes'),
-        body: {
-          "userID": user.id
-        }
+      const params = {
+        "userID": user.id
       }
-      axios(config)
+      sendAPI('get', '/likes/getAllUserLikes', params)
         .then((res) => {
           setLiked(res.data);
         })
@@ -46,14 +44,10 @@ const SeachComp = () => {
   //axios call for finding post
   const searchPost = () => {
     const dataBody = {
-      'username': search
+      'username': search,
+      'token': jwt
     }
-    let config = {
-      method: 'get',
-      url: path.buildPath('/posts/getUserPostsByUsername'),
-      params: dataBody,
-    }
-    axios(config)
+    sendAPI('get', '/posts/getUserPostsByUsername', dataBody)
       .then((res) => {
         setPost(res.data);
         setErrMsg('');
@@ -68,14 +62,10 @@ const SeachComp = () => {
 
     let bodyData = {
       userID: user.id,
-      postID: post
+      postID: post,
+      token: jwt,
     }
-    let config = {
-      method: 'post',
-      url: path.buildPath('/likes/createUserLike'),
-      data: bodyData,
-    }
-    axios(config)
+    sendAPI('post', '/likes/createUserLike', bodyData)
       .then((res) => {
         setLiked((l) => [...l, res.data])
       })
@@ -87,14 +77,10 @@ const SeachComp = () => {
   const onRemove = useCallback((post) => {
     let bodyData = {
       userID: user.id,
-      postID: post
+      postID: post,
+      token: jwt
     }
-    let config = {
-      method: 'delete',
-      url: path.buildPath('/likes/removeUserLike'),
-      data: bodyData,
-    }
-    axios(config)
+    sendAPI('delete', '/likes/removeUserLike', bodyData)
       .then((res) => {
         setLiked((l) => l.filter((p) => p.postID !== post))
       })

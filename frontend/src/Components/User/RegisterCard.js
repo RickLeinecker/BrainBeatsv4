@@ -1,6 +1,8 @@
 import React, { Component, useState } from "react";
-import axios from "axios";
 import { Button } from "react-bootstrap";
+import { useRecoilState } from "recoil";
+import {userModeState} from '../context/GlobalState'
+import sendAPI from "../sendAPI";
 
 
 
@@ -15,6 +17,9 @@ const RegisterCard = () => {
     const [stage, setStage] = useState(0);
     const [errorMsg, setErrorMsg] = useState('');
     const [creationSuccess, setCreateSuccess] = useState('');
+
+    const [jwt, setJwt] = useRecoilState(userModeState)
+
 
 
     const emptyField = () => {
@@ -47,23 +52,15 @@ const RegisterCard = () => {
             "dob": dob + 'T00:00:00.000Z', //Date format for SQL
             "email": email,
             "username": username,
-            "password": password
+            "password": password,
+            'token': jwt,
         };
-        //create a json to pass into axois
-        let config = {
-            method: "post",
-            url: path.buildPath('/users/createUser'),
-            headers: {
-                "Content-Type": "application/json"
-            },
-            data: newUser
-        };
-        //axios command
-        axios(config).then(function (res) {
-            setCreateSuccess("Account Created!");
-            setErrorMsg("");
-
-        })
+        sendAPI('post', '/users/createUser', newUser)
+            .then(function (res) {
+                setCreateSuccess("Account Created!");
+                setJwt(res.data.token);
+                setErrorMsg("");
+            })
             .catch(function (err) {
                 setErrorMsg(err.response.data.msg);
             })

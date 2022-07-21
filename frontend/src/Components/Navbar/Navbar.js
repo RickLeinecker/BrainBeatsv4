@@ -25,6 +25,7 @@ const Navbars = () => {
 
     const Logout = () => {
         setUser(null)
+        window.location.href='/'
     }
 
     return (
@@ -47,20 +48,20 @@ const Navbars = () => {
                     <Navbar.Collapse className="justify-content-end">
                         {user ?
                             <NavDropdown title={user.username}>
-                                <NavDropdown.Item ><Link to='/' style={{ textDecoration: 'none' }}><FaHome /> Home</Link></NavDropdown.Item>
-                                <NavDropdown.Item ><Link to='/Search' style={{ textDecoration: 'none' }}><FaSearch /> Search</Link></NavDropdown.Item>
-                                <NavDropdown.Item ><Link to='/Profile' style={{ textDecoration: 'none' }} ><FaUserEdit /> Profile</Link></NavDropdown.Item>
-                                <NavDropdown.Item ><Link to='/Record' style={{ textDecoration: 'none' }}><FaRegPlayCircle />Record</Link></NavDropdown.Item>
-                                <NavDropdown.Item ><Link to='/Playlist' style={{ textDecoration: 'none' }}><FaMusic />Playlist</Link></NavDropdown.Item>
+                                <NavDropdown.Item href="/"><FaHome /> Home</NavDropdown.Item>
+                                <NavDropdown.Item href="/Search"><FaSearch /> Search</NavDropdown.Item>
+                                <NavDropdown.Item href="/Profile"><FaUserEdit /> Profile</NavDropdown.Item>
+                                <NavDropdown.Item href="/Record"><FaRegPlayCircle />Record</NavDropdown.Item>
+                                <NavDropdown.Item href="/Playlist"><FaMusic />Playlist</NavDropdown.Item>
                                 <NavDropdown.Divider />
                                 <NavDropdown.Item onClick={Logout}><FaDoorOpen />Logout</NavDropdown.Item>
                             </NavDropdown>
                             :
                             <NavDropdown title={<FaBars size={30}/>} style={{paddingLeft:'100px'}}>
-                                <NavDropdown.Item ><Link to='/' style={{ textDecoration: 'none' }}><FaHome /> Home</Link></NavDropdown.Item>
-                                <NavDropdown.Item ><Link to='/Login' style={{ textDecoration: 'none' }}><FaRegArrowAltCircleRight /> Login</Link></NavDropdown.Item>
-                                <NavDropdown.Item ><Link to='/Search' style={{ textDecoration: 'none' }}><FaSearch /> Search</Link></NavDropdown.Item>
-                                <NavDropdown.Item ><Link to='/Playlist' style={{ textDecoration: 'none' }} ><FaUserEdit /> Playlist</Link></NavDropdown.Item>
+                                <NavDropdown.Item href="/"><FaHome /> Home</NavDropdown.Item>
+                                <NavDropdown.Item href="/Login"><FaRegArrowAltCircleRight /> Login</NavDropdown.Item>
+                                <NavDropdown.Item href="/Search"><FaSearch /> Search</NavDropdown.Item>
+                                <NavDropdown.Item href="/Playlist"><FaUserEdit /> Playlist</NavDropdown.Item>
                             </NavDropdown>}
 
                     </Navbar.Collapse>

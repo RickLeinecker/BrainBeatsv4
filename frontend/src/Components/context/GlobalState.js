@@ -8,3 +8,9 @@ export const userModeState = atom({
     default: '',
     effects_UNSTABLE: [persistAtom],
 });
+
+export const userJWT = atom({
+    key: 'userJWT',
+    default: '',
+    effects_UNSTABLE: [persistAtom],
+})
