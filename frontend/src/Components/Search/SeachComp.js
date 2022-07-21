@@ -25,7 +25,7 @@ const SeachComp = () => {
   useEffect(() => {
     searchPost()
     if (user) {
-      const params = {
+      let params = {
         "userID": user.id
       }
       sendAPI('get', '/likes/getAllUserLikes', params)

@@ -564,12 +564,12 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
         opacity: '1',
     }
 
-	console.log(numNotes)
-	console.log(instrumentArr)
-	console.log(noteDuration)
-	console.log(scale)
-	console.log(keyNum)
-	console.log(BPM)
+	console.log("numNotes: " + numNotes)
+	console.log("instrumentArr: " + instrumentArr)
+	console.log("noteDuration: " + noteDuration)
+	console.log("Scale: " + scale)
+	console.log("keyNum: " + keyNum)
+	console.log("BPM: " + BPM)
     const [record, setRecord] = useState(false);
 
 
@@ -585,6 +585,15 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 	let channels = 0;
 	let trackMap = new Map();
 	let contentHintToIndex = {};
+
+	const MidiWriter = require('midi-writer-js');
+
+	var trackFP1 = new MidiWriter.Track();
+	var trackFP2 = new MidiWriter.Track();
+	var trackC3 = new MidiWriter.Track();
+	var trackC4 = new MidiWriter.Track();
+
+	var noteFP1, noteFP2, noteC3, noteC4;
 
     useEffect(() => {
 
@@ -766,6 +775,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 				else
 					noteFP1 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(FP1NoteType).toString()});
 				trackFP1.addEvent(noteFP1);
+				//console.log("FP1 over");
 			}
 			else if (tracky.contentHint.localeCompare("FP2") == 0)
 			{
@@ -774,6 +784,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 				else
 					noteFP2 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(FP2NoteType).toString()});
 				trackFP2.addEvent(noteFP2);
+				//console.log("FP2 over");
 			}
 			else if (tracky.contentHint.localeCompare("C3") == 0)
 			{
@@ -782,6 +793,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 				else
 					noteC3 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(C3NoteType).toString()});
 				trackC3.addEvent(noteC3);
+				//console.log("C3 over");
 			}
 			else if (tracky.contentHint.localeCompare("C4") == 0)
 			{
@@ -790,6 +802,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 				else
 					noteC4 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(C4NoteType).toString()});
 				trackC4.addEvent(noteC4);
+				//console.log("C4 over");
 			}
 
 			// Generate a data URI
@@ -955,16 +968,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 		C3NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C3NoteType)],
 		C4NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C4NoteType)];
 
-	const MidiWriter = require('midi-writer-js');
-
-	const trackFP1 = new MidiWriter.Track();
-	const trackFP2 = new MidiWriter.Track();
-	const trackC3 = new MidiWriter.Track();
-	const trackC4 = new MidiWriter.Track();
-
-	var noteFP1, noteFP2, noteC3, noteC4;
-
-
 	// ------------------------------------------------------------------------------ USER-DEFINED VARIABLES ------------------------------------------------------------------------------
 
 
@@ -998,24 +1001,47 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 
 	function playMidiFile(uri)
 	{
-		//var MidiPlayer = require('midi-player-js');
-
 		// Initialize player and register event handler
-		var Player = new MidiPlayer.Player(function(event) {
-			//console.log(event);
-		});
+		var Player = new MidiPlayer.Player(function(event) {});
 
-		// Load a MIDI file
-		Player.loadDataUri(uri);
+		// Load a MIDI file and start combing through it
+		//Player.loadDataUri(uri); this is the good one that you should use (:
+		//Player.loadDataUri(btoa("file://C:\Users\Noah\Documents\GitHub\BrainBeatsWeb\frontend\src\Components\Record/UseThisToTestMIDI.mid"));
+		console.log("URI passed in: " + uri);
+		Player.loadDataUri("data:audio/midi;base64,TVRoZAAAAAYAAQAEAIBNVHJrAAAAfwD/UQMHoSAA/1gEBAIYCIIAkAAAAIAAAIIAkAAAAIAAAACQQECCAIBAQIIAkAAAAIAAAIIAkAAAAIAAAACQRECCAIBEQIIAkAAAAIAAAIIAkAAAAIAAAIIAkAAAAIAAAACQRUCCAIBFQACQQkCCAIBCQIIAkAAAAIAAAAD/LwBNVHJrAAAA4gD/UQMHoSAA/1gEBAIYCACQQECBAIBAQACQRUCBAIBFQACQQkCBAIBCQIEAkAAAAIAAAIEAkAAAAIAAAACQSUCBAIBJQACQR0CBAIBHQACQQkCBAIBCQACQRUCBAIBFQIEAkAAAAIAAAIEAkAAAAIAAAACQP0CBAIA/QACQRECBAIBEQACQRECBAIBEQACQR0CBAIBHQIEAkAAAAIAAAACQR0CBAIBHQIEAkAAAAIAAAIEAkAAAAIAAAACQR0CBAIBHQIEAkAAAAIAAAIEAkAAAAIAAAACQRUCBAIBFQAD/LwBNVHJrAAABawD/UQMHoSAA/1gEBAIYCECQAAAAgAAAAJBRQECAUUAAkE5AQIBOQACQR0BAgEdAQJAAAACAAABAkAAAAIAAAACQQkBAgEJAAJBFQECARUAAkFFAQIBRQACQP0BAgD9AAJBFQECARUAAkERAQIBEQACQREBAgERAQJAAAACAAABAkAAAAIAAAACQRUBAgEVAQJAAAACAAABAkAAAAIAAAACQRUBAgEVAQJAAAACAAAAAkERAQIBEQACQTkBAgE5AAJBOQECATkAAkEVAQIBFQACQQEBAgEBAQJAAAACAAABAkAAAAIAAAACQREBAgERAQJAAAACAAABAkAAAAIAAAECQAAAAgAAAQJAAAACAAABAkAAAAIAAAECQAAAAgAAAQJAAAACAAABAkAAAAIAAAECQAAAAgAAAQJAAAACAAABAkAAAAIAAAACQQEBAgEBAAJBFQECARUBAkAAAAIAAAECQAAAAgAAAAP8vAE1UcmsAAAJ7AP9RAwehIAD/WAQEAhgIAJBAQCCAQEAAkE5AIIBOQACQTkAggE5AAJBOQCCATkAAkFhAIIBYQACQRUAggEVAAJA9QCCAPUAgkAAAAIAAAACQR0AggEdAAJBHQCCAR0AAkEdAIIBHQACQR0AggEdAAJBHQCCAR0AAkEdAIIBHQCCQAAAAgAAAAJBHQCCAR0AAkD1AIIA9QACQR0AggEdAAJA9QCCAPUAAkEdAIIBHQACQQEAggEBAIJAAAACAAAAAkEJAIIBCQACQQkAggEJAAJBCQCCAQkAAkEJAIIBCQACQREAggERAAJBEQCCAREAAkERAIIBEQCCQAAAAgAAAAJBEQCCAREAgkAAAAIAAAACQREAggERAAJBEQCCAREAAkERAIIBEQACQUEAggFBAAJBQQCCAUEAAkFBAIIBQQACQUEAggFBAAJBQQCCAUEAAkFBAIIBQQCCQAAAAgAAAAJBHQCCAR0AgkAAAAIAAAACQR0AggEdAIJAAAACAAAAAkEdAIIBHQCCQAAAAgAAAIJAAAACAAAAgkAAAAIAAACCQAAAAgAAAIJAAAACAAAAAkEdAIIBHQACQR0AggEdAIJAAAACAAAAAkEdAIIBHQACQR0AggEdAIJAAAACAAAAAkEdAIIBHQCCQAAAAgAAAIJAAAACAAAAgkAAAAIAAACCQAAAAgAAAIJAAAACAAAAgkAAAAIAAACCQAAAAgAAAIJAAAACAAAAAkEBAIIBAQACQQEAggEBAAJBCQCCAQkAgkAAAAIAAAACQQkAggEJAAJBAQCCAQEAAkEJAIIBCQCCQAAAAgAAAIJAAAACAAAAgkAAAAIAAAAD/LwA=");
 		Player.play();
 
 		var eventCount = 0;
 
+		// We will be getting all of these from the database on a per-post basis, but for now setting them here.
+		var track1Inst = FP1Instrument, 
+			track2Inst = FP2Instrument, 
+			track3Inst = C3Instrument, 
+			track4Inst = C4Instrument;
+		var track1NoteType = FP1NoteType,
+			track2NoteType = FP2NoteType,
+			track3NoteType = C3NoteType,
+			track4NoteType = C4NoteType;
+
+		// Event listener for midiEvents
 		Player.on('midiEvent', function(event) {
-			// Do something when a MIDI event is fired.
-			console.log("WHAOAISHHASABSJHGAK " + eventCount);
+			if (event.noteNumber != 0 && event.noteNumber != undefined)// && eventCount % 2 == 0) // As long as the midiEvent is a valid NOTE (other events not supported) and not undefined
+			{
+				//console.log(event);
+				console.log("" + eventCount + ": " + event.noteNumber + ", AKA " + event.noteName);
+
+				var midiNoteFrequency = getFrequencyFromNoteOctaveString(event.noteName);
+
+				if (event.track == 1) //FP1
+					playMidiNote(midiNoteFrequency, DEFAULT_VOLUME, track1Inst, track1NoteType);
+				else if (event.track == 2) // FP2
+					playMidiNote(midiNoteFrequency, DEFAULT_VOLUME, track2Inst, track2NoteType);
+				else if (event.track == 3) // FP3
+					playMidiNote(midiNoteFrequency, DEFAULT_VOLUME, track3Inst, track3NoteType);
+				else if (event.track == 4) // FP4
+					playMidiNote(midiNoteFrequency, DEFAULT_VOLUME, track4Inst, track4NoteType);
+			}
 			eventCount++;
-			// (this is the same as passing a function to MidiPlayer.Player() when instantiating.
 		});
 	}
 
@@ -1044,9 +1070,9 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 
 	function generateAndDownloadMIDIFile()
 	{
-		const write = new MidiWriter.Writer([trackFP1, trackFP2, trackC3, trackC4]);
-		var writeURI = write.dataUri()
-		downloadURI(writeURI, "BrainBeatsMasterpiece");
+		var write = new MidiWriter.Writer([trackFP1, trackFP2, trackC3, trackC4]);
+		var writeURI = write.dataUri();
+		//downloadURI(writeURI, "BrainBeatsMasterpiece");
 		playMidiFile(writeURI);
 		//console.log(write.dataUri());
 	}
