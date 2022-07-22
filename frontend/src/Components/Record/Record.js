@@ -1079,7 +1079,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 
 	function downloadData() 
 	{
-		// Alter exponential values to get a more accurate readings
 		// //   console.log(JSON.stringify(allData));
 		var workbook = XLSX.utils.book_new();
 		const worksheet = XLSX.utils.json_to_sheet(allData);

@@ -1,4 +1,4 @@
-openapi: 3.0.1
+swagger: "2.0"
 info:
   title: BrainBeatsWeb API 
   description: This is a BrainBeatsWeb API documentation form
@@ -61,25 +61,25 @@ paths:
             description: URL Not Found
 
   # Find user by userID
-    /api/users/getUserByUserID:
-      post:
+    /api/users/getUserByID/:
+      get:
         tags:
           - Users
         summary: Search a user by with their username
-        operationId: getUserByUserID
+        operationId: getUserByID
         description: Search a user in the database
         consumes: 
         - application/json
         produces:
         - application/json
         parameters:
-        - in: body
-          name: getUserByUserID
-          required: true
-          description: Find a user by their username
+        - in: query
+          name: id
           schema:
             type: string
-            $ref: '#/definitions/getUserByUserID'
+          description: Enter a user UUID
+          schema:
+            type: string
         responses:
           200:
             description: OK
@@ -87,7 +87,7 @@ paths:
             description: URL Not Found
 
   # Find user by username
-    /api/users/getUserByUsername:
+    /api/users/getUserByUsername/:
       get:
         tags:
           - Users
@@ -100,13 +100,12 @@ paths:
         - application/json
         parameters:
         - in: query
-          name: getUserByUsername
-          required: true
-          type: string
-          description: Find a user by their username
+          name: username
           schema:
             type: string
-            $ref: '#/definitions/getUserByUsername'
+          description: Enter a user username
+          schema:
+            type: string
         responses:
           200:
             description: OK
@@ -152,7 +151,7 @@ paths:
         - application/json
         parameters:
         - in: body
-          name: id
+          name: Delete User
           required: true
           description: Delete
           schema:
@@ -212,24 +211,25 @@ paths:
             description: URL Not Found
 
   # Get user posts by username
-    /api/posts/getUsersPostsByUsername:
-      post:
+    /api/posts/getUserPostsByUsername/:
+      get:
         tags:
           - Posts
         summary: Search a users posts by username
-        operationId: getUsersPostsByUsername
+        operationId: getUserPostsByUsername
         description: Get posts from user profile
         consumes: 
         - application/json
         produces:
         - application/json
         parameters:
-        - in: body
-          name: Find user posts by username
-          required: true
-          description: Get user posts by username
+        - in: query
+          name: username
           schema:
-            $ref: '#/definitions/getUsersPostsByUsername'
+            type: string
+          description: Enter a user username
+          schema:
+            type: string
         responses:
           200:
             description: OK
@@ -237,7 +237,7 @@ paths:
             description: URL Not Found
 
   # Get user posts by author ID
-    /api/posts/getUsersPostsByID:
+    /api/posts/getUsersPostsByID/:
       post:
         tags:
           - Posts
@@ -249,12 +249,13 @@ paths:
         produces:
         - application/json
         parameters:
-        - in: body
-          name: Find user posts by user ID
-          required: true
-          description: Get user posts by user ID
+        - in: query
+          name: userID
           schema:
-            $ref: '#/definitions/getUsersPostsByID'
+            type: string
+          description: Enter a user UUID
+          schema:
+            type: string
         responses:
           200:
             description: OK
@@ -385,24 +386,25 @@ paths:
             description: URL Not Found
 
   # Get user posts by author ID
-    /api/playlists/getPlaylistWithID:
-      post:
+    /api/playlists/getPlaylistByID/:
+      get:
         tags:
           - Playlists
         summary: Search a users posts by user ID
-        operationId: getPlaylistWithID
+        operationId: getPlaylistByID
         description: Get posts from user profile
         consumes: 
         - application/json
         produces:
         - application/json
         parameters:
-        - in: body
-          name: Find user posts by user ID
-          required: true
-          description: Get user posts by user ID
+        - in: query
+          name: id
           schema:
-            $ref: '#/definitions/getPlaylistWithID'
+            type: string
+          description: Enter a user UUID
+          schema:
+            type: string
         responses:
           200:
             description: OK
@@ -410,24 +412,25 @@ paths:
             description: URL Not Found
 
   # Get user posts by author ID
-    /api/playlists/getPlaylistsByPostsID:
-      post:
+    /api/playlists/getPlaylistsByPostID/:
+      get:
         tags:
           - Playlists
         summary: Search a users posts by user ID
-        operationId: getPlaylistsByPostsID
+        operationId: getPlaylistsByPostID
         description: Get posts from user profile
         consumes: 
         - application/json
         produces:
         - application/json
         parameters:
-        - in: body
-          name: Find user posts by user ID
-          required: true
-          description: Get user posts by user ID
+        - in: query
+          name: id
           schema:
-            $ref: '#/definitions/getPlaylistsByPostsID'
+            type: string
+          description: Enter a user playlist ID
+          schema:
+            type: string
         responses:
           200:
             description: OK
@@ -435,24 +438,25 @@ paths:
             description: URL Not Found
 
   # Get user posts by author ID
-    /api/playlists/getPostsByPlaylistsID:
-      post:
+    /api/playlists/getPostsByPlaylistID/:
+      get:
         tags:
           - Playlists
         summary: Search a users posts by user ID
-        operationId: getPostsByPlaylistsID
+        operationId: getPostsByPlaylistID
         description: Get playlist from user profile
         consumes: 
         - application/json
         produces:
         - application/json
         parameters:
-        - in: body
-          name: Find user playlist by playlist ID
-          required: true
-          description: Get user playlist by user ID
+        - in: query
+          name: id
           schema:
-            $ref: '#/definitions/getPostsByPlaylistsID'
+            type: string
+          description: Enter a user playlist ID
+          schema:
+            type: string
         responses:
           200:
             description: OK
@@ -566,7 +570,7 @@ paths:
 # Definitions components
 definitions:
 
-  # ***** USER ***** #
+  # ***** User ***** #
 
     createUser:
       required: 
@@ -595,22 +599,6 @@ definitions:
         password:
           type: string
           example: JohnDoePassword
-
-    getUserByUsername:
-      required: 
-      - username
-      properties:
-        username:
-          type: string
-          example: JohnDoe96
-
-    getUserByUserID:
-      required: 
-      - id
-      properties:
-        id:
-          type: string
-          example: ba170e4c-024f-4572-9909-fcd56f59354f
 
     updateUser:
       required: 
@@ -648,22 +636,6 @@ definitions:
           exmaple: 632961af-29ae-4c3a-8f3f-426763a4cf00
 
   # ***** User Posts ***** #
-    getUsersPostsByID:
-      required:
-      - userID
-      properties:
-        userID:
-          type: string
-          example: abb3973d-29ee-4221-aee1-639836c91be0
-
-    getUsersPostsByUsername:
-      required:
-      - username
-      properties:
-        username:
-          type: string
-          example: JohnDoe96
-
     updatePost:
       required: 
       - id
@@ -756,14 +728,6 @@ definitions:
           type: string
           example: Playlist title
 
-    getPlaylistWithID:
-      required:
-      - id
-      properties:
-        id:
-          type: int
-          example: 1
-
     updatePlaylist:
       required: 
       - id
@@ -775,14 +739,6 @@ definitions:
         name:
           type: string
           example: Playlist title
-
-    getPlaylistsByPostsID:
-      required: 
-      - postID
-      properties:
-        postID:
-          type: int
-          example: 1
 
     deletePlaylist:
       required: 
@@ -803,17 +759,6 @@ definitions:
         name:
         type: string
         example: PLaylist name
-
-    getPostsByPlaylistsID:
-      required: 
-      - id
-      - name
-      properties:
-        id:
-          type: string
-          example: 1
-
-
 
   # ***** User Verification ***** #
     loginUser:
