@@ -45,14 +45,10 @@ router.post('/createUser', async (req, res) => {
             // Create JWT
             const token = jwtAPI.getJWT(newUser.id, newUser.email);
 
-            //----COMMENTED OUT TO CLOSE USER LOOP----\\ 
-            // const token = jwt.sign(
-            //     { userId: newUser.id, email },
-            //     process.env.NEXT_PUBLIC_JWT_KEY,
-            //     {
-            //         expiresIn: "1h",
-            //     }
-            //     );
+            const data = {
+                user: newUser,
+                token: token
+            }
 
             res.json(data);
         }
@@ -155,7 +151,7 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
         if (!userExists) {
             return res.status(400).json({
                 msg: "User ID not found"
-            })
+            });
         } else {
             const updateUser = await prisma.User.update({
                 where: { id },
