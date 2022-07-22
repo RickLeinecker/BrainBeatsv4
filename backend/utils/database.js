@@ -1,4 +1,5 @@
-const {PrismaClient} = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 const bcrypt = require('bcryptjs');
 
 // Gets whether a user exists or not based on the field leading the query.
