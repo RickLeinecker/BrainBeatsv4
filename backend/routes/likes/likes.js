@@ -20,9 +20,9 @@ router.post('/createUserLike', async (req, res) => {
             });
         }
 
-        const userExists = dbUtil.getUserExists(userID, "id");
+        const userExists = await dbUtil.getUserExists(userID, "id");
 
-        const postExists = dbUtil.getPostExists(postID, "id");
+        const postExists = await dbUtil.getPostExists(postID, "id");
 
         if (!userExists) {
             return res.status(400).json({

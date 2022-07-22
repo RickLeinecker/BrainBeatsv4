@@ -21,7 +21,7 @@ router.post('/createPlaylist', async (req, res) => {
             });
         }
 
-        const userExists = userUtil.getUserExists(id, "id");
+        const userExists = await dbUtil.getUserExists(id, "id");
 
         if (!userExists) {
             return res.status(400).json({
@@ -56,7 +56,7 @@ router.get('/getAllPlaylists', async (req, res) => {
 // Get playlist by ID
 router.get('/getPlaylistByID', async (req, res) => {
     try {
-        const playlistExists = dbUtil.getPlaylistExists(req.query.id, "id");
+        const playlistExists = await dbUtil.getPlaylistExists(req.query.id, "id");
 
         if (!playlistExists) {
             return res.status(400).json({
@@ -98,7 +98,7 @@ router.get('/getPlaylistsByPostID', async (req, res) => {
 // Get all posts in a playlist
 router.get('/getPostsByPlaylistID', async (req, res) => {
     try {
-        const playlistExists = dbUtil.getPlaylistExists(req.query.id, "id");
+        const playlistExists = await dbUtil.getPlaylistExists(req.query.id, "id");
 
         if (!playlistExists) {
             return res.status(400).json({
@@ -156,9 +156,9 @@ router.post('/addPostToPlaylist', async (req, res) => {
             });
         }
 
-        const playlistExists = dbUtil.getPlaylistExists(playlistID, "id");
+        const playlistExists = await dbUtil.getPlaylistExists(playlistID, "id");
 
-        const postExists = dbUtil.getPostExists(postID, "id");
+        const postExists = await dbUtil.getPostExists(postID, "id");
 
         if (!playlistExists) {
             return res.status(400).json({

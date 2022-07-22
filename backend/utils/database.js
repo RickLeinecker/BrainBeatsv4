@@ -2,7 +2,7 @@ const {PrismaClient} = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 
 // Gets whether a user exists or not based on the field leading the query.
-function getUserExists(searchVal, searchType) {
+async function getUserExists(searchVal, searchType) {
     let result;
     switch (searchType) {
         case 'email':
@@ -30,7 +30,7 @@ function getUserExists(searchVal, searchType) {
 }
 
 // Gets whether a post exists or not based on the field leading the query.
-function getPostExists(searchVal, searchType) {
+async function getPostExists(searchVal, searchType) {
     let result;
     switch (searchType) {
         case 'id':
@@ -46,7 +46,7 @@ function getPostExists(searchVal, searchType) {
 }
 
 // Gets whether a playlist exists or not based on the field leading the query.
-function getPlaylistExists(searchVal, searchType) {
+async function getPlaylistExists(searchVal, searchType) {
     let result;
     switch (searchType) {
         case 'id':

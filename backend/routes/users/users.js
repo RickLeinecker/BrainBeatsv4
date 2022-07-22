@@ -13,20 +13,14 @@ router.post('/createUser', async (req, res) => {
     try {
         const { firstName, lastName, dob, email, username, password } = req.body;
 
-        // Check if the email already exists in db
-        const userEmailExists = await prisma.User.findUnique({
-            where: { email },
-        });
+        const userEmailExists = await dbUtil.getUserExists(email, "email");
 
-        // Check if the username already exists in db
-        const userNameExists = await prisma.User.findUnique({
-            where: { username },
-        });
+        const userNameExists = await dbUtil.getUserExists(username, "username");
 
         if (userEmailExists || userNameExists) {
             return res.status(400).json({
                 msg: "Email or username already exists. Please try again."
-            })
+            });
         } else {
 
             //Encrypt user password
@@ -62,70 +56,80 @@ router.post('/createUser', async (req, res) => {
 
             res.json(newUser);
         }
+    } catch (err) {
+        res.status(500).json({ msg: "Unable to create user" });
+    } 
+});
 
-    }
-    catch (err) {
-        console.log(err)
-        res.status(500).json({ msg: "Unable to create user" })
-    }
+// Login an existing user
+router.post('/loginUser', async (req, res) => {
+    try {
+        // Get user input
+        const { email, password } = req.body;
 
+        // Validate if user exists in our database
+        const userExists = await dbUtil.getUserExists(email, "email");
+
+        // If password is related to the email console log a successful login
+        if (userExists && (bcrypt.compare(password, userExists.password))) {
+            const token = jwtAPI.getJWT(userExists.id, userExists.email);
+            const data = {
+                user: userExists,
+                token: token
+            }
+            res.json(data);
+        } else {
+            return res.status(400).json({
+                msg: "Invalid credentials"
+            });
+        }
+
+    } catch (err) {
+        res.status(500).json({ msg: "Unable to create user" });
+    }
 });
 
 // Get all users with all records
 router.get('/getAllUsers', async (req, res) => {
-
     try {
         const users = await prisma.User.findMany();
-        res.json(users)
-        // FIND THE LENGTH OF USERS IN MYSQL USER TABLE
-        // res.json(users.length)
+        res.json(users);
+    } catch (err) {
+        res.status(500).send({ msg: err });
     }
-    catch (err) {
-        res.status(500).send({ msg: err })
-    }
-
 });
 
 // Get user by username
 router.get('/getUserByUsername', async (req, res) => {
-    console.log(req.query.username)
     try {
-        const findUser = await prisma.User.findUnique({
-            where: { username: req.query.username }
-        });
+        const userExists = await dbUtil.getUserExists(req.query.username, "username");
 
-        if (!findUser) {
+        if (!userExists) {
             return res.status(400).json({
                 msg: "Username does not exist"
-            })
+            });
         }
-        res.json(findUser)
+        res.json(userExists);
+    } catch (err) {
+        res.status(500).send({ msg: err });
     }
-    catch (err) {
-        res.status(500).send({ msg: err })
-    }
-
 });
 
 // Get user by user ID
 router.get('/getUserByID', async (req, res) => {
-
     try {
-        const findUser = await prisma.User.findUnique({
-            where: { id: req.query.id }
-        });
+        const userExists = await dbUtil.getUserExists(req.query.id, "id");
 
-        if (!findUser) {
+        if (!userExists) {
             return res.status(400).json({
                 msg: "User does not exist"
-            })
+            });
         }
-        res.json(findUser)
+        res.json(userExists);
     }
     catch (err) {
         res.status(500).send({ msg: err })
     }
-
 });
 
 // for (let i = 0; i <= user.length; i++) {
@@ -137,48 +141,45 @@ router.get('/getUserByID', async (req, res) => {
 
 // Update user info 
 router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
-
-    // try {
+    try {
         const { id, firstName, lastName, dob, email, username, bio } = req.body;
 
         // Required field for profilePicture as an entry
         
         const profilePicture = req.file;
                 
-        // Check if the id already exists in db
-        const userIDExists = await prisma.User.findUnique({
-            where: { id },
-        });
+        // Check if the user already exists in db
+        const userExists = await dbUtil.getUserExists(id, "id");
 
-        if (!userIDExists) {
+        if (!userExists) {
             return res.status(400).json({
                 msg: "User ID not found"
             })
         } else {
-        const updateUser = await prisma.User.update({
-            where: { id },
-            data: {
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                dob: new Date(dob).toISOString(),
-                username: username,
-                bio: bio
-            }
-        });    
+            const updateUser = await prisma.User.update({
+                where: { id },
+                data: {
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    dob: new Date(dob).toISOString(),
+                    username: username,
+                    bio: bio
+                }
+            });
         
-        const uploadPath = "../images/profilePicture/" + id;
+            const uploadPath = "../images/profilePicture/" + id;
 
-        fs.writeFile(uploadPath, profilePicture.buffer, function(err) {
-            if (err) throw new Error('Unable to save image');
-        });
-        // const profilepic2 = fs.readFile(uploadPath);
-        // console.log(profilepic2);
-        res.status(200).send({msg: "Updated OK"});
+            fs.writeFile(uploadPath, profilePicture.buffer, function(err) {
+                if (err) throw new Error('Unable to save image');
+            });
+            // const profilepic2 = fs.readFile(uploadPath);
+            // console.log(profilepic2);
+            res.status(200).send({msg: "Updated OK"});
         }
-    // } catch (err) {
-    //     res.status(500).send(err);
-    // }
+    } catch (err) {
+        res.status(500).send(err);
+    }
 });
 
 // Delete user by ID
@@ -189,8 +190,7 @@ router.delete('/deleteUser', async (req, res) => {
             where: { id: req.body.id }
         })
         res.status(200).send({ msg: "Deleted a user" });
-    }
-    catch (err) {
+    } catch (err) {
         res.status(500).send(err);
     }
 

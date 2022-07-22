@@ -12,7 +12,7 @@ const dbUtil = require("../../utils/database");
 router.get('/findMidi', async (req, res) => {
 
     const { username } = req.body;
-    const userExists = dbUtil.getUserExists(username, "username");
+    const userExists = await dbUtil.getUserExists(username, "username");
 
     if (!userExists) {
         return res.status(400).json({
