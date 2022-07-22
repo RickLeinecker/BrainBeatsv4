@@ -7,7 +7,9 @@ const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
 const dbUtil = require("../../utils/database");
-
+const multer  = require('multer')
+const upload = multer()
+const fs = require('fs');
 // Create a new user
 router.post('/createUser', async (req, res) => {
 
