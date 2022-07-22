@@ -18,6 +18,8 @@ const Cards = () => {
     const [data, setData] = useState('');
     //boolean for botton nav
     const [showMedia, setShowMedia] = useState(false);
+    const [beTheFirst, setBeTheFirst] = useState('');
+    const [yourFirst, setYourFirst] = useState('');
     const user = useRecoilValue(userModeState)
     const jwt = useRecoilValue(userJWT);
 
@@ -51,6 +53,12 @@ const Cards = () => {
                     setLiked(res.data);
                 })
                 
+        }
+        if(allPost.length == 0){
+            setBeTheFirst('Be the first to create music');
+        }
+        if(userPost.length == 0){
+            setYourFirst('Create your first piece');
         }
     }, [])
 
@@ -108,6 +116,7 @@ const Cards = () => {
                 <div className='row'>
                     <Container className='containerOverflow'>
                         <div style={{ display: 'inline-flex' }}>
+                            <p>{beTheFirst}</p>
                             {allPost.map((item, index) => {
                                 return (
                                     <div key={index}>
@@ -141,6 +150,7 @@ const Cards = () => {
                         <h1> YOUR SONG </h1>
                         <Container className='containerOverflow'>
                             <div style={{ display: 'inline-flex' }}>
+                                <p>{yourFirst}</p>
                                 {userPost.map((item, index) => {
                                     return (
                                         <div key={index}>

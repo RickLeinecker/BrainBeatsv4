@@ -11,8 +11,8 @@ import { useSetRecoilState, useRecoilState } from 'recoil';
 import { userModeState, userJWT } from '../context/GlobalState'
 
 const Navbars = () => {
-    const { user, setUser } = useRecoilState(userModeState)
-    const setUserJwt = useSetRecoilState(userJWT)
+    const [user, setUser ] = useRecoilState(userModeState)
+    const [jwt, setUserJwt] = useRecoilState(userJWT)
 
     const [search, setSearch] = useState('');
 
@@ -34,7 +34,7 @@ const Navbars = () => {
 
     return (
         <>
-            <Navbar bg="dark" variant="dark">
+            <Navbar style={{backgroundColor: '#333333'}}>
                 <Container >
                     <Navbar.Brand className='d-flex justify-content-start'>
                         <NavDropdown title={<FaBars size={30} />}>

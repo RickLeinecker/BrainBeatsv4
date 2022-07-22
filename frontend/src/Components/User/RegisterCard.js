@@ -1,7 +1,7 @@
 import React, { Component, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useRecoilState } from "recoil";
-import { userModeState } from '../context/GlobalState'
+import { userJWT, userModeState } from '../context/GlobalState'
 import sendAPI from "../sendAPI";
 
 
@@ -18,7 +18,8 @@ const RegisterCard = () => {
     const [errorMsg, setErrorMsg] = useState('');
     const [creationSuccess, setCreateSuccess] = useState('');
 
-    const [jwt, setJwt] = useRecoilState(userModeState)
+    const [jwt, setJwt] = useRecoilState(userJWT);
+    const [user, setUser] = useRecoilState(userModeState)
 
 
 
@@ -58,6 +59,7 @@ const RegisterCard = () => {
         sendAPI('post', '/users/createUser', newUser)
             .then(function (res) {
                 setCreateSuccess("Account Created!");
+                
                 setJwt(res.data.token);
                 setErrorMsg("");
             })
