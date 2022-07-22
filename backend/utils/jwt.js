@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { getUserExists } = require('./database');
 
 // Checks the local storage for an existing token and logs them in if one exists
 function verifyJWT(jwtToken) {
@@ -16,6 +17,10 @@ function verifyJWT(jwtToken) {
             return false;
         } else {
             if (decoded) {
+                const userExists = getUserExists(decoded.id, "id");
+
+                if (!userExists) return false;
+
                 return decoded;
             }
         }
