@@ -9,23 +9,24 @@ async function getUserExists(searchVal, searchType) {
             result = await prisma.User.findUnique({
                 where: { email: searchVal }
             });
-
+            console.log("email" + result);
             break;
         case 'id':
             result = await prisma.User.findUnique({
                 where: { id: searchVal }
             });
-
+            console.log("id" + result);
             break;
         case 'username':
             result = await prisma.User.findUnique({
                 where: { username: searchVal }
             });
-
+            console.log("username" + result);
             break;
     }
 
     if (!result) result = false;
+    console.log("final:" + result);
     return result;
 }
 

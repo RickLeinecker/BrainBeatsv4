@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
 const jwtAPI = require("../../utils/jwt");
-const dbUtil = require("../../utils/database");
+const { getUserExists, getPostExists } = require("../../utils/database");
 
 // Create a user like
 router.post('/createUserLike', async (req, res) => {
@@ -20,9 +20,9 @@ router.post('/createUserLike', async (req, res) => {
             });
         }
 
-        const userExists = await dbUtil.getUserExists(userID, "id");
+        const userExists = await getUserExists(userID, "id");
 
-        const postExists = await dbUtil.getPostExists(postID, "id");
+        const postExists = await getPostExists(postID, "id");
 
         if (!userExists) {
             return res.status(400).json({

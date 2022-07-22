@@ -9,16 +9,16 @@ const multer  = require('multer')
 const upload = multer()
 const fs = require('fs');
 const jwtAPI = require("../../utils/jwt");
-const dbUtil = require("../../utils/database");
+const { getUserExists } = require("../../utils/database");
 
 // Create a new user
 router.post('/createUser', async (req, res) => {
     try {
         const { firstName, lastName, dob, email, username, password } = req.body;
 
-        const userEmailExists = await dbUtil.getUserExists(email, "email");
+        const userEmailExists = await getUserExists(email, "email");
 
-        const userNameExists = await dbUtil.getUserExists(username, "username");
+        const userNameExists = await getUserExists(username, "username");
 
         if (userEmailExists || userNameExists) {
             return res.status(400).json({
@@ -64,7 +64,7 @@ router.post('/loginUser', async (req, res) => {
         const { email, password } = req.body;
 
         // Validate if user exists in our database
-        const userExists = await dbUtil.getUserExists(email, "email");
+        const userExists = await getUserExists(email, "email");
 
         // If password is related to the email console log a successful login
         if (userExists && (bcrypt.compare(password, userExists.password))) {
@@ -98,7 +98,7 @@ router.get('/getAllUsers', async (req, res) => {
 // Get user by username
 router.get('/getUserByUsername', async (req, res) => {
     try {
-        const userExists = await dbUtil.getUserExists(req.query.username, "username");
+        const userExists = await getUserExists(req.query.username, "username");
 
         if (!userExists) {
             return res.status(400).json({
@@ -114,7 +114,7 @@ router.get('/getUserByUsername', async (req, res) => {
 // Get user by user ID
 router.get('/getUserByID', async (req, res) => {
     try {
-        const userExists = await dbUtil.getUserExists(req.query.id, "id");
+        const userExists = await getUserExists(req.query.id, "id");
 
         if (!userExists) {
             return res.status(400).json({
@@ -144,7 +144,7 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
         const profilePicture = req.file;
                 
         // Check if the user already exists in db
-        const userExists = await dbUtil.getUserExists(id, "id");
+        const userExists = await getUserExists(id, "id");
 
         if (!userExists) {
             return res.status(400).json({

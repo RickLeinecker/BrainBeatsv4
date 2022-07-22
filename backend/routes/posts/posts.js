@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
 const jwtAPI = require("../../utils/jwt");
-const dbUtil = require("../../utils/database");
+const { getUserExists, getPostExists } = require("../../utils/database");
 
 // Create a post
 router.post('/createPost', async (req, res) => {
@@ -20,7 +20,7 @@ router.post('/createPost', async (req, res) => {
             });
         }
 
-        const userExists = await dbUtil.getUserExists(userID, "id");
+        const userExists = await getUserExists(userID, "id");
 
         if (!userExists) {
             return res.status(400).json({
@@ -61,7 +61,7 @@ router.get('/getUserPostsByUsername', async (req, res) => {
             return;
         }
 
-        const userExists = await dbUtil.getUserExists(username, "username");
+        const userExists = await getUserExists(username, "username");
 
         if (!userExists) {
             return res.status(400).json({
@@ -92,7 +92,7 @@ router.get('/getUserPostsByID', async (req, res) => {
     try {
         const userID = req.query.userID;
 
-        const userExists = await dbUtil.getUserExists(userID, "id");
+        const userExists = await getUserExists(userID, "id");
 
         if (!userExists) {
             return res.status(400).json({
@@ -165,7 +165,7 @@ router.put('/updatePost', async (req, res) => {
         }
 
         // Check if the id already exists in db
-        const postExists = await dbUtil.getPostExists(id, "id");
+        const postExists = await getPostExists(id, "id");
 
         if (!postExists) {
             return res.status(400).json({

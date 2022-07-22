@@ -5,14 +5,14 @@ const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 const musicUtils = require("../../utils/music");
 // const { JSON } = require("express");
-const dbUtil = require("../../utils/database");
+const { getUserExists } = require("../../utils/database");
 
 // TODO : Don't think this is needed, change it to actually work for our case for downloading to
 // Get user midi information by ID
 router.get('/findMidi', async (req, res) => {
 
     const { username } = req.body;
-    const userExists = await dbUtil.getUserExists(username, "username");
+    const userExists = await getUserExists(username, "username");
 
     if (!userExists) {
         return res.status(400).json({
