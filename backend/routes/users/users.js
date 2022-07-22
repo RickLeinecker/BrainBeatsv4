@@ -179,7 +179,7 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
 
 // Delete user by ID
 router.delete('/deleteUser', async (req, res) => {
-    const decoded = verifyJWT(res.body.token);
+    const decoded = verifyJWT(req.body.token);
 
     if (!decoded) {
         return res.status(400).json({
