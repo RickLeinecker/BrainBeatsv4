@@ -8,7 +8,7 @@ import sendAPI from '../sendAPI';
 const Profile = () => {
 
     const user = useRecoilValue(userModeState);
-
+    const jwt = useRecoilValue(userJWT);
     // //useStates to get required fields
     const [email, setEmail] = useState(user.email);
     const [username, setUsername] = useState(user.username);

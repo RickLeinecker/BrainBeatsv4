@@ -64,13 +64,12 @@ const Cards = () => {
             token: jwt,
         }
         sendAPI('post', '/likes/createUserLike', bodyData)
-        axios(config)
-            .then((res) => {
-                setLiked((l) => [... l,res.data])
-            })
-            .catch((err) => {
-                console.log(err.data)
-            })
+        .then((res) => {
+            setLiked((l) => [... l,res.data])
+        })
+        .catch((err) => {
+            console.log(err.data)
+        })
     },[])
 
     const onRemove = useCallback((post) => {

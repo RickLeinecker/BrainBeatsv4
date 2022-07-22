@@ -10,7 +10,7 @@ import sendAPI from '../sendAPI';
 const PlaylistBody = () => {
   const [toggle, setToggle] = useState(false);
   const user = useRecoilValue(userModeState);
-  const jtw = useRecoilValue(userJWT);
+  const jwt = useRecoilValue(userJWT);
 
   return (
     <>
@@ -20,7 +20,7 @@ const PlaylistBody = () => {
         <span className="switch-handle"></span>
       </label>
       <div className='container mainContainer'>
-        {toggle ? "" : <CreatePlayList id={user.id}/>}
+        {toggle ? "" : <CreatePlayList id={user.id} jwt = {jwt}/>}
       </div>
     </>
   )
@@ -28,7 +28,7 @@ const PlaylistBody = () => {
 
 export default PlaylistBody
 
-function CreatePlayList({id}){
+function CreatePlayList({id, jwt}){
 
   const [name, setName] = useState('')
   const [msg, setMsg] = useState('')
