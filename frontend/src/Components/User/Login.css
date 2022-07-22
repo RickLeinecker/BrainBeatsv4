@@ -1,5 +1,5 @@
 body {
-  background: #1C8EF9 !important;
+  background:#cfcccc;
   font-weight: 400;
   font-family: 'Fira Sans', sans-serif;
   text-align: center;
@@ -45,13 +45,18 @@ body, #root {
 form {
     position: absolute;
     background: white;
+    border: 4px solid #3b689c;
     padding: 5px;
     border-radius: 10px;
     width: 300px;
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
-}  
+} 
+
+.submitButton{
+  width: 40%;
+}
 .errMsg {
   color: red;
   font-size: 20px;

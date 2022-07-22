@@ -72,7 +72,7 @@ const Login = () => {
                             </div>
                         </div>
                         <p className='errMsg'>{errMsg}</p>
-                        <button type="submit" className="btn btn-primary btn-block">Submit</button>
+                        <button type="submit" className="btn btn-primary btn-block submitButton">Submit</button>
 
                         <div id="HASH" className="blue-msg">
                             <p className="sign-up text-left">New here? <a href="/Register">Sign up</a></p>

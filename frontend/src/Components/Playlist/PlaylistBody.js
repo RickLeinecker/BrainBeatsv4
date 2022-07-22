@@ -33,7 +33,6 @@ function CreatePlayList({id, jwt}){
   const [name, setName] = useState('')
   const [msg, setMsg] = useState('')
   console.log(id);
-  const path = require('../Path');
 
   const makePlaylist = () => {
     const bodyData = {

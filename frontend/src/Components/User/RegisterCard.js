@@ -1,7 +1,7 @@
 import React, { Component, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useRecoilState } from "recoil";
-import {userModeState} from '../context/GlobalState'
+import { userModeState } from '../context/GlobalState'
 import sendAPI from "../sendAPI";
 
 
@@ -37,8 +37,8 @@ const RegisterCard = () => {
             setStage(0);
             return;
         }
-        if(ageCheck()){
-            setErrorMsg("You are to young");
+        if (ageCheck()) {
+            setErrorMsg("You are too young");
             return;
         }
 
@@ -82,10 +82,9 @@ const RegisterCard = () => {
         var birthDate = new Date(dob);
         var age = today.getFullYear() - birthDate.getFullYear();
         console.log("IN AGE CHECK")
-        if(age < 13)
-        {
+        if (age < 13) {
             return true
-        }else{
+        } else {
             return false
         }
     }
@@ -150,6 +149,9 @@ const RegisterCard = () => {
                                     <div style={{ textAlign: 'right' }}>
                                         <Button type="button" className="" onClick={nextStage}>Next</Button>
                                     </div>
+                                    <div id="HASH" className="blue-msg">
+                                        <p className="sign-up text-left">Already Signed up? <a href="/Login">Sign In</a></p>
+                                    </div>
                                 </>
                             )}
                             {stage == 1 && (
@@ -193,7 +195,11 @@ const RegisterCard = () => {
                                     <div id="HASH">
                                         <Button type="button" className='text-left' onClick={(e) => (e.preventDefault(), setStage(0))}>Prev</Button>
                                         <Button type="submit" className='text-right' >Submit</Button>
+                                    </div>
+                                    <div id="HASH" className="blue-msg">
+                                        <p className="sign-up text-left">Already Signed up? <a href="/Login">Sign In</a></p>
                                     </div></>
+
                             )}
 
                         </form>

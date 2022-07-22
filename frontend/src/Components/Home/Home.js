@@ -3,7 +3,6 @@ import { Card, Button, Container } from 'react-bootstrap';
 import { FaHeart, FaPlayCircle, FaRegHeart } from 'react-icons/fa';
 import MidiPlayer from 'react-midi-player';
 import './homepage.css';
-import axios from 'axios';
 import Carousel from '../Carousel/Carousel';
 import { useRecoilValue } from 'recoil';
 
@@ -57,7 +56,6 @@ const Cards = () => {
 
 
     const onLike = useCallback((post) => {
-
         let bodyData = {
             userID: user.id,
             postID: post,

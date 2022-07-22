@@ -1,20 +1,15 @@
-@media (max-width: 600px) {
-    .element-to-hide {
-      display: none;
-    }
-  }
-
 .homeImg {
-    width: 70px;
-    height: 70px;
+    width: 50px;
+    height: 50px;
     position: relative;
     overflow: hidden;
     border-radius: 50%;
     margin: 10px;
 }
 
-.titleNav {
-    margin: 10px;
-    font-size: 40px;
-    text-decoration: none;
+.buttonStyle{
+  background-color: #3b689c;
+  border-color: pink;
+  color: white;
+  margin: 5px;
 }
