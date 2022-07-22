@@ -4,14 +4,14 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 var nodemailer = require("nodemailer");
-const jwtAPI = require("../../utils/jwt");
+const { getJWT, verifyJWT} = require("../../utils/jwt");
 // const { JSON } = require("express");
 const dbUtil = require("../../utils/database");
 
 router.get('/verifyJWT', async (req, res) => {
     try {
         const jwt = req.query.jwt;
-        res.json(jwtAPI.verifyJWT(jwt));
+        res.json(verifyJWT(jwt));
     } catch (err) {
         res.status(500).send(err);
     }

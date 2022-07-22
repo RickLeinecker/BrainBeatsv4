@@ -4,7 +4,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
-const jwtAPI = require("../../utils/jwt");
+const { getJWT, verifyJWT } = require("../../utils/jwt");
 const { getUserExists, getPostExists } = require("../../utils/database");
 
 // Create a user like
@@ -12,7 +12,7 @@ router.post('/createUserLike', async (req, res) => {
     try {
         const { userID, postID, token } = req.body;
 
-        const decoded = jwtAPI.verifyJWT(token);
+        const decoded = verifyJWT(token);
 
         if (!decoded) {
             return res.status(400).json({
@@ -51,7 +51,7 @@ router.post('/createUserLike', async (req, res) => {
 // Remove a user like
 router.delete('/removeUserLike', async (req, res) => { 
     try {
-        const decoded = jwtAPI.verifyJWT(req.body.token);
+        const decoded = verifyJWT(req.body.token);
 
         if (!decoded) {
             return res.status(400).json({

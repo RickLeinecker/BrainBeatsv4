@@ -4,7 +4,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
-const jwtAPI = require("../../utils/jwt");
+const { getJWT, verifyJWT } = require("../../utils/jwt");
 const { getUserExists, getPostExists, getPlaylistExists} = require("../../utils/database");
 
 // Create a new playlist
@@ -13,7 +13,7 @@ router.post('/createPlaylist', async (req, res) => {
     try {
         const { name, userID, token } = req.body;
 
-        const decoded = jwtAPI.verifyJWT(token);
+        const decoded = verifyJWT(token);
 
         if (!decoded) {
             return res.status(400).json({
@@ -122,7 +122,7 @@ router.get('/getPostsByPlaylistID', async (req, res) => {
 router.delete('/deletePlaylist', async (req, res) => {
 
     try {
-        const decoded = jwtAPI.verifyJWT(req.body.token);
+        const decoded = verifyJWT(req.body.token);
 
         if (!decoded) {
             return res.status(400).json({
@@ -148,7 +148,7 @@ router.post('/addPostToPlaylist', async (req, res) => {
     try {
         const { playlistID, postID, token } = req.body;
 
-        const decoded = jwtAPI.verifyJWT(token);
+        const decoded = verifyJWT(token);
 
         if (!decoded) {
             return res.status(400).json({
@@ -188,7 +188,7 @@ router.delete('/removePostFromPlaylist', async (req, res) => {
     try {
         const { postID, playlistID, token } = req.body;
 
-        const decoded = jwtAPI.verifyJWT(token);
+        const decoded = verifyJWT(token);
 
         if (!decoded) {
             return res.status(400).json({
@@ -216,7 +216,7 @@ router.put('/updatePlaylist', async (req, res) => {
     try {
         const { id, name, thumbnail, token} = req.body;
 
-        const decoded = jwtAPI.verifyJWT(token);
+        const decoded = verifyJWT(token);
 
         if (!decoded) {
             return res.status(400).json({

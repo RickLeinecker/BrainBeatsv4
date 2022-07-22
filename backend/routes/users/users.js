@@ -8,7 +8,7 @@ const { user, post } = new PrismaClient();
 const multer  = require('multer')
 const upload = multer()
 const fs = require('fs');
-const jwtAPI = require("../../utils/jwt");
+const { getJWT, verifyJWT } = require("../../utils/jwt");
 const { getUserExists } = require("../../utils/database");
 
 // Create a new user
@@ -41,7 +41,7 @@ router.post('/createUser', async (req, res) => {
             });
 
             // Create JWT
-            const token = jwtAPI.getJWT(newUser.id, newUser.email);
+            const token = getJWT(newUser.id, newUser.email);
 
             const data = {
                 user: newUser,
@@ -68,7 +68,7 @@ router.post('/loginUser', async (req, res) => {
 
         // If password is related to the email console log a successful login
         if (userExists && (bcrypt.compare(password, userExists.password))) {
-            const token = jwtAPI.getJWT(userExists.id, userExists.email);
+            const token = getJWT(userExists.id, userExists.email);
             const data = {
                 user: userExists,
                 token: token
@@ -132,7 +132,7 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
     try{
         const { id, firstName, lastName, dob, email, username, bio, token } = req.body;
 
-        const decoded = jwtAPI.verifyJWT(token);
+        const decoded = verifyJWT(token);
 
         if (!decoded) {
             return res.status(400).json({
@@ -179,7 +179,7 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
 
 // Delete user by ID
 router.delete('/deleteUser', async (req, res) => {
-    const decoded = jwtAPI.verifyJWT(res.body.token);
+    const decoded = verifyJWT(res.body.token);
 
     if (!decoded) {
         return res.status(400).json({

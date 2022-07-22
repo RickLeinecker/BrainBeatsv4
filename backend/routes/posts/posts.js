@@ -4,7 +4,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
-const jwtAPI = require("../../utils/jwt");
+const { getJWT, verifyJWT} = require("../../utils/jwt");
 const { getUserExists, getPostExists } = require("../../utils/database");
 
 // Create a post
@@ -12,7 +12,7 @@ router.post('/createPost', async (req, res) => {
     try {
         const { userID, title, bpm, key, instruments, noteTypes, visibility, token} = req.body;
 
-        const decoded = jwtAPI.verifyJWT(token);
+        const decoded = verifyJWT(token);
 
         if (!decoded) {
             return res.status(400).json({
@@ -133,7 +133,7 @@ router.get('/getAllPosts', async (req, res) => {
 // Delete a post
 router.delete('/deletePost', async (req, res) => {
     try {
-        const decoded = jwtAPI.verifyJWT(req.body.token);
+        const decoded = verifyJWT(req.body.token);
 
         if (!decoded) {
             return res.status(400).json({
@@ -156,7 +156,7 @@ router.put('/updatePost', async (req, res) => {
     try {
         const { id, title, visibility, bio, thumbnail, likeCount, token} = req.body;
 
-        const decoded = jwtAPI.verifyJWT(token);
+        const decoded = verifyJWT(token);
 
         if (!decoded) {
             return res.status(400).json({

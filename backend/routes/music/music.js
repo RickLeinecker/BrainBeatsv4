@@ -3,7 +3,7 @@ const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
-const musicUtils = require("../../utils/music");
+const { getBPMValues } = require("../../utils/music");
 // const { JSON } = require("express");
 const { getUserExists } = require("../../utils/database");
 
@@ -36,7 +36,7 @@ router.get('/findMidi', async (req, res) => {
 
 // Get BPM values
 router.get('/getBPMValues', async (req, res) => {
-    const bpmValues = await musicUtils.getBPMValues();
+    const bpmValues = await getBPMValues();
     res.json(bpmValues);
 });
 
