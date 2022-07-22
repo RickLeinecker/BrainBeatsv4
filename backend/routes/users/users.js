@@ -10,7 +10,9 @@ const upload = multer()
 const fs = require('fs');
 const jwtAPI = require("../../utils/jwt");
 const dbUtil = require("../../utils/database");
-
+const multer  = require('multer')
+const upload = multer()
+const fs = require('fs');
 // Create a new user
 router.post('/createUser', async (req, res) => {
     try {

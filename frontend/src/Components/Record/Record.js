@@ -4,9 +4,16 @@ import { Carousel } from "react-responsive-carousel";
 import { SliderPicker } from 'react-color'
 import './record.css'
 import { FaAngleRight, FaAngleLeft, FaRegPlayCircle, FaRegPauseCircle } from "react-icons/fa";
+
+// **** If more devices are needed, here are the packages to begin their acquisition. **** \\
+import muse from "https://cdn.jsdelivr.net/npm/@brainsatplay/muse@0.0.1/dist/index.esm.js"; // Muse board retrieval
+import hegduino from "https://cdn.jsdelivr.net/npm/@brainsatplay/hegduino@0.0.3/dist/index.esm.js"; // Cyton 8 channel board retrieval
+
+
 import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/dist/index.esm.js"; // UI
-import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js"; // Data acquisition
-import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // Device drivers
+// Data acquisition
+import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js"; 
+import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // This is the device aquisition for BrainBeats AKA the ganglion device.
 import * as XLSX from 'xlsx';
 import MidiPlayer from 'midi-player-js';
 import {cloneDeep} from 'lodash'
@@ -601,6 +608,10 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 
 		dataDevices = new datastreams.DataDevices();
 		dataDevices.load(ganglion);
+
+		// dataDevices.load(muse);
+		// dataDevices.load(device);
+		// dataDevices.load(hegduino);
 
 		// Set up graph (rough)
 		// const graphDiv = document.getElementById("graph");
