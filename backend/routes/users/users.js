@@ -6,6 +6,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
+const dbUtil = require("../../utils/database");
 
 // Create a new user
 router.post('/createUser', async (req, res) => {
