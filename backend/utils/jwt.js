@@ -23,7 +23,7 @@ function verifyJWT(jwtToken) {
 }
 
 // Checks the user exists and then creates and saves a JWT onto their machine's local storage
-async function getJWT(id, email) {
+function getJWT(id, email) {
     const token = jwt.sign({
         id: id,
         email: email
