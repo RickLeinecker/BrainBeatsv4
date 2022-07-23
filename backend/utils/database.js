@@ -10,24 +10,20 @@ async function getUserExists(searchVal, searchType) {
             result = await prisma.User.findUnique({
                 where: { email: searchVal }
             });
-            console.log("email" + result);
             break;
         case 'id':
             result = await prisma.User.findUnique({
                 where: { id: searchVal }
             });
-            console.log("id" + result);
             break;
         case 'username':
             result = await prisma.User.findUnique({
                 where: { username: searchVal }
             });
-            console.log("username" + result);
             break;
     }
 
     if (!result) result = false;
-    console.log("final:" + result);
     return result;
 }
 
@@ -63,8 +59,23 @@ async function getPlaylistExists(searchVal, searchType) {
     return result;
 }
 
+async function getLikeExists(postID, userID) {
+    let result = await prisma.Like.findUnique({
+        where: {
+            postID_userID:{
+                postID: postID,
+                userID: userID
+            }
+        }
+    });
+
+    if (!result) result = false;
+    return result;
+}
+
 module.exports = {
     getUserExists: getUserExists,
     getPostExists: getPostExists,
-    getPlaylistExists: getPlaylistExists
+    getPlaylistExists: getPlaylistExists,
+    getLikeExists: getLikeExists
 }

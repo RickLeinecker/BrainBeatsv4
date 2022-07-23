@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { getUserExists } = require('./database');
+require("dotenv").config();
 
 // Checks the local storage for an existing token and logs them in if one exists
 function verifyJWT(jwtToken) {
@@ -27,16 +28,20 @@ function verifyJWT(jwtToken) {
     });
 }
 
-// Checks the user exists and then creates and saves a JWT onto their machine's local storage
+// Creates and saves a JWT onto their machine's local storage
 function getJWT(id, email) {
-    const token = jwt.sign({
-        id: id,
-        email: email
-    }, process.env.NEXT_JWT_KEY, {
-        expiresIn: '30d'
-    });
-    
-    return token;
+    try {
+        const token = jwt.sign({
+            id: id,
+            email: email
+        }, process.env.NEXT_JWT_KEY, {
+            expiresIn: '30d'
+        });
+
+        return token;
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 // TODO : Turn these into API calls for frontend to use so it's actually client side local storage

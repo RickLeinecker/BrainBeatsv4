@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
 const { getJWT, verifyJWT } = require("../../utils/jwt");
-const { getUserExists, getPostExists } = require("../../utils/database");
+const { getUserExists, getPostExists, getLikeExists } = require("../../utils/database");
 
 // Create a user like
 router.post('/createUserLike', async (req, res) => {
@@ -33,6 +33,14 @@ router.post('/createUserLike', async (req, res) => {
                 msg: "Post not found"
             });
         } else {
+            const likeExists = await getLikeExists(postID, userID);
+
+            if (likeExists) {
+                return res.status(400).json({
+                    msg: "Like already exists"
+                });
+            }
+
             // Create a like
             const newLike = await prisma.Like.create({
                 data: {
@@ -42,7 +50,7 @@ router.post('/createUserLike', async (req, res) => {
             });
 
             const updatePost = await prisma.Post.update({
-                where: { postID },
+                where: { id: postID },
                 data: {
                     likeCount: postExists.likeCount + 1
                 }
@@ -51,6 +59,7 @@ router.post('/createUserLike', async (req, res) => {
             res.json(newLike);
         }
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err });
     }
 });
@@ -90,9 +99,15 @@ router.delete('/removeUserLike', async (req, res) => {
                     },
                 }
             });
+
+            if (!deleteLike) {
+                return res.status(400).json({
+                    msg: "Like not found"
+                });
+            }
     
             const updatePost = await prisma.Post.update({
-                where: { postID },
+                where: { id: postID },
                 data: {
                     likeCount: postExists.likeCount - 1
                 }
