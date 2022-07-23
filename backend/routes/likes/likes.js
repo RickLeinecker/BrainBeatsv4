@@ -136,32 +136,4 @@ router.get('/getAllUserLikes', async (req, res) => {
     }
 });
 
-// Get number of likes for a post
-router.get('/getNumLikesForPost', async (req, res) => {
-    try {
-        const postID = req.query.postID;
-
-        const postExists = await getPostExists(postID, "id");
-
-        if (!postExists) { 
-            return res.status(400).json({
-                msg: "Post not found"
-            });
-        } else {
-            const numLikes = await prisma.Post.findUnique({
-                where: {
-                    id: postID
-                },
-                select: {
-                    likeCount: true
-                }
-            });
-
-            res.send(likeCount);
-        }
-    } catch (err) {
-        res.status(500).send(err);
-    }
-});
-
 module.exports = router;
