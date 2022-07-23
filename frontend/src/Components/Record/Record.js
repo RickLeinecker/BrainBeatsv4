@@ -4,6 +4,9 @@ import { Carousel } from "react-responsive-carousel";
 import { SliderPicker } from 'react-color'
 import './record.css'
 import { FaAngleRight, FaAngleLeft, FaRegPlayCircle, FaRegPauseCircle } from "react-icons/fa";
+//import * as fs from 'fs/promises';
+// import {readFileSync, promises as fsPromises} from 'fs';
+// import * as fs from 'fs';
 
 // **** If more devices are needed, here are the packages to begin their acquisition. **** \\
 import muse from "https://cdn.jsdelivr.net/npm/@brainsatplay/muse@0.0.1/dist/index.esm.js"; // Muse board retrieval
@@ -16,11 +19,12 @@ import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@lates
 import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // This is the device aquisition for BrainBeats AKA the ganglion device.
 import * as XLSX from 'xlsx';
 import MidiPlayer from 'midi-player-js';
-import {cloneDeep} from 'lodash'
+import _, {cloneDeep} from 'lodash'
 
 import { useRecoilValue } from "recoil";
 import {userJWT, userModeState} from '../context/GlobalState'
 import sendAPI from '../sendAPI';
+// import { fsync } from 'fs';
 
 function Record() {
     //needed states
@@ -840,7 +844,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 			// 	button.onclick = () => downloadData();
 			// }
 			else if (button.id === 'Disconnect'){
-				button.onclick = () => {rec=false;console.log("I GOT CLICKED" + rec)};
+				button.onclick = () => {rec=false;console.log("I GOT CLICKED " + rec)};
 			}
 	},[])
 
@@ -852,6 +856,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 		console.log("FP1, FP2, C3, C4 Instruments: " + getInstrumentNameFromInt(FP1Instrument), ", " + getInstrumentNameFromInt(FP2Instrument) + ", "
 			+ getInstrumentNameFromInt(C3Instrument) + ", " + getInstrumentNameFromInt(C4Instrument));
 		console.log("FP1, FP2, C3, C4 Note Types: " + FP1NoteType, ", " + FP2NoteType + ", " + C3NoteType + ", " + C4NoteType);
+		console.log("----------------------------------------------");
 	}
 	// ------------------------------------------------------------------------------ CONSTANTS AND GLOBAL VARIABLES ------------------------------------------------------------------------------
 
@@ -1009,6 +1014,22 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 		
 	// ------------------------------------------------------------------------------ CUSTOM HELPER FUNCTIONS ------------------------------------------------------------------------------
 
+	var decodedMIDIString = '';
+
+	function previewFile() {
+		const [file] = document.querySelector('input[type=file]').files;
+		const reader = new FileReader();
+	  
+		reader.addEventListener("load", () =>
+		{
+			console.log("Data from MIDI file converted to base64: " + btoa(reader.result));
+			decodedMIDIString = btoa(reader.result);
+		}, false);
+	  
+		if (file)
+			//reader.readAsText(file);
+			reader.readAsBinaryString(file);
+	}
 
 	function playMidiFile(uri)
 	{
@@ -1018,8 +1039,9 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 		// Load a MIDI file and start combing through it
 		//Player.loadDataUri(uri); this is the good one that you should use (:
 		//Player.loadDataUri(btoa("file://C:\Users\Noah\Documents\GitHub\BrainBeatsWeb\frontend\src\Components\Record/UseThisToTestMIDI.mid"));
+		
 		console.log("URI passed in: " + uri);
-		Player.loadDataUri("data:audio/midi;base64,TVRoZAAAAAYAAQAEAIBNVHJrAAAAfwD/UQMHoSAA/1gEBAIYCIIAkAAAAIAAAIIAkAAAAIAAAACQQECCAIBAQIIAkAAAAIAAAIIAkAAAAIAAAACQRECCAIBEQIIAkAAAAIAAAIIAkAAAAIAAAIIAkAAAAIAAAACQRUCCAIBFQACQQkCCAIBCQIIAkAAAAIAAAAD/LwBNVHJrAAAA4gD/UQMHoSAA/1gEBAIYCACQQECBAIBAQACQRUCBAIBFQACQQkCBAIBCQIEAkAAAAIAAAIEAkAAAAIAAAACQSUCBAIBJQACQR0CBAIBHQACQQkCBAIBCQACQRUCBAIBFQIEAkAAAAIAAAIEAkAAAAIAAAACQP0CBAIA/QACQRECBAIBEQACQRECBAIBEQACQR0CBAIBHQIEAkAAAAIAAAACQR0CBAIBHQIEAkAAAAIAAAIEAkAAAAIAAAACQR0CBAIBHQIEAkAAAAIAAAIEAkAAAAIAAAACQRUCBAIBFQAD/LwBNVHJrAAABawD/UQMHoSAA/1gEBAIYCECQAAAAgAAAAJBRQECAUUAAkE5AQIBOQACQR0BAgEdAQJAAAACAAABAkAAAAIAAAACQQkBAgEJAAJBFQECARUAAkFFAQIBRQACQP0BAgD9AAJBFQECARUAAkERAQIBEQACQREBAgERAQJAAAACAAABAkAAAAIAAAACQRUBAgEVAQJAAAACAAABAkAAAAIAAAACQRUBAgEVAQJAAAACAAAAAkERAQIBEQACQTkBAgE5AAJBOQECATkAAkEVAQIBFQACQQEBAgEBAQJAAAACAAABAkAAAAIAAAACQREBAgERAQJAAAACAAABAkAAAAIAAAECQAAAAgAAAQJAAAACAAABAkAAAAIAAAECQAAAAgAAAQJAAAACAAABAkAAAAIAAAECQAAAAgAAAQJAAAACAAABAkAAAAIAAAACQQEBAgEBAAJBFQECARUBAkAAAAIAAAECQAAAAgAAAAP8vAE1UcmsAAAJ7AP9RAwehIAD/WAQEAhgIAJBAQCCAQEAAkE5AIIBOQACQTkAggE5AAJBOQCCATkAAkFhAIIBYQACQRUAggEVAAJA9QCCAPUAgkAAAAIAAAACQR0AggEdAAJBHQCCAR0AAkEdAIIBHQACQR0AggEdAAJBHQCCAR0AAkEdAIIBHQCCQAAAAgAAAAJBHQCCAR0AAkD1AIIA9QACQR0AggEdAAJA9QCCAPUAAkEdAIIBHQACQQEAggEBAIJAAAACAAAAAkEJAIIBCQACQQkAggEJAAJBCQCCAQkAAkEJAIIBCQACQREAggERAAJBEQCCAREAAkERAIIBEQCCQAAAAgAAAAJBEQCCAREAgkAAAAIAAAACQREAggERAAJBEQCCAREAAkERAIIBEQACQUEAggFBAAJBQQCCAUEAAkFBAIIBQQACQUEAggFBAAJBQQCCAUEAAkFBAIIBQQCCQAAAAgAAAAJBHQCCAR0AgkAAAAIAAAACQR0AggEdAIJAAAACAAAAAkEdAIIBHQCCQAAAAgAAAIJAAAACAAAAgkAAAAIAAACCQAAAAgAAAIJAAAACAAAAAkEdAIIBHQACQR0AggEdAIJAAAACAAAAAkEdAIIBHQACQR0AggEdAIJAAAACAAAAAkEdAIIBHQCCQAAAAgAAAIJAAAACAAAAgkAAAAIAAACCQAAAAgAAAIJAAAACAAAAgkAAAAIAAACCQAAAAgAAAIJAAAACAAAAAkEBAIIBAQACQQEAggEBAAJBCQCCAQkAgkAAAAIAAAACQQkAggEJAAJBAQCCAQEAAkEJAIIBCQCCQAAAAgAAAIJAAAACAAAAgkAAAAIAAAAD/LwA=");
+		Player.loadDataUri("data:audio/midi;base64," + decodedMIDIString);
 		Player.play();
 
 		var eventCount = 0;
@@ -1039,7 +1061,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 			if (event.noteNumber != 0 && event.noteNumber != undefined)// && eventCount % 2 == 0) // As long as the midiEvent is a valid NOTE (other events not supported) and not undefined
 			{
 				//console.log(event);
-				console.log("" + eventCount + ": " + event.noteNumber + ", AKA " + event.noteName);
+				console.log("" + eventCount + ": " + event.noteNumber + ", AKA " + event.noteName + " [Track " + event.track + "]");
 
 				var midiNoteFrequency = getFrequencyFromNoteOctaveString(event.noteName);
 
@@ -1055,7 +1077,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 			eventCount++;
 		});
 	}
-
 
 	function getNoteLengthStringFromInt(input)
 	{
@@ -1083,6 +1104,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 	{
 		var write = new MidiWriter.Writer([trackFP1, trackFP2, trackC3, trackC4]);
 		var writeURI = write.dataUri();
+		//convertMidiFileToBase64String('./big_doog.mid');
 		//downloadURI(writeURI, "BrainBeatsMasterpiece");
 		playMidiFile(writeURI);
 		//console.log(write.dataUri());
@@ -1927,13 +1949,14 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
                         Disconnect
                       </button>
                     </div>
+					<input type="file" onChange={previewFile}></input>
 
               </td>
               <td style={{ width: "25%", textAlign: "center" }}>
 				<div style={{ color: "white" }}>Helpful Buttons</div>
 					<button onClick={handleStuff}>Print Debug Stuff</button> <br></br>
 					<button onClick={generateAndDownloadMIDIFile}>Download MIDI and play WIP</button>
-					<button onClick={downloadData}>Print Raw Data</button> <br></br>
+					<button onClick={downloadData}>Download Raw Data</button> <br></br>
               </td>
 			  
             </tr>
