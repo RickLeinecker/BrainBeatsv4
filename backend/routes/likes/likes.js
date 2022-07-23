@@ -41,6 +41,13 @@ router.post('/createUserLike', async (req, res) => {
                 }
             });
 
+            const updatePost = await prisma.Post.update({
+                where: { postID },
+                data: {
+                    likeCount: postExists.likeCount + 1
+                }
+            });
+
             res.json(newLike);
         }
     } catch (err) {
@@ -51,7 +58,10 @@ router.post('/createUserLike', async (req, res) => {
 // Remove a user like
 router.delete('/removeUserLike', async (req, res) => { 
     try {
-        const decoded = verifyJWT(req.body.token);
+
+        const { userID, postID, token } = req.body;
+
+        const decoded = verifyJWT(token);
 
         if (!decoded) {
             return res.status(400).json({
@@ -59,16 +69,37 @@ router.delete('/removeUserLike', async (req, res) => {
             });
         }
 
-        const deleteLike = await prisma.Like.delete({
-            where: { 
-                postID_userID: {
-                    postID: req.body.postID,
-                    userID: req.body.userID,
-                },
-            }
-        });
-        console.log(deleteLike);
-        res.status(200).send({ msg: "Deleted a user like" });
+        const userExists = await getUserExists(userID, "id");
+
+        const postExists = await getPostExists(postID, "id");
+
+        if (!userExists) {
+            return res.status(400).json({
+                msg: "User not found"
+            });
+        } else if (!postExists) { 
+            return res.status(400).json({
+                msg: "Post not found"
+            });
+        } else {
+            const deleteLike = await prisma.Like.delete({
+                where: { 
+                    postID_userID: {
+                        postID: postID,
+                        userID: userID,
+                    },
+                }
+            });
+    
+            const updatePost = await prisma.Post.update({
+                where: { postID },
+                data: {
+                    likeCount: postExists.likeCount - 1
+                }
+            });
+    
+            res.status(200).send({ msg: "Deleted a user like" });
+        }
     } catch (err) {
         res.status(500).send(err);
     }
@@ -100,6 +131,34 @@ router.get('/getAllUserLikes', async (req, res) => {
         });
 
         res.json(allLikes);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+});
+
+// Get number of likes for a post
+router.get('/getNumLikesForPost', async (req, res) => {
+    try {
+        const postID = req.query.postID;
+
+        const postExists = await getPostExists(postID, "id");
+
+        if (!postExists) { 
+            return res.status(400).json({
+                msg: "Post not found"
+            });
+        } else {
+            const numLikes = await prisma.Post.findUnique({
+                where: {
+                    id: postID
+                },
+                select: {
+                    likeCount: true
+                }
+            });
+
+            res.send(likeCount);
+        }
     } catch (err) {
         res.status(500).send(err);
     }
