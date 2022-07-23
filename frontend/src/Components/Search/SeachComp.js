@@ -10,7 +10,7 @@ import sendAPI from '../sendAPI';
 const SeachComp = () => {
   const user = useRecoilValue(userModeState);
   const jwt = useRecoilValue(userJWT);
-  let search = '';
+  const [search, setSearch] = useState('')
   const [Post, setPost] = useState([]);
   const [liked, setLiked] = useState([]);
   const [errMsg, setErrMsg] = useState('');
@@ -98,11 +98,12 @@ const SeachComp = () => {
       <button onClick={() => handle()}>HE</button>
       <div className='row'>
         <div>
-          <input className='textBox' placeholder='Search Box' onChange={(event) => {
-            //the reason search is not a use state is setState is asyncronous which
-            //messes with live search
-            search = event.target.value;
-            searchPost();
+          <input className='textBox' placeholder='Search Box' onKeyPress={(event) => {
+            if(event.key === 'Enter'){
+              search = event.target.value;
+              searchPost();
+            }
+            
           }} />
 
         </div>

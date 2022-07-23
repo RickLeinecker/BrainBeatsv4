@@ -5,7 +5,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 export default () => (
     <div style={{display: 'flex', justifyContent: 'center'}}>
-        <Carousel autoPlay showThumbs={false} showIndicators={false}
+        <Carousel autoPlay showThumbs={false}
         infiniteLoop={true} dynamicHeight={true} interval={10000}>
             <div>
                 <img alt="" src="http://via.placeholder.com/2048x1024" />

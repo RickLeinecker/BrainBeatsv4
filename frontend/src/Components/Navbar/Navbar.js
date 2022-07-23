@@ -57,7 +57,7 @@ const Navbars = () => {
                             aria-label="Search"
                             onKeyPress={handleSearch}
                         />
-                        <Button variant="outline-success" onClick={handleSearch}>Search</Button>
+                        <Button variant="outline-success" onClick={handleSearch} style={{color: 'blue'}}>Search</Button>
                     </div>
                     <Navbar.Collapse className="justify-content-end">
                         {user ?
