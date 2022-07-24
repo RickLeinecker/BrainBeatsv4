@@ -55,6 +55,23 @@ router.get('/getAllPlaylists', async (req, res) => {
     }
 });
 
+// Get all playlists for a user
+router.get('/getUserPlaylists', async (req, res) => {
+    const userID = req.query.userID;
+
+    try {
+        const playlists = await prisma.Playlist.findMany({
+            where: {
+                userID: userID
+            }
+        });
+        res.json(playlists);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ msg: err });
+    }
+});
+
 // Get playlist by ID
 router.get('/getPlaylistByID', async (req, res) => {
     try {
