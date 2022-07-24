@@ -51,6 +51,7 @@ router.post('/createUser', async (req, res) => {
             res.json(data);
         }
     } catch (err) {
+        console.log(err);
         return res.status(400).json({
             msg: "Could not create user."
         });
@@ -79,8 +80,8 @@ router.post('/loginUser', async (req, res) => {
                 msg: "Invalid credentials"
             });
         }
-
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err });
     }
 });
@@ -91,6 +92,7 @@ router.get('/getAllUsers', async (req, res) => {
         const users = await prisma.User.findMany();
         res.json(users);
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err });
     }
 });
@@ -107,6 +109,7 @@ router.get('/getUserByUsername', async (req, res) => {
         }
         res.json(userExists);
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err });
     }
 });
@@ -123,6 +126,7 @@ router.get('/getUserByID', async (req, res) => {
         }
         res.json(userExists);
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err });
     }
 });
@@ -173,6 +177,7 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
             res.status(200).send({msg: "User was successfully updated"});
         }
     } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 });
@@ -193,6 +198,7 @@ router.delete('/deleteUser', async (req, res) => {
         });
         res.status(200).send({ msg: "Deleted a user" });
     } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 });

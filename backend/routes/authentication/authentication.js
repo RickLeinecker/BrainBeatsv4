@@ -13,6 +13,7 @@ router.get('/verifyJWT', async (req, res) => {
         const jwt = req.query.jwt;
         res.json(verifyJWT(jwt));
     } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 });

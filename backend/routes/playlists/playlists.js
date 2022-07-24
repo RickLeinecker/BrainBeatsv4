@@ -38,6 +38,7 @@ router.post('/createPlaylist', async (req, res) => {
             res.json(newPlaylist);
         }
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err });
     }
 });
@@ -49,6 +50,7 @@ router.get('/getAllPlaylists', async (req, res) => {
         const playlists = await prisma.Playlist.findMany();
         res.json(playlists);
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err });
     }
 });
@@ -66,6 +68,7 @@ router.get('/getPlaylistByID', async (req, res) => {
 
         res.json(playlistExists);
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err })
     }
 });
@@ -90,6 +93,7 @@ router.get('/getPlaylistsByPostID', async (req, res) => {
 
         res.json(playlists);
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err })
     }
 
@@ -114,6 +118,7 @@ router.get('/getPostsByPlaylistID', async (req, res) => {
 
         res.json(playlist);
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err });
     }
 });
@@ -137,6 +142,7 @@ router.delete('/deletePlaylist', async (req, res) => {
         res.status(200).send({ msg: "Deleted a user playlist" });
     }
     catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 
@@ -179,6 +185,7 @@ router.post('/addPostToPlaylist', async (req, res) => {
         }
     }
     catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err });
     }
 });
@@ -207,6 +214,7 @@ router.delete('/removePostFromPlaylist', async (req, res) => {
         res.status(200).send({ msg: "Removed a post from a playlist" });
     }
     catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 });
@@ -233,9 +241,8 @@ router.put('/updatePlaylist', async (req, res) => {
         });
         //   res.status(200).send({msg: "Updated OK"});
         res.json(updatePlaylist);
-    }
-
-    catch (err) {
+    } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 });

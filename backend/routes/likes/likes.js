@@ -116,6 +116,7 @@ router.delete('/removeUserLike', async (req, res) => {
             res.status(200).send({ msg: "Deleted a user like" });
         }
     } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 });
@@ -134,6 +135,7 @@ router.get('/getUserLike', async (req, res) => {
 
         res.json(likeStatus);
     } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 });
@@ -147,6 +149,7 @@ router.get('/getAllUserLikes', async (req, res) => {
 
         res.json(allLikes);
     } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 });

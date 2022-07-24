@@ -44,6 +44,7 @@ router.post('/createPost', async (req, res) => {
             res.json(newPost);
         }
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err });
     }
 });
@@ -83,6 +84,7 @@ router.get('/getUserPostsByUsername', async (req, res) => {
             res.json(userPosts);
         }
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err });
     }
 });
@@ -113,6 +115,7 @@ router.get('/getUserPostsByID', async (req, res) => {
             res.json(userPosts);
         }
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err });
     }
 });
@@ -126,6 +129,7 @@ router.get('/getAllPosts', async (req, res) => {
 
         res.json(posts);
     } catch (err) {
+        console.log(err);
         res.status(500).send({ msg: err });
     }
 });
@@ -146,6 +150,7 @@ router.delete('/deletePost', async (req, res) => {
         });
         res.status(200).send({ msg: "Deleted a user post" });
     } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 });
@@ -186,6 +191,7 @@ router.put('/updatePost', async (req, res) => {
             res.json(updatePost);
       }
     } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 });
