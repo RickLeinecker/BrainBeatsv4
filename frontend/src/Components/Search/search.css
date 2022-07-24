@@ -21,8 +21,7 @@
 .cardStyleSearch{
     display: block; 
     background: none;
-    width: 200px; 
-    height: 200px;
+    width: 190px; 
     margin-left: 5px;
     border: 0;
 }
@@ -58,4 +57,50 @@
 
 .playhover {
     position: 'absolute';
+}
+
+.statusButton {
+    background: none;
+    border: 1px solid rgb(229, 229, 229);
+    border-radius: 10%;
+    display: flex;
+    height: 30px;
+    padding: .3rem;
+    margin: 2.7rem .5rem 0 0;
+}
+
+
+.statusText {
+    position: relative;
+    top: -3px
+
+}
+
+.reactDrop {
+    background: none;
+    border: 1px solid rgb(229, 229, 229);
+    border-radius: 10%;
+    display: flex;
+    height: 30px;
+    margin: 2.7rem 0 0 0;
+}
+.inputModal{
+    width: 400px;
+}
+
+.modalImg {
+    height: 50px;
+    width: 50px;
+}
+
+.ModalTitle{
+    position: relative;
+    text-align: left;
+    left: -40px;
+}
+.ModalAddButton{
+    background: none;
+    border: 1px solid rgb(229, 229, 229);
+    height: 30px;
+    margin-top: 10px;
 }
