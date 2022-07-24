@@ -36,7 +36,6 @@ router.post('/createPost', async (req, res) => {
                     key: key,
                     instruments: instruments,
                     noteTypes: noteTypes,
-                    visibility: visibility,
                     likeCount: 0
                 }
             });

@@ -35,7 +35,6 @@ model Post {
   noteTypes Json
   likeCount Int
   thumbnail String?   @db.LongText // Store file path in database instead of the actual image
-  visibility Boolean
   user   User      @relation(fields: [userID], references: [id], onDelete: Cascade)
   userID String // relation scalar field  (used in the `@relation` attribute above)
   createdAt DateTime  @default(now())
