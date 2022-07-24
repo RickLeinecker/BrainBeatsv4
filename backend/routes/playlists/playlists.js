@@ -21,7 +21,7 @@ router.post('/createPlaylist', async (req, res) => {
             });
         }
 
-        const userExists = await getUserExists(id, "id");
+        const userExists = await getUserExists(userID, "id");
 
         if (!userExists) {
             return res.status(400).json({
