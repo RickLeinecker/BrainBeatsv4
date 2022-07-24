@@ -1,5 +1,5 @@
 import React from 'react'
-import Search from '../Components/Search/SeachComp'
+import Search from '../Components/Search/SearchComp'
 import Navbar from '../Components/Navbar/Navbar'
 
 const SearchPage = () => {

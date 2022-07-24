@@ -47,10 +47,7 @@ const Cards = () => {
                     setLog(err);
                 })
                 
-            const dataBody2 = {
-                "userID": user.id
-            }
-            sendAPI('get', '/likes/getAllUserLikes', dataBody2)
+            sendAPI('get', '/likes/getAllUserLikes', dataBody)
                 .then((res) => {
                     setLiked(res.data);
                 })
@@ -71,6 +68,7 @@ const Cards = () => {
             postID: post,
             token: jwt,
         }
+        console.log(jwt);
         sendAPI('post', '/likes/createUserLike', bodyData)
         .then((res) => {
             setLiked((l) => [... l,res.data])

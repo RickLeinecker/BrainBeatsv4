@@ -59,9 +59,8 @@ const RegisterCard = () => {
         sendAPI('post', '/users/createUser', newUser)
             .then(function (res) {
                 setCreateSuccess("Account Created!");
-                
+                setUser(res.data.user);
                 setJwt(res.data.token);
-                setErrorMsg("");
             })
             .catch(function (err) {
                 setErrorMsg(err.response.data.msg);
