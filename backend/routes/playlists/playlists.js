@@ -170,7 +170,7 @@ router.delete('/deletePlaylist', async (req, res) => {
 router.post('/addPostToPlaylist', async (req, res) => {
     try {
         const { playlistID, postID, token } = req.body;
-        console.log(playlistID)
+        
         const decoded = verifyJWT(token);
 
         if (!decoded) {

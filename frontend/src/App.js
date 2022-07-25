@@ -10,6 +10,7 @@ import Profile from './Pages/Profile';
 import Search from './Pages/SearchPage'
 import Test from './Pages/Test';
 import Playlist from './Pages/Playlist'
+import AboutUs from './Pages/AboutUs'
 
 import Record from './Pages/Recording';
 
@@ -34,6 +35,7 @@ function App() {
           <Route path='/Register' element={<Register />} />
           <Route path='/Forgot' element={<Forgot />} />
           <Route path='/Test' element={<Test />} />
+          <Route path='/About' element={<AboutUs />} />
         </Routes>
       </Router>
   );
