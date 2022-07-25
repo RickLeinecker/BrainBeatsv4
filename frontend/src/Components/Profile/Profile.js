@@ -130,6 +130,7 @@ const Profile = () => {
         [profilePictureRef, profilePicture]
     );
 
+
     return (
         <div className='content-fluid'>
             <div className='row'>

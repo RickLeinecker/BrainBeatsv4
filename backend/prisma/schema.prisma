@@ -19,7 +19,7 @@ model User {
   username  String    @unique @db.VarChar(20)
   password  String
   bio       String?   @db.LongText
-  profilePicture String?   @db.VarChar(255) // Store file path in database instead of the actual image
+  profilePicture Bytes?   @db.LongBlob() // Store file path in database instead of the actual image
   createdAt DateTime  @default(now())
   Posts Post[]
   Playlists Playlist[]

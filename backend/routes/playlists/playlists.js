@@ -8,6 +8,8 @@ const { getJWT, verifyJWT } = require("../../utils/jwt");
 const { getUserExists, getPostExists, getPlaylistExists} = require("../../utils/database");
 
 // Create a new playlist
+
+//Thumbnail is a file upload is here
 router.post('/createPlaylist', async (req, res) => {
 
     try {

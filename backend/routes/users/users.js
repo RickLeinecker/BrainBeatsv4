@@ -36,7 +36,7 @@ router.post('/createUser', async (req, res) => {
                     dob,
                     email,
                     username,
-                    password: encryptedPassword
+                    password: encryptedPassword,
                 }
             });
 
@@ -89,7 +89,35 @@ router.post('/loginUser', async (req, res) => {
 // Get all users in the database
 router.get('/getAllUsers', async (req, res) => {
     try {
-        const users = await prisma.User.findMany();
+        const users = await prisma.User.findMany({
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                dob: true,
+                email: true,
+                username: true,
+                password: true,
+                profilePicture: false
+            }
+        });
+        res.json(users);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ msg: err });
+    }
+});
+
+// Get all users in the database
+router.get('/getUserImages', async (req, res) => {
+    try {
+        const id = req.query.id;
+        const users = await prisma.User.findMany({
+            where: {id: id},
+            select: {
+                profilePicture: true
+            }
+        });
         res.json(users);
     } catch (err) {
         console.log(err);
@@ -135,7 +163,7 @@ router.get('/getUserByID', async (req, res) => {
 router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
     try{
         const { id, firstName, lastName, dob, email, username, bio, token } = req.body;
-
+        const profilePicture = req.file;
         const decoded = verifyJWT(token);
 
         if (!decoded) {
@@ -145,7 +173,7 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
         }
 
         // Required field for profilePicture as an entry
-        const profilePicture = req.file;
+        // const profilePicture = req.file;
                 
         // Check if the user already exists in db
         const userExists = await getUserExists(id, "id");
@@ -163,17 +191,20 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
                     email: email,
                     dob: new Date(dob).toISOString(),
                     username: username,
-                    bio: bio
+                    bio: bio,
+                    profilePicture: profilePicture.buffer
                 }
             });    
         
             const uploadPath = "../images/profilePicture/" + id;
 
-            fs.writeFile(uploadPath, profilePicture.buffer, function(err) {
-                if (err) throw new Error('Unable to save images');
+            fs.writeFile(uploadPath, profilePicture.buffer, (err) => {
+                if (err) {
+                    console.log(err);
+                }
             });
             // const profilepic2 = fs.readFile(uploadPath);
-            // console.log(profilepic2);
+            console.log(profilePicture);
             res.status(200).send({msg: "User was successfully updated"});
         }
     } catch (err) {

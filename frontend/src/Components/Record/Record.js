@@ -8,9 +8,9 @@ import {Accordion, Button} from 'react-bootstrap'
 // import {readFileSync, promises as fsPromises} from 'fs';
 // import * as fs from 'fs';
 
-// **** If more devices are needed, here are the packages to begin their acquisition. **** \\
-import muse from "https://cdn.jsdelivr.net/npm/@brainsatplay/muse@0.0.1/dist/index.esm.js"; // Muse board retrieval
-import hegduino from "https://cdn.jsdelivr.net/npm/@brainsatplay/hegduino@0.0.3/dist/index.esm.js"; // Cyton 8 channel board retrieval
+// **** If more devices are needed, here are the node modules to begin their acquisition. **** \\
+// import muse from "https://cdn.jsdelivr.net/npm/@brainsatplay/muse@0.0.1/dist/index.esm.js"; // Muse board retrieval
+// import hegduino from "https://cdn.jsdelivr.net/npm/@brainsatplay/hegduino@0.0.3/dist/index.esm.js"; // Hegduino 8 channel board retrieval
 
 
 import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/dist/index.esm.js"; // UI
