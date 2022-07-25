@@ -1,9 +1,9 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
-import RecordButton from './RecordButton';
+import React, { useContext, useState, useEffect, useCallback} from 'react';
 import { Carousel } from "react-responsive-carousel";
-import { SliderPicker } from 'react-color'
+import { SketchPicker } from 'react-color'
 import './record.css'
 import { FaAngleRight, FaAngleLeft, FaRegPlayCircle, FaRegPauseCircle } from "react-icons/fa";
+import {Accordion, Button} from 'react-bootstrap'
 //import * as fs from 'fs/promises';
 // import {readFileSync, promises as fsPromises} from 'fs';
 // import * as fs from 'fs';
@@ -19,7 +19,7 @@ import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@lates
 import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // This is the device aquisition for BrainBeats AKA the ganglion device.
 import * as XLSX from 'xlsx';
 import MidiPlayer from 'midi-player-js';
-import _, {cloneDeep} from 'lodash'
+import _, {cloneDeep, first} from 'lodash'
 
 import { useRecoilValue } from "recoil";
 import {userJWT, userModeState} from '../context/GlobalState'
@@ -78,9 +78,6 @@ function Record() {
 			})
 	},[])
 
-    const handleChange = () => {
-        setChecked(!checked);
-      };
 	const goNext = () => {
 		if(stage < 2)
 		{
@@ -120,32 +117,72 @@ function Record() {
 				setMsg('Song posted')
 			})
 	}
+	const [backgroundColor, setBackgroundColor] =useState( {
+		displayColorPicker: false,
+		color: {
+		  r: '241',
+		  g: '112',
+		  b: '19',
+		  a: '1',
+		},
+	  });
+	  const [textColor, setTextColor] =useState( {
+		displayColorPicker: false,
+		color: {
+		  r: '241',
+		  g: '112',
+		  b: '19',
+		  a: '1',
+		},
+	  });
+	  //Background Color Picker Function
+	  const openBackgroundColor = () => {
+		setBackgroundColor({ displayColorPicker: !backgroundColor.displayColorPicker, color: backgroundColor.color });
+	  };
+	  const closeBackgroundColor = () => {
+		setBackgroundColor({ displayColorPicker: false, color: backgroundColor.color });
+	  };
+	  const setColorBackground = (color) => {
+		setBackgroundColor({ displayColorPicker: backgroundColor.displayColorPicker, color: color.rgb });
+	  };
+	  //Text Color Picker Function
+	  const openTextColor = () => {
+		setTextColor({ displayColorPicker: !textColor.displayColorPicker, color: textColor.color });
+	  };
+	  const closeTextColor = () => {
+		setTextColor({ displayColorPicker: false, color: textColor.color });
+	  };
+	  const setColorText = (color) => {
+		setTextColor({ displayColorPicker: textColor.displayColorPicker, color: color.rgb });
+	  };
+	  
     return <>
+	<div className="scriptBox">
 		{stage == 0 && (
 			<>
-			<div className='container scriptBox'>
-				<div>
-				<div className='row'>
-					<p className='textColor'>Music Setting</p>
+			
+			  <div>
+				<div className="row">
+				  <p className="textHeader">Music Setting</p>
 				</div>
-				<div className='row'>
-				<div className='col'>
-					<div style={{ color: "white" }}>FP1 Instrument</div>
-			  			<select onChange={(e) => setFP1Inst(e.target.value)}>
-                  			<option value={-3}>SineWave</option>
-                  			<option value={-2}>TriangleWave</option>
-				  			<option value={-1}>SquareWave</option>
-							<option value={0}>Flute</option>
-							<option value={1}>Oboe</option>
-							<option value={2}>Clarinet</option>
-							<option value={3}>Bassoon</option>
-							<option value={4}>Trumpet</option>
-							<option value={5}>FrenchHorn</option>
-							<option value={6}>Trombone</option>
-							<option value={7}>Tuba</option>
-            			</select>
-					<div style={{ color: "white" }}>FP2 Instrument</div>
-						<select onChange={(e) => setFP2Inst(e.target.value)}>
+				<Accordion defaultActiveKey="0">
+				  <Accordion.Item eventKey="0">
+					<Accordion.Header>Basic Setting</Accordion.Header>
+					<Accordion.Body>
+						<div>
+        					<input type="radio" value="Male" name="gender" /> Male
+        					<input type="radio" value="Female" name="gender" /> Female
+        					<input type="radio" value="Other" name="gender" /> Other
+      					</div>
+					</Accordion.Body>
+				  </Accordion.Item>
+				  <Accordion.Item eventKey="1">
+					<Accordion.Header>Advance Setting</Accordion.Header>
+					<Accordion.Body>
+					  <div className="row">
+						<div className="col">
+						  <div>FP1 Instrument</div>
+						  <select onChange={(e) => setFP1Inst(e.target.value)}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -157,9 +194,9 @@ function Record() {
 							<option value={5}>FrenchHorn</option>
 							<option value={6}>Trombone</option>
 							<option value={7}>Tuba</option>
-            			</select>
-					<div style={{ color: "white" }}>C3 Instrument</div>
-						<select onChange={(e) => setC3Inst(e.target.value)}>
+						  </select>
+						  <div>FP2 Instrument</div>
+						  <select onChange={(e) => setFP2Inst(e.target.value)}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -171,9 +208,9 @@ function Record() {
 							<option value={5}>FrenchHorn</option>
 							<option value={6}>Trombone</option>
 							<option value={7}>Tuba</option>
-            			</select>
-					<div style={{ color: "white" }}>C4 Instrument</div>
-						<select onChange={(e) => setC4Inst(e.target.value)}>
+						  </select>
+						  <div>C3 Instrument</div>
+						  <select onChange={(e) => setC3Inst(e.target.value)}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -185,61 +222,75 @@ function Record() {
 							<option value={5}>FrenchHorn</option>
 							<option value={6}>Trombone</option>
 							<option value={7}>Tuba</option>
-            			</select>
-
-				</div>
-				<div className='col'>
-					<div style={{ color: "white" }}>FP1 Note Type</div>
-							<select onChange={(e) => setFP1Note(e.target.value)}>
-								<option value={0}>Whole</option>
-								<option value={1}>Half</option>
-								<option value={2}>Quarter</option>
-								<option value={3}>Eighth</option>
-								<option value={4}>Sixteenth</option>
-							</select>
-						<div style={{ color: "white" }}>FP2 Note Type</div>
-							<select onChange={(e) => setFP2Note(e.target.value)}>
-								<option value={0}>Whole</option>
-								<option value={1}>Half</option>
-								<option value={2}>Quarter</option>
-								<option value={3}>Eighth</option>
-								<option value={4}>Sixteenth</option>
-							</select>
-						<div style={{ color: "white" }}>C3 Note Type</div>
-							<select onChange={(e) => setC3Note(e.target.value)}>
-								<option value={0}>Whole</option>
-								<option value={1}>Half</option>
-								<option value={2}>Quarter</option>
-								<option value={3}>Eighth</option>
-								<option value={4}>Sixteenth</option>
-							</select>
-						<div style={{ color: "white" }}>C4 Note Type</div>
-							<select onChange={(e) => setC4Note(e.target.value)}>
-								<option value={0}>Whole</option>
-								<option value={1}>Half</option>
-								<option value={2}>Quarter</option>
-								<option value={3}>Eighth</option>
-								<option value={4}>Sixteenth</option>
-							</select>
-				</div>
-				<div className='col'>
-						<div style={{ color: "white" }}>Number of Octaves</div>
-							<select onChange={(e) =>  setNumNotes(e.target.value * 7)} >
-                  				<option value={1}>1</option>
-                  				<option value={2}>2</option>
-				  				<option value={3}>3</option>
-            				</select>
-					<div style={{ color: "white" }}>Tempo</div>
-					<select onChange={(e) => setBPM(BPMArray[e.target.value])}>
-						{BPMArray.map((item, index) => {
-							return (	
-								<option value={index}>{item}</option>
-							)
-						})}
-					</select>
-					<div style={{ color: "white" }}>Key Signature</div>
-
-						<select onChange={(e) => setKey(e.target.value)} value={keyNum}>
+						  </select>
+						  <div>C4 Instrument</div>
+						  <select onChange={(e) => setC4Inst(e.target.value)}>
+							<option value={-3}>SineWave</option>
+							<option value={-2}>TriangleWave</option>
+							<option value={-1}>SquareWave</option>
+							<option value={0}>Flute</option>
+							<option value={1}>Oboe</option>
+							<option value={2}>Clarinet</option>
+							<option value={3}>Bassoon</option>
+							<option value={4}>Trumpet</option>
+							<option value={5}>FrenchHorn</option>
+							<option value={6}>Trombone</option>
+							<option value={7}>Tuba</option>
+						  </select>
+						</div>
+						<div className="col">
+						  <div>FP1 Note Type</div>
+						  <select onChange={(e) => setFP1Note(e.target.value)}>
+							<option value={0}>Whole</option>
+							<option value={1}>Half</option>
+							<option value={2}>Quarter</option>
+							<option value={3}>Eighth</option>
+							<option value={4}>Sixteenth</option>
+						  </select>
+						  <div>FP2 Note Type</div>
+						  <select onChange={(e) => setFP2Note(e.target.value)}>
+							<option value={0}>Whole</option>
+							<option value={1}>Half</option>
+							<option value={2}>Quarter</option>
+							<option value={3}>Eighth</option>
+							<option value={4}>Sixteenth</option>
+						  </select>
+						  <div>C3 Note Type</div>
+						  <select onChange={(e) => setC3Note(e.target.value)}>
+							<option value={0}>Whole</option>
+							<option value={1}>Half</option>
+							<option value={2}>Quarter</option>
+							<option value={3}>Eighth</option>
+							<option value={4}>Sixteenth</option>
+						  </select>
+						  <div>C4 Note Type</div>
+						  <select onChange={(e) => setC4Note(e.target.value)}>
+							<option value={0}>Whole</option>
+							<option value={1}>Half</option>
+							<option value={2}>Quarter</option>
+							<option value={3}>Eighth</option>
+							<option value={4}>Sixteenth</option>
+						  </select>
+						</div>
+						<div className="col">
+						  <div>Number of Octaves</div>
+						  <select onChange={(e) => setNumNotes(e.target.value * 7)}>
+							<option value={1}>1</option>
+							<option value={2}>2</option>
+							<option value={3}>3</option>
+						  </select>
+						  <div>Tempo</div>
+						  <select onChange={(e) => setBPM(BPMArray[e.target.value])}>
+							{BPMArray.map((item, index) => {
+							  return <option value={index}>{item}</option>;
+							})}
+						  </select>
+						  <div>Key Signature</div>
+	  
+						  <select
+							onChange={(e) => setKey(e.target.value)}
+							value={keyNum}
+						  >
 							<option value={0}>C</option>
 							<option value={1}>C#/Db</option>
 							<option value={2}>D</option>
@@ -252,36 +303,141 @@ function Record() {
 							<option value={9}>A</option>
 							<option value={10}>A#/Bb</option>
 							<option value={11}>B</option>
-						</select>
-                	<div style={{ color: "white" }}>Scale</div>
-						<select onChange={(e) => setScale(e.target.value)} value={scale}>
+						  </select>
+						  <div>Scale</div>
+						  <select
+							onChange={(e) => setScale(e.target.value)}
+							value={scale}
+						  >
 							<option value={0}>Major</option>
 							<option value={1}>Minor</option>
-						</select>
-				</div>
-				</div>
-				</div>
-        </div>
-						<button className='arrowButtonMain' onClick={goNext}>Next {<FaAngleRight />}</button>
-			</>
+						  </select>
+						</div>
+					  </div>
+					</Accordion.Body>
+				  </Accordion.Item>
+				</Accordion>
+			  </div>
+			  	<button className="arrowButtonMain" onClick={goNext}>
+			  		Next {<FaAngleRight />}
+				</button>
+			
+		  </>
 		)}
         {stage == 1 && (
 			<div>
-            <div className="">
-                <label className="switch">
-                    <input type="checkbox" className="switch-input" checked={checked} onChange={handleChange}/>
-                    <span className="switch-label" data-on="Script" data-off="Link"></span>
-                    <span className="switch-handle"></span>
-                </label>
-            </div>
-            <ScriptThing show={checked === true} finish={finishRec} setFinish={setFinishRec}/>
-            <LinkThing show={checked === false} finish={finishRec} setFinish={setFinishRec}/>
-            <Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} keyNum={keyNum} scale={scale} BPM={BPM}/>
-			
-			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Music Setting </button>
-			<button className='arrowButtonMain' onClick={goNext}>Post {<FaAngleRight />}</button>
-
-		</div>
+			<div className="textHeader">Script</div>
+			<div>
+			  <input className="InputForYoutube" placeholder="YouTube Link" />
+			  <p className="line">
+				<span className="wordInLine">OR</span>
+			  </p>
+			  <Button>SKIP</Button>
+			  <br />
+			  <input className="inputForCard" placeholder="YOUR TEXT HERE" />
+			</div>
+			<div className="row">
+			  <div className="col">
+				<Button>Preview</Button>
+			  </div>
+			  <div className="col">
+				<div>
+				  <div
+					style={{
+					  padding: "2px",
+					  background: "#fff",
+					  borderRadius: "1px",
+					  boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
+					  display: "inline-block",
+					  cursor: "pointer",
+					}}
+					onClick={openBackgroundColor}
+				  >
+					<div
+					  style={{
+						width: "40px",
+						height: "40px",
+						borderRadius: "2px",
+						background: `rgba(${backgroundColor.color.r}, ${backgroundColor.color.g}, ${backgroundColor.color.b}, ${backgroundColor.color.a})`,
+					  }}
+					/>
+				  </div>
+				  {backgroundColor.displayColorPicker ? (
+					<div style={{ position: "absolute", zIndex: "2", bottom: '50px' }}>
+					  <div
+						style={{
+						  position: "fixed",
+						  top: "0px",
+						  right: "0px",
+						  bottom: "0px",
+						  left: "0px",
+						}}
+						onClick={closeBackgroundColor}
+					  />
+					  <SketchPicker
+						color={backgroundColor.color}
+						onChange={setColorBackground}
+					  />
+					</div>
+				  ) : null}
+				</div>
+			  </div>
+			  <div className="col">
+				<input placeholder="Seconds" />
+			  </div>
+			  <div className="col">
+			  <div>
+				  <div
+					style={{
+					  padding: "2px",
+					  background: "#fff",
+					  borderRadius: "1px",
+					  boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
+					  display: "inline-block",
+					  cursor: "pointer",
+					}}
+					onClick={openTextColor}
+				  >
+					<div
+					  style={{
+						width: "40px",
+						height: "40px",
+						borderRadius: "2px",
+						background: `rgba(${textColor.color.r}, ${textColor.color.g}, ${textColor.color.b}, ${textColor.color.a})`,
+					  }}
+					/>
+				  </div>
+				  {textColor.displayColorPicker ? (
+					<div style={{ position: "absolute", zIndex: "2", bottom: '50px'}}>
+					  <div
+						style={{
+						  position: "fixed",
+						  top: "0px",
+						  right: "0px",
+						  bottom: "0px",
+						  left: "0px",
+						}}
+						onClick={closeTextColor}
+					  />
+					  <SketchPicker
+						color={textColor.color}
+						onChange={setColorText}
+					  />
+					</div>
+				  ) : null}
+				</div>
+			  </div>
+			  <div className="col">
+				<Button>Add</Button>
+			  </div>
+			</div>
+			<button className="arrowButtonMain" onClick={goBack}>
+			  {<FaAngleLeft />} Music Setting{" "}
+			</button>
+			<button className="arrowButtonMain" onClick={goNext}>
+			  Post {<FaAngleRight />}
+			</button>
+		  </div>
 		)}
 		{stage == 2 && (
 			<>
@@ -327,6 +483,7 @@ function Record() {
 			<button className='arrowButtonMain' onClick={postFile}>Finish {<FaAngleRight />}</button>
 			</>
 		)}
+		</div>
 	</>
 		
 }
@@ -505,16 +662,7 @@ function ScriptThing({show, finish, setFinishRec}) {
                             </div>
                             <div className='col scriptBox'>
                                 <label className='textColor'>Slideshow Background</label>
-                                <SliderPicker color={slides[currentSlide].background} onChangeComplete={(e) => {
-									const tempSlide = slides[currentSlide];
-									tempSlide.background = e.hex;
-									editSlide(currentSlide,tempSlide)}} />
-
-                                <label className='textColor'>Text color</label>
-                                <SliderPicker color={slides[currentSlide].textColor} onChangeComplete={(e) => {
-									const tempSlide = slides[currentSlide];
-									tempSlide.textColor = e.hex;
-									editSlide(currentSlide,tempSlide)}} />
+                             
 
 								<label className='textColor'>Slideshow Speed</label> <br />
                         		<input value={slides[currentSlide].speed / 1000} type='number' placeholder='(seconds)' onChange={(e) => {
