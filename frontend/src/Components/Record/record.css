@@ -52,8 +52,10 @@
 
 }
 .inputForCard{
+  text-align: center;
   padding: 10rem 15rem 10rem 15rem;
   font-size: 25px;
+  color: rgb
 }
 
 .YtVideo {
@@ -63,8 +65,20 @@
 }
 
 .recordButton {
-    background: none;
+    background: rgb(16, 203, 0);
+    font-size: 20px;
+    width: 120px;
     border: 0px;
+    margin: 10px;
+    border-radius: 5px;
+}
+.stopButton {
+  background: rgb(206, 61, 61);
+  font-size: 20px;
+  width: 120px;
+  border: 0px;
+  margin: 10px;
+  border-radius: 5px;
 }
 
 .reactIcon {
@@ -81,4 +95,17 @@
 .line .wordInLine { 
    background:#fff; 
    padding:0 10px; 
+}
+
+.timeInput {
+  margin-top: 10px;
+  padding: .5rem 1rem .5rem 1rem;
+  border-radius: 25px;
+}
+
+.defaultRadio {
+  margin: 2rem;
+}
+.scriptDisplayCard {
+  margin-left: 7.5rem;
 }

@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect, useCallback} from 'react';
 import { Carousel } from "react-responsive-carousel";
 import { SketchPicker } from 'react-color'
 import './record.css'
-import { FaAngleRight, FaAngleLeft, FaRegPlayCircle, FaRegPauseCircle } from "react-icons/fa";
+import { FaAngleRight, FaAngleLeft, FaRegPlayCircle, FaRegPauseCircle, FaClipboardList } from "react-icons/fa";
 import {Accordion, Button} from 'react-bootstrap'
 //import * as fs from 'fs/promises';
 // import {readFileSync, promises as fsPromises} from 'fs';
@@ -30,8 +30,10 @@ function Record() {
     //needed states
     const user = useRecoilValue(userModeState);
 	const jwt = useRecoilValue(userJWT);
-    const [checked, setChecked] = useState(false);
-	const [stage, setStage] = useState(0);
+
+	const [stage, setStage] = useState(1);
+
+	//Music Generation States
 	const [numNotes, setNumNotes] = useState(7);
 	const [FP1, setFP1Inst] = useState(-3);
 	const [FP2, setFP2Inst] = useState(-3);
@@ -45,9 +47,44 @@ function Record() {
 	const [scale, setScale] = useState(0);
 	const [BPMArray, setBPMArray] = useState([]);
 	const [BPM, setBPM] = useState(120);
-	const [vis, setVis] = useState(true);
+
+
+	const [currentSlide, setCurrentSlide] = useState(0);
+	const [autoplay, setAutoplay] = useState(true);
+
+	//Setting Up Script
+	//Text Cards
+	const initialBackground = {
+		displayColorPicker: false,
+		color: {
+		  r: '242',
+		  g: '242',
+		  b: '242',
+		  a: '1',
+		},
+	}
+	const initialTextColor = {
+		displayColorPicker: false,
+		color: {
+		  r: '0',
+		  g: '0',
+		  b: '0',
+		  a: '1',
+		},
+	}
+	const [cards, setCards] = useState([])
+	const [cardText, setCardTextState] = useState('');
+	const [speed, setSpeed] = useState(1)
+	const [backgroundColor, setBackgroundColor] =useState(initialBackground);
+	const [textColor, setTextColor] =useState(initialTextColor);
+
+	//Youtube Link
+	const [youtubeLink, setYoutubeLink] = useState('')
+	//Posting States
 	const [title, setTitle] = useState('');
 	const [msg, setMsg] = useState('');
+
+	
 
 	const [finishRec, setFinishRec] = useState();
 	
@@ -79,35 +116,39 @@ function Record() {
 	},[])
 
 	const goNext = () => {
-		if(stage < 2)
-		{
-			setStage(stage + 1)
-			console.log(stage)
-		}	
-		if(stage == 1)
-		{
-			console.log(finishRec)
-		}
+		setStage(stage + 1)
 	}
 	const goBack = () => {
 		setStage(stage - 1)
 	}
-	const handle = () => {
-		console.log(numNotes)
-		console.log(instrumentList);
-		console.log(noteDuration);
-		console.log(keyNum);
-		console.log(scale);
-		console.log(BPM);
-		console.log(BPMArray)
+	const addCard = () => {
+		if(cardText === ''){
+			alert("Invalid Card format")
+			return
+		}
+		let newCard ={
+			textColor: textColor.color,
+			backGroundColor: backgroundColor.color,
+			speed: speed * 1000,
+			text: cardText,
+		}
+		//set input back to default
+		setBackgroundColor(initialBackground);
+		setTextColor(initialTextColor);
+		setCardTextState('');
+		setSpeed(1);
+		setCards([...cards, newCard])
 	}
+	const noScript = () => {
+		setStage(4);
+	}
+
 	const postFile = () => {
 		const bodyData ={
 			"userID": 'de0463ea-1745-4f47-a789-82a9d7eae746',
   			"title": title,
   			"bpm": BPM,
   			"key": KEY[scale],
-  			"visibility": vis,
 			'token': jwt,
 		}
 		console.log(bodyData)
@@ -117,24 +158,7 @@ function Record() {
 				setMsg('Song posted')
 			})
 	}
-	const [backgroundColor, setBackgroundColor] =useState( {
-		displayColorPicker: false,
-		color: {
-		  r: '241',
-		  g: '112',
-		  b: '19',
-		  a: '1',
-		},
-	  });
-	  const [textColor, setTextColor] =useState( {
-		displayColorPicker: false,
-		color: {
-		  r: '241',
-		  g: '112',
-		  b: '19',
-		  a: '1',
-		},
-	  });
+	
 	  //Background Color Picker Function
 	  const openBackgroundColor = () => {
 		setBackgroundColor({ displayColorPicker: !backgroundColor.displayColorPicker, color: backgroundColor.color });
@@ -145,6 +169,7 @@ function Record() {
 	  const setColorBackground = (color) => {
 		setBackgroundColor({ displayColorPicker: backgroundColor.displayColorPicker, color: color.rgb });
 	  };
+
 	  //Text Color Picker Function
 	  const openTextColor = () => {
 		setTextColor({ displayColorPicker: !textColor.displayColorPicker, color: textColor.color });
@@ -153,10 +178,12 @@ function Record() {
 		setTextColor({ displayColorPicker: false, color: textColor.color });
 	  };
 	  const setColorText = (color) => {
+		console.log(color)
 		setTextColor({ displayColorPicker: textColor.displayColorPicker, color: color.rgb });
 	  };
-	  
-    return <>
+
+
+	return <>
 	<div className="scriptBox">
 		{stage == 0 && (
 			<>
@@ -170,9 +197,9 @@ function Record() {
 					<Accordion.Header>Basic Setting</Accordion.Header>
 					<Accordion.Body>
 						<div>
-        					<input type="radio" value="Male" name="gender" /> Male
-        					<input type="radio" value="Female" name="gender" /> Female
-        					<input type="radio" value="Other" name="gender" /> Other
+        					<input type="radio" className='defaultRadio'/> Slow and Melodic
+        					<input type="radio" className='defaultRadio'/> Moderate and Timely
+        					<input type="radio" className='defaultRadio'/> Fast and Frenzy
       					</div>
 					</Accordion.Body>
 				  </Accordion.Item>
@@ -328,17 +355,22 @@ function Record() {
 			<div>
 			<div className="textHeader">Script</div>
 			<div>
-			  <input className="InputForYoutube" placeholder="YouTube Link" />
+			  <input className="InputForYoutube" placeholder="YouTube Link" onChange={(e)=> setYoutubeLink(e.target.value)}/>
 			  <p className="line">
 				<span className="wordInLine">OR</span>
 			  </p>
-			  <Button>SKIP</Button>
+			  <Button style={{width: '100px', float: 'right', marginRight: '6rem'}} onClick={noScript}>SKIP</Button>
 			  <br />
-			  <input className="inputForCard" placeholder="YOUR TEXT HERE" />
+			  <input className="inputForCard" placeholder="YOUR TEXT HERE" onChange={(e) => setCardTextState(e.target.value)}
+			  style={{
+				  color: `rgba(${textColor.color.r}, ${textColor.color.g}, ${textColor.color.b}, ${textColor.color.a})`,
+				  background: `rgba(${backgroundColor.color.r}, ${backgroundColor.color.g}, ${backgroundColor.color.b}, ${backgroundColor.color.a})`,
+				  }}
+				value={cardText}/>
 			</div>
 			<div className="row">
 			  <div className="col">
-				<Button>Preview</Button>
+				<Button style={{width: '100px', marginLeft: '6rem'}}>Preview</Button>
 			  </div>
 			  <div className="col">
 				<div>
@@ -383,7 +415,7 @@ function Record() {
 				</div>
 			  </div>
 			  <div className="col">
-				<input placeholder="Seconds" />
+				<input type='number' placeholder="Seconds" className='timeInput' onChange={(e)=> setSpeed(e.target.value)} value={speed}/>
 			  </div>
 			  <div className="col">
 			  <div>
@@ -428,18 +460,44 @@ function Record() {
 				</div>
 			  </div>
 			  <div className="col">
-				<Button>Add</Button>
+				<Button style={{width: '100px', marginRight: '6rem'}} onClick={addCard}>Add</Button>
 			  </div>
 			</div>
 			<button className="arrowButtonMain" onClick={goBack}>
-			  {<FaAngleLeft />} Music Setting{" "}
+			  {<FaAngleLeft />} Script{" "}
 			</button>
 			<button className="arrowButtonMain" onClick={goNext}>
 			  Post {<FaAngleRight />}
 			</button>
 		  </div>
 		)}
-		{stage == 2 && (
+		{//User does not want to script
+		stage == 4 && (
+			<>
+			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} />
+			</>
+		)}
+		{//This displays cards
+		stage == 2 && youtubeLink === '' && (
+			<>
+			<ValidScript slides={cards} setCurrentSlide={setCurrentSlide} autoplay={autoplay} currentSlide={currentSlide}/>
+			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} />
+			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
+			<button className='arrowButtonMain' onClick={postFile}>Publish {<FaAngleRight />}</button>
+			
+			</>
+		)}
+		{//This shows youtube
+		stage == 2 && cards.length === 0 && (
+			<>
+			<VidLink link={youtubeLink} />
+			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} />
+			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
+			<button className='arrowButtonMain' onClick={goNext}>Publish {<FaAngleRight />}</button>
+			
+			</>
+		)}
+		{stage == 3 && (
 			<>
 			<div className='container scriptBox'>
 				<div className='row'>
@@ -456,15 +514,7 @@ function Record() {
 				</div>	
 				<br />
 				<div className='row'>
-					<div className='col'>
-						<label style={{ color: "white" }}>Visibility</label>
-						<br />
-						<label className='switch'>
-							<input type='checkbox' className='switch-input' checked={vis} onChange={() => setVis(!vis)}/>
-							<span className="switch-label" data-on="Public" data-off="Private"></span>
-							<span className="switch-handle"></span>
-						</label>
-					</div>
+
 					<div className='col'>
 						<label style={{ color: "white" }}>Key</label>
 						<input value={KEY[keyNum]} disabled />
@@ -557,20 +607,22 @@ function LinkThing({show, finish, setFinishRec}) {
     return <></>;
 }
 
-function VidLink(link) {
+function VidLink({link}) {
     //two type of YT URLS
     //https://www.youtube.com/watch?v=DSBBEDAGOTc
     //https://www.youtube.com/watch?v=ScMzIvxBSi4&ab_channel=BenMarquezTX
 
-
-    let tempID = link.link;
+	//get everything after the =
+    let tempID = link.split('=');
+	tempID = tempID[1];
     //this discards discards everything after the & sign giving the correct URL if the URL
     //in the second form
-    tempID = tempID.split('&')
+    tempID = tempID.split('&');
+	//offical youtube ID
     let id = tempID[0];
     return (
         <>
-
+			<h2>Record</h2>
             <iframe
                 src={`https://www.youtube.com/embed/${id}`}
                 frameBorder="0"
@@ -686,24 +738,24 @@ function ScriptThing({show, finish, setFinishRec}) {
 }
 
 function ValidScript({slides, setCurrentSlide, currentSlide, autoplay}) {
-
 	const changeCarosel = useCallback((slide) => {
 		setCurrentSlide(slide)
 	},[])
-
+	console.log(autoplay)
     return (
         <>
-            <div>
-                To start click left or right side of slideshow
-            </div>
-            <Carousel autoPlay={autoplay} width={700} showThumbs={false} showIndicators={false}
+            <h2>Record</h2>
+            <Carousel className='scriptDisplayCard' autoPlay={autoplay} width={700} showThumbs={false} showIndicators={false}
                 infiniteLoop={true} dynamicHeight={true} interval={slides[currentSlide].speed} onChange={changeCarosel}>
                 {slides.map(
                     (slide,index) =>
-                        {console.log(autoplay)
+                        {console.log(currentSlide)
 							
-						return <div key={index} style={{ background: `${slide.background}`, color: `${slide.textColor}`, padding: '250px' }}>
-                            {slide.word}
+						return <div key={index} style={{ 
+							background: `rgba(${slide.backGroundColor.r}, ${slide.backGroundColor.g}, ${slide.backGroundColor.b}, ${slide.backGroundColor.a})`,
+							color: `rgba(${slide.textColor.r}, ${slide.textColor.g}, ${slide.textColor.b}, ${slide.textColor.a})`, 
+							padding: '250px'}}>
+                            {slide.text}
                         </div>})}
             </Carousel>
 
@@ -2068,49 +2120,23 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
     
 	
 	return (
-      <>
-        <div style={st}>
-          <table style={{ width: "100%" }}>
-            <tr>
-              <td style={{ width: "25%", textAlign: "center" }}>
-                
-              </td>
-              <td style={{ width: "22%", textAlign: "left" }}>
-			  	
-			  </td>
-			
-			  <td style={{ width: "22%", textAlign: "left" }}>
-			  	
-              </td>
-              <td style={{ textAlign: "left" }}>
-				 <div id="buttons">
-                      <button
-                        id="ganglion"
-                        className="recordButton"
-                      >
-                        Connect
-                      </button>
-					  <button
-                        id="Disconnect"
-                        className="recordButton"
-                      >
-                        Disconnect
-                      </button>
-                    </div>
-					<input type="file" onChange={previewFile}></input>
-
-              </td>
-              <td style={{ width: "25%", textAlign: "center" }}>
-				<div style={{ color: "white" }}>Helpful Buttons</div>
-					<button onClick={handleStuff}>Print Debug Stuff</button> <br></br>
-					<button onClick={generateAndDownloadMIDIFile}>Download MIDI and play WIP</button>
-					<button onClick={downloadData}>Download Raw Data</button> <br></br>
-              </td>
-			  
-            </tr>
-          </table>
-        </div>
-      </>
+		<>
+		<div id="buttons">
+		  <button id="ganglion" className="recordButton">
+			RECORD
+		  </button>
+		  <button id="Disconnect" className="stopButton">
+			STOP
+		  </button>
+		</div>
+		<input type="file" onChange={previewFile}></input>
+		<div style={{ color: "white" }}>Helpful Buttons</div>
+		<button onClick={handleStuff}>Print Debug Stuff</button> <br></br>
+		<button onClick={generateAndDownloadMIDIFile}>
+		  Download MIDI and play WIP
+		</button>
+		<button onClick={downloadData}>Download Raw Data</button> <br></br>
+	  </>
     );
 
 }
