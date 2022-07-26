@@ -2,8 +2,8 @@ import React, { useContext, useState, useEffect, useCallback} from 'react';
 import { Carousel } from "react-responsive-carousel";
 import { SketchPicker } from 'react-color'
 import './record.css'
-import { FaAngleRight, FaAngleLeft, FaRegPlayCircle, FaRegPauseCircle, FaClipboardList } from "react-icons/fa";
-import {Accordion, Button} from 'react-bootstrap'
+import { FaAngleRight, FaAngleLeft, FaQuestion } from "react-icons/fa";
+import {Accordion, Button, OverlayTrigger, Tooltip} from 'react-bootstrap'
 import Img from '../Navbar/Logo.jpg'
 //import * as fs from 'fs/promises';
 // import {readFileSync, promises as fsPromises} from 'fs';
@@ -213,12 +213,40 @@ function Record() {
 		setBPM(160);
 	  }
 
-	  function checking(){
-		  console.log(FP1Note)
-		  console.log(FP2Note)
-		  console.log(C3Note)
-		  console.log(C4Note)
+	  function checkScript(){
+		if(cards.length === 0 && youtubeLink === ''){
+			setMsg("Please Provide a script or skip this step")
+			return true
+		}else if(cards.length > 0 && youtubeLink !== ''){
+			setMsg("Please choose only one script type")
+			return true;
+		}else return false;
 	  }
+	  const renderBasicTips = (props) => (
+		<Tooltip id="button-tooltip" {...props}>
+		  Choose your desired tempo and instruments
+		</Tooltip>
+	  );
+	  const renderAdvanceTip = (props) => (
+		<Tooltip id="button-tooltip" {...props}>
+		  Customize your own experience
+		</Tooltip>
+	  );
+	  const renderScriptTip = (props) => (
+		<Tooltip id="button-tooltip" {...props}>
+		  Influence your brainwave via youtube link, creating your own cards or just skip this step
+		</Tooltip>
+	  );
+	  const renderRecordTip = (props) => (
+		<Tooltip id="button-tooltip" {...props}>
+		  Click start to start recording, and stop to stop
+		</Tooltip>
+	  );
+	  const renderPublishTip = (props) => (
+		<Tooltip id="button-tooltip" {...props}>
+			You can now publish your song to the world
+		</Tooltip>
+	  );
 
 	return <>
 	<div className="scriptBox">
@@ -231,8 +259,15 @@ function Record() {
 				</div>
 				<Accordion defaultActiveKey="0">
 				  <Accordion.Item eventKey="0">
-					<Accordion.Header>Basic Setting</Accordion.Header>
+					<Accordion.Header>Basic Setting
+							
+					</Accordion.Header>
 					<Accordion.Body>
+						<div>
+						<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderBasicTips}>
+							<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+						</OverlayTrigger>
+						</div>
 						<div>
         					<input type="radio"  onChange={setToSlow} className='defaultRadio' name='tempo' value='slow' /> <label>Slow and Melodic</label>
         					<input type="radio" onChange={setToMed} className='defaultRadio' name='tempo' value='normal' checked/><label>Moderate and Timely</label> 
@@ -322,6 +357,11 @@ function Record() {
 				  <Accordion.Item eventKey="1">
 					<Accordion.Header>Advance Setting</Accordion.Header>
 					<Accordion.Body>
+						<div>
+						<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderAdvanceTip}>
+							<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+						</OverlayTrigger>
+						</div>
 					  <div className="row">
 						<div className="col">
 						  <div>FP1 Instrument</div>
@@ -471,7 +511,13 @@ function Record() {
 		)}
         {stage == 1 && (
         <div>
+			<div>
+				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderScriptTip}>
+					<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+				</OverlayTrigger>
+			</div>
           <div className="textHeader">Script</div>
+		  <div><p>{msg}</p></div>
           <div>
             <input
               className="InputForYoutube"
@@ -619,7 +665,7 @@ function Record() {
           <button className="arrowButtonMain" onClick={goBack}>
             {<FaAngleLeft />} Script{" "}
           </button>
-          <button className="arrowButtonMain" onClick={goNext}>
+          <button className="arrowButtonMain" onClick={goNext} disabled={(cards.length === 0) ^ (youtubeLink !== '')}>
             Post {<FaAngleRight />}
           </button>
           <p className="line">
@@ -636,6 +682,12 @@ function Record() {
 		{//User does not want to script
 		stage == 4 && (
 			<>
+			<div>
+				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderRecordTip}>
+					<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+				</OverlayTrigger>
+			</div>
+			<h2>Record</h2>
 			<img src={Img} className="scriptless"/>
 			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} />
 			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
@@ -645,6 +697,11 @@ function Record() {
 		{//This displays cards
 		stage == 2 && youtubeLink === '' && (
 			<>
+			<div>
+				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderRecordTip}>
+					<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+				</OverlayTrigger>
+			</div>
 			<ValidScript slides={cards} setCurrentSlide={setCurrentSlide} autoplay={autoplay} currentSlide={currentSlide}/>
 			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} />
 			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
@@ -655,6 +712,11 @@ function Record() {
 		{//This shows youtube
 		stage == 2 && cards.length === 0 && (
 			<>
+			<div>
+				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderRecordTip}>
+					<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+				</OverlayTrigger>
+			</div>
 			<VidLink link={youtubeLink} />
 			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} />
 			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
@@ -665,6 +727,11 @@ function Record() {
 		{stage == 3 && (
 			<>
 			<div>
+			<div>
+				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderPublishTip}>
+					<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+				</OverlayTrigger>
+			</div>
 			<div>
 				<h2>Publish</h2>
 			</div>
@@ -690,75 +757,6 @@ function Record() {
 		</div>
 	</>
 		
-}
-
-function LinkThing({show, finish, setFinishRec}) {
-    //Link test
-    //https://www.youtube.com/watch?v=l0jJGlalLh8
-
-    const [id, setId] = useState('');
-    const [stage, setStage] = useState(0)
-
-    let correctLink = id.split('='); //return the string with youtube id
-
-    let url = correctLink[1];
-    const goNext = (e) => {
-        e.preventDefault()
-        setStage(stage + 1)
-		setFinishRec(stage)
-    }
-    const goBack = (e) => {
-        e.preventDefault()
-        setStage(stage - 1)
-		setFinishRec(stage)
-
-    }
-    if (show) {
-        return <>
-            {stage == 0 && (
-                <>
-                    <div className='container scriptBox'>
-
-                        <p className='textColor'>Link Script</p>
-                        <br />
-                        <input placeholder='Youtube Link' onChange={(e) => setId(e.target.value)} />
-                        <br />
-                        <button className='nextButton' onClick={goNext}>RECORD {<FaAngleRight />}</button>
-
-                    </div>
-
-                    <br />
-
-                </>
-            )}
-            {stage == 1 && url == undefined && (
-                <>
-                    <br />
-                    <div className='container scriptBox'>
-
-                        <p className='textColor'>Invalid Link Please go back</p>
-
-                        <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
-                    </div>
-                </>
-            )}
-            {stage == 1 && url != undefined && (
-                <>
-                    <br />
-                    <div className='container scriptBox'>
-                        <VidLink link={url} />
-                        <br />
-                        <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
-
-                        <button className='nextButton'>FINISH</button>
-
-                    </div>
-                </>
-            )}
-
-        </>
-    }
-    return <></>;
 }
 
 function VidLink({link}) {
@@ -789,107 +787,6 @@ function VidLink({link}) {
     )
 }
 
-function ScriptThing({show, finish, setFinishRec}) {
-    const [words, setWords] = useState('');
-    const [stage, setStage] = useState(0)
-	const [currentSlide, setCurrentSlide] = useState(0)
-	const [autoplay, setAutoPlay] = useState(false);
-
-	//let words = script.split(', ');
-
-	const [slides, setSlides] = useState([{word:'',speed:1000,background:'',textColor:''}])
-
-    const createSlides = useCallback(() =>{
-		
-		let tempSlides = [];
-		for(const word of words.split(', ')){
-			console.log(word)
-			tempSlides.push({word: word,speed:1000,background:'#fff',textColor:'#000'})
-		}
-		setSlides(tempSlides);
-	},[words])
-
-    //Go to next step in recording
-    const goNext = (e) => {
-        e.preventDefault()
-		if(stage == 0)
-			createSlides()
-        setStage(stage + 1)
-		setFinishRec(stage)
-		
-    }
-    //Go back a step in recording
-    const goBack = (e) => {
-        e.preventDefault()
-        setStage(stage - 1)
-		setFinishRec(stage)
-
-    }
-	const editSlide = useCallback((slideIdx, updatedSlide) =>{
-		console.log('UPDATED: ',updatedSlide)
-		setSlides((slides) => {const tempSlides = cloneDeep(slides); tempSlides.splice(slideIdx, 1, updatedSlide); return tempSlides})
-	},[])
-
-	
-    if (show) {
-        return <>
-            {stage == 0 && (
-                <>
-                    <div className='container scriptBox'>
-
-                        <p className='textColor'>Build Script</p>
-                        <br />
-                        <textarea value={words} className='scriptTextBox' rows='5' cols='50' placeholder='Wordbox (seperate inputs by commas and spaces)' onChange={(e) => setWords(e.target.value)} />
-                        <br />
-                        <button className='nextButton' onClick={goNext}>RECORD {<FaAngleRight />}</button>
-
-                    </div>
-
-                    <br />
-
-                </>
-            )}
-            {stage == 1 && words == '' && (
-                <div className='container scriptBox'>
-
-                    <p className='textColor'>Invalid Script Please go back</p>
-
-                    <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
-
-                </div>
-            )}
-			
-            {stage == 1 && words != '' && (
-                <>
-                    <div className='container'>
-                        <div className='row'>
-                            <div className='col'>
-                                <ValidScript setCurrentSlide={setCurrentSlide} slides={slides} autoplay={autoplay} currentSlide={currentSlide} />
-                            </div>
-                            <div className='col scriptBox'>
-                                <label className='textColor'>Slideshow Background</label>
-                             
-
-								<label className='textColor'>Slideshow Speed</label> <br />
-                        		<input value={slides[currentSlide].speed / 1000} type='number' placeholder='(seconds)' onChange={(e) => {
-									const tempSlide = slides[currentSlide];
-									tempSlide.speed = e.target.value * 1000;
-									editSlide(currentSlide, tempSlide);
-								}} />
-                        
-								<button onClick={(e) => setAutoPlay(!autoplay)}>{autoplay ? 'true' : 'false'}</button>
-                                <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
-                                <div className='nextButton' >FINISH</div>
-                            </div>
-                        </div>
-                    </div>
-                </>
-            )}
-
-        </>
-    }
-    return <></>;
-}
 
 function ValidScript({slides, setCurrentSlide, currentSlide, autoplay}) {
 	const changeCarosel = useCallback((slide) => {
