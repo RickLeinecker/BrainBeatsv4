@@ -109,7 +109,7 @@ router.get('/getAllUsers', async (req, res) => {
 });
 
 // Get all users in the database
-router.get('/getUserImages', async (req, res) => {
+router.get('/getUserProfilePic', async (req, res) => {
     try {
         const id = req.query.id;
         const users = await prisma.User.findMany({
