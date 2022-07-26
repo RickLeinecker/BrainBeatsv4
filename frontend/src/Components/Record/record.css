@@ -10,6 +10,10 @@
   overflow-y: scroll;
 }
 
+.advanceInputBoxes {
+  width: 100px;
+}
+
 .colorBox {
     background: #36393f; 
     height: 40%;
@@ -55,7 +59,6 @@
   text-align: center;
   padding: 10rem 15rem 10rem 15rem;
   font-size: 25px;
-  color: rgb
 }
 
 .YtVideo {
@@ -74,6 +77,15 @@
 }
 .stopButton {
   background: rgb(206, 61, 61);
+  font-size: 20px;
+  width: 120px;
+  border: 0px;
+  margin: 10px;
+  border-radius: 5px;
+}
+
+.publishButton {
+  background: rgb(0, 166, 203);
   font-size: 20px;
   width: 120px;
   border: 0px;
@@ -107,5 +119,30 @@
   margin: 2rem;
 }
 .scriptDisplayCard {
-  margin-left: 7.5rem;
+  margin-left: 13%;
+}
+
+.scriptless{
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  margin: 5rem
+}
+
+input[type="file"] {
+  display: none;
+}
+.custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.titleInput {
+  border-width: 0px 0px 1px 0px;
+  width: 200px;
+  margin-top: 100px;
+  text-align: center;
 }

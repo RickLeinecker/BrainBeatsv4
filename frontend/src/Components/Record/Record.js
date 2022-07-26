@@ -4,6 +4,7 @@ import { SketchPicker } from 'react-color'
 import './record.css'
 import { FaAngleRight, FaAngleLeft, FaRegPlayCircle, FaRegPauseCircle, FaClipboardList } from "react-icons/fa";
 import {Accordion, Button} from 'react-bootstrap'
+import Img from '../Navbar/Logo.jpg'
 //import * as fs from 'fs/promises';
 // import {readFileSync, promises as fsPromises} from 'fs';
 // import * as fs from 'fs';
@@ -31,18 +32,18 @@ function Record() {
     const user = useRecoilValue(userModeState);
 	const jwt = useRecoilValue(userJWT);
 
-	const [stage, setStage] = useState(1);
+	const [stage, setStage] = useState(0);
 
 	//Music Generation States
-	const [numNotes, setNumNotes] = useState(7);
+	const [numNotes, setNumNotes] = useState(21);
 	const [FP1, setFP1Inst] = useState(-3);
 	const [FP2, setFP2Inst] = useState(-3);
 	const [C3, setC3Inst] = useState(-3);
 	const [C4, setC4Inst] = useState(-3);
-	const [FP1Note, setFP1Note] = useState(0);
-	const [FP2Note, setFP2Note] = useState(0);
-	const [C3Note, setC3Note] = useState(0);
-	const [C4Note, setC4Note] = useState(0);
+	const [FP1Note, setFP1Note] = useState(2);
+	const [FP2Note, setFP2Note] = useState(2);
+	const [C3Note, setC3Note] = useState(1);
+	const [C4Note, setC4Note] = useState(1);
 	const [keyNum, setKey] = useState(0);
 	const [scale, setScale] = useState(0);
 	const [BPMArray, setBPMArray] = useState([]);
@@ -182,6 +183,42 @@ function Record() {
 		setTextColor({ displayColorPicker: textColor.displayColorPicker, color: color.rgb });
 	  };
 
+	  //Default Selections for music generation
+	  function setToSlow(){
+		setFP1Note(2);
+		setFP2Note(1);
+		setC3Note(1);
+		setC4Note(0);
+		setBPM(100);
+	  }
+	  function setToMed(){
+		setFP1Note(2);
+		setFP2Note(2);
+		setC3Note(1);
+		setC4Note(1);
+		setBPM(120);
+	  }
+	  function setToQuick(){
+		setFP1Note(3);
+		setFP2Note(3);
+		setC3Note(2);
+		setC4Note(2);
+		setBPM(140);
+	  }
+	  function setToFast(){
+		setFP1Note(4);
+		setFP2Note(4);
+		setC3Note(3);
+		setC4Note(3);
+		setBPM(160);
+	  }
+
+	  function checking(){
+		  console.log(FP1Note)
+		  console.log(FP2Note)
+		  console.log(C3Note)
+		  console.log(C4Note)
+	  }
 
 	return <>
 	<div className="scriptBox">
@@ -197,10 +234,89 @@ function Record() {
 					<Accordion.Header>Basic Setting</Accordion.Header>
 					<Accordion.Body>
 						<div>
-        					<input type="radio" className='defaultRadio'/> Slow and Melodic
-        					<input type="radio" className='defaultRadio'/> Moderate and Timely
-        					<input type="radio" className='defaultRadio'/> Fast and Frenzy
+        					<input type="radio"  onChange={setToSlow} className='defaultRadio' name='tempo' value='slow' /> <label>Slow and Melodic</label>
+        					<input type="radio" onChange={setToMed} className='defaultRadio' name='tempo' value='normal' checked/><label>Moderate and Timely</label> 
+        					<input type="radio" onChange={setToQuick} className='defaultRadio' name='tempo' value='normal' checked/><label>Quick and Lively</label> 
+							<input type="radio" onChange={setToFast} className='defaultRadio' name='tempo' value='fast'/> <label>Fast and Frenzy</label>
       					</div>
+						<div className='row'>
+						<div className="col">
+							<div>FP1 Instrument</div>
+							<select
+								className="advanceInputBoxes"
+								onChange={(e) => setFP1Inst(e.target.value)}
+							>
+								<option value={-3}>SineWave</option>
+								<option value={-2}>TriangleWave</option>
+								<option value={-1}>SquareWave</option>
+								<option value={0}>Flute</option>
+								<option value={1}>Oboe</option>
+								<option value={2}>Clarinet</option>
+								<option value={3}>Bassoon</option>
+								<option value={4}>Trumpet</option>
+								<option value={5}>FrenchHorn</option>
+								<option value={6}>Trombone</option>
+								<option value={7}>Tuba</option>
+							</select>
+							</div>
+							<div className="col">
+							<div>FP2 Instrument</div>
+							<select
+								className="advanceInputBoxes"
+								onChange={(e) => setFP2Inst(e.target.value)}
+							>
+								<option value={-3}>SineWave</option>
+								<option value={-2}>TriangleWave</option>
+								<option value={-1}>SquareWave</option>
+								<option value={0}>Flute</option>
+								<option value={1}>Oboe</option>
+								<option value={2}>Clarinet</option>
+								<option value={3}>Bassoon</option>
+								<option value={4}>Trumpet</option>
+								<option value={5}>FrenchHorn</option>
+								<option value={6}>Trombone</option>
+								<option value={7}>Tuba</option>
+							</select>
+							</div>
+							<div className="col">
+							<div>C3 Instrument</div>
+							<select
+								className="advanceInputBoxes"
+								onChange={(e) => setC3Inst(e.target.value)}
+							>
+								<option value={-3}>SineWave</option>
+								<option value={-2}>TriangleWave</option>
+								<option value={-1}>SquareWave</option>
+								<option value={0}>Flute</option>
+								<option value={1}>Oboe</option>
+								<option value={2}>Clarinet</option>
+								<option value={3}>Bassoon</option>
+								<option value={4}>Trumpet</option>
+								<option value={5}>FrenchHorn</option>
+								<option value={6}>Trombone</option>
+								<option value={7}>Tuba</option>
+							</select>
+							</div>
+							<div className="col">
+							<div>C4 Instrument</div>
+							<select
+								className="advanceInputBoxes"
+								onChange={(e) => setC4Inst(e.target.value)}
+							>
+								<option value={-3}>SineWave</option>
+								<option value={-2}>TriangleWave</option>
+								<option value={-1}>SquareWave</option>
+								<option value={0}>Flute</option>
+								<option value={1}>Oboe</option>
+								<option value={2}>Clarinet</option>
+								<option value={3}>Bassoon</option>
+								<option value={4}>Trumpet</option>
+								<option value={5}>FrenchHorn</option>
+								<option value={6}>Trombone</option>
+								<option value={7}>Tuba</option>
+							</select>
+							</div>
+						</div>
 					</Accordion.Body>
 				  </Accordion.Item>
 				  <Accordion.Item eventKey="1">
@@ -209,7 +325,7 @@ function Record() {
 					  <div className="row">
 						<div className="col">
 						  <div>FP1 Instrument</div>
-						  <select onChange={(e) => setFP1Inst(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setFP1Inst(e.target.value)}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -223,7 +339,7 @@ function Record() {
 							<option value={7}>Tuba</option>
 						  </select>
 						  <div>FP2 Instrument</div>
-						  <select onChange={(e) => setFP2Inst(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setFP2Inst(e.target.value)}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -237,7 +353,7 @@ function Record() {
 							<option value={7}>Tuba</option>
 						  </select>
 						  <div>C3 Instrument</div>
-						  <select onChange={(e) => setC3Inst(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setC3Inst(e.target.value)}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -251,7 +367,7 @@ function Record() {
 							<option value={7}>Tuba</option>
 						  </select>
 						  <div>C4 Instrument</div>
-						  <select onChange={(e) => setC4Inst(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setC4Inst(e.target.value)}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -267,7 +383,7 @@ function Record() {
 						</div>
 						<div className="col">
 						  <div>FP1 Note Type</div>
-						  <select onChange={(e) => setFP1Note(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setFP1Note(e.target.value)}>
 							<option value={0}>Whole</option>
 							<option value={1}>Half</option>
 							<option value={2}>Quarter</option>
@@ -275,7 +391,7 @@ function Record() {
 							<option value={4}>Sixteenth</option>
 						  </select>
 						  <div>FP2 Note Type</div>
-						  <select onChange={(e) => setFP2Note(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setFP2Note(e.target.value)}>
 							<option value={0}>Whole</option>
 							<option value={1}>Half</option>
 							<option value={2}>Quarter</option>
@@ -283,7 +399,7 @@ function Record() {
 							<option value={4}>Sixteenth</option>
 						  </select>
 						  <div>C3 Note Type</div>
-						  <select onChange={(e) => setC3Note(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setC3Note(e.target.value)}>
 							<option value={0}>Whole</option>
 							<option value={1}>Half</option>
 							<option value={2}>Quarter</option>
@@ -291,7 +407,7 @@ function Record() {
 							<option value={4}>Sixteenth</option>
 						  </select>
 						  <div>C4 Note Type</div>
-						  <select onChange={(e) => setC4Note(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setC4Note(e.target.value)}>
 							<option value={0}>Whole</option>
 							<option value={1}>Half</option>
 							<option value={2}>Quarter</option>
@@ -301,13 +417,13 @@ function Record() {
 						</div>
 						<div className="col">
 						  <div>Number of Octaves</div>
-						  <select onChange={(e) => setNumNotes(e.target.value * 7)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setNumNotes(e.target.value * 7)}>
 							<option value={1}>1</option>
 							<option value={2}>2</option>
 							<option value={3}>3</option>
 						  </select>
 						  <div>Tempo</div>
-						  <select onChange={(e) => setBPM(BPMArray[e.target.value])}>
+						  <select className='advanceInputBoxes' onChange={(e) => setBPM(BPMArray[e.target.value])}>
 							{BPMArray.map((item, index) => {
 							  return <option value={index}>{item}</option>;
 							})}
@@ -317,6 +433,7 @@ function Record() {
 						  <select
 							onChange={(e) => setKey(e.target.value)}
 							value={keyNum}
+							className='advanceInputBoxes' 
 						  >
 							<option value={0}>C</option>
 							<option value={1}>C#/Db</option>
@@ -335,6 +452,7 @@ function Record() {
 						  <select
 							onChange={(e) => setScale(e.target.value)}
 							value={scale}
+							className='advanceInputBoxes' 
 						  >
 							<option value={0}>Major</option>
 							<option value={1}>Minor</option>
@@ -352,129 +470,176 @@ function Record() {
 		  </>
 		)}
         {stage == 1 && (
-			<div>
-			<div className="textHeader">Script</div>
-			<div>
-			  <input className="InputForYoutube" placeholder="YouTube Link" onChange={(e)=> setYoutubeLink(e.target.value)}/>
-			  <p className="line">
-				<span className="wordInLine">OR</span>
-			  </p>
-			  <Button style={{width: '100px', float: 'right', marginRight: '6rem'}} onClick={noScript}>SKIP</Button>
-			  <br />
-			  <input className="inputForCard" placeholder="YOUR TEXT HERE" onChange={(e) => setCardTextState(e.target.value)}
-			  style={{
-				  color: `rgba(${textColor.color.r}, ${textColor.color.g}, ${textColor.color.b}, ${textColor.color.a})`,
-				  background: `rgba(${backgroundColor.color.r}, ${backgroundColor.color.g}, ${backgroundColor.color.b}, ${backgroundColor.color.a})`,
-				  }}
-				value={cardText}/>
-			</div>
-			<div className="row">
-			  <div className="col">
-				<Button style={{width: '100px', marginLeft: '6rem'}}>Preview</Button>
-			  </div>
-			  <div className="col">
-				<div>
-				  <div
-					style={{
-					  padding: "2px",
-					  background: "#fff",
-					  borderRadius: "1px",
-					  boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
-					  display: "inline-block",
-					  cursor: "pointer",
-					}}
-					onClick={openBackgroundColor}
-				  >
-					<div
-					  style={{
-						width: "40px",
-						height: "40px",
-						borderRadius: "2px",
-						background: `rgba(${backgroundColor.color.r}, ${backgroundColor.color.g}, ${backgroundColor.color.b}, ${backgroundColor.color.a})`,
-					  }}
-					/>
-				  </div>
-				  {backgroundColor.displayColorPicker ? (
-					<div style={{ position: "absolute", zIndex: "2", bottom: '50px' }}>
-					  <div
-						style={{
-						  position: "fixed",
-						  top: "0px",
-						  right: "0px",
-						  bottom: "0px",
-						  left: "0px",
-						}}
-						onClick={closeBackgroundColor}
-					  />
-					  <SketchPicker
-						color={backgroundColor.color}
-						onChange={setColorBackground}
-					  />
-					</div>
-				  ) : null}
-				</div>
-			  </div>
-			  <div className="col">
-				<input type='number' placeholder="Seconds" className='timeInput' onChange={(e)=> setSpeed(e.target.value)} value={speed}/>
-			  </div>
-			  <div className="col">
-			  <div>
-				  <div
-					style={{
-					  padding: "2px",
-					  background: "#fff",
-					  borderRadius: "1px",
-					  boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
-					  display: "inline-block",
-					  cursor: "pointer",
-					}}
-					onClick={openTextColor}
-				  >
-					<div
-					  style={{
-						width: "40px",
-						height: "40px",
-						borderRadius: "2px",
-						background: `rgba(${textColor.color.r}, ${textColor.color.g}, ${textColor.color.b}, ${textColor.color.a})`,
-					  }}
-					/>
-				  </div>
-				  {textColor.displayColorPicker ? (
-					<div style={{ position: "absolute", zIndex: "2", bottom: '50px'}}>
-					  <div
-						style={{
-						  position: "fixed",
-						  top: "0px",
-						  right: "0px",
-						  bottom: "0px",
-						  left: "0px",
-						}}
-						onClick={closeTextColor}
-					  />
-					  <SketchPicker
-						color={textColor.color}
-						onChange={setColorText}
-					  />
-					</div>
-				  ) : null}
-				</div>
-			  </div>
-			  <div className="col">
-				<Button style={{width: '100px', marginRight: '6rem'}} onClick={addCard}>Add</Button>
-			  </div>
-			</div>
-			<button className="arrowButtonMain" onClick={goBack}>
-			  {<FaAngleLeft />} Script{" "}
-			</button>
-			<button className="arrowButtonMain" onClick={goNext}>
-			  Post {<FaAngleRight />}
-			</button>
-		  </div>
-		)}
+        <div>
+          <div className="textHeader">Script</div>
+          <div>
+            <input
+              className="InputForYoutube"
+              placeholder="YouTube Link"
+              onChange={(e) => setYoutubeLink(e.target.value)}
+            />
+            <p className="line">
+              <span className="wordInLine">OR</span>
+            </p>
+            <br />
+            <input
+              className="inputForCard"
+              placeholder="YOUR TEXT HERE"
+              onChange={(e) => setCardTextState(e.target.value)}
+              style={{
+                color: `rgba(${textColor.color.r}, ${textColor.color.g}, ${textColor.color.b}, ${textColor.color.a})`,
+                background: `rgba(${backgroundColor.color.r}, ${backgroundColor.color.g}, ${backgroundColor.color.b}, ${backgroundColor.color.a})`,
+              }}
+              value={cardText}
+            />
+          </div>
+          <div className="row">
+            <div className="col-sm-2">
+			<p style={{position: 'relative', left: '45px'}}>Text Color</p>
+              <div>
+                <div
+                  style={{
+                    padding: "2px",
+                    background: "#fff",
+                    borderRadius: "1px",
+                    boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
+                    display: "inline-block",
+                    cursor: "pointer",
+					float: 'right'
+                  }}
+                  onClick={openTextColor}
+                >
+					
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "2px",
+                      background: `rgba(${textColor.color.r}, ${textColor.color.g}, ${textColor.color.b}, ${textColor.color.a})`,
+                    }}
+                  />
+                </div>
+                {textColor.displayColorPicker ? (
+                  <div
+                    style={{
+                      position: "absolute",
+                      zIndex: "2",
+                      bottom: "50px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        position: "fixed",
+                        top: "0px",
+                        right: "0px",
+                        bottom: "0px",
+                        left: "0px",
+                      }}
+                      onClick={closeTextColor}
+                    />
+                    <SketchPicker
+                      color={textColor.color}
+                      onChange={setColorText}
+                    />
+                  </div>
+                ) : null}
+				<br />
+				
+              </div>
+            </div>
+            <div className="col-sm-2">
+              <div>
+			  <p style={{position: 'relative', left: '0px'}}>Background Color</p>
+              
+                <div
+                  style={{
+                    padding: "2px",
+                    background: "#fff",
+                    borderRadius: "1px",
+                    boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
+                    display: "inline-block",
+                    cursor: "pointer",
+                  }}
+                  onClick={openBackgroundColor}
+                >
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "2px",
+                      background: `rgba(${backgroundColor.color.r}, ${backgroundColor.color.g}, ${backgroundColor.color.b}, ${backgroundColor.color.a})`,
+                    }}
+                  />
+                </div>
+                {backgroundColor.displayColorPicker ? (
+                  <div
+                    style={{
+                      position: "absolute",
+                      zIndex: "2",
+                      bottom: "50px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        position: "fixed",
+                        top: "0px",
+                        right: "0px",
+                        bottom: "0px",
+                        left: "0px",
+                      }}
+                      onClick={closeBackgroundColor}
+                    />
+                    <SketchPicker
+                      color={backgroundColor.color}
+                      onChange={setColorBackground}
+                    />
+                  </div>
+                ) : null}
+              </div>
+            </div>
+            <div className="col">
+              <input
+                type="number"
+                placeholder="Seconds"
+                className="timeInput"
+                onChange={(e) => setSpeed(e.target.value)}
+                value={speed}
+              />
+            </div>
+
+            <div className="col">
+              <Button
+                style={{ width: "100px", float: "center", marginTop: '10px'}}
+                onClick={addCard}
+              >
+                Add
+              </Button>
+            </div>
+          </div>
+          <button className="arrowButtonMain" onClick={goBack}>
+            {<FaAngleLeft />} Script{" "}
+          </button>
+          <button className="arrowButtonMain" onClick={goNext}>
+            Post {<FaAngleRight />}
+          </button>
+          <p className="line">
+            <span className="wordInLine">OR</span>
+          </p>
+          <Button
+            style={{ width: "100px", marginTop: "10px" }}
+            onClick={noScript}
+          >
+            SKIP
+          </Button>
+        </div>
+      )}
 		{//User does not want to script
 		stage == 4 && (
 			<>
+			<img src={Img} className="scriptless"/>
 			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} />
+			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
+			<button className='arrowButtonMain' onClick={goNext}>Publish {<FaAngleRight />}</button>
 			</>
 		)}
 		{//This displays cards
@@ -483,7 +648,7 @@ function Record() {
 			<ValidScript slides={cards} setCurrentSlide={setCurrentSlide} autoplay={autoplay} currentSlide={currentSlide}/>
 			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} />
 			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
-			<button className='arrowButtonMain' onClick={postFile}>Publish {<FaAngleRight />}</button>
+			<button className='arrowButtonMain' onClick={goNext}>Publish {<FaAngleRight />}</button>
 			
 			</>
 		)}
@@ -499,38 +664,27 @@ function Record() {
 		)}
 		{stage == 3 && (
 			<>
-			<div className='container scriptBox'>
-				<div className='row'>
-					<p className='textColor'>Posting</p>
-					<p style={{ color: "white" }}>{msg}</p>	
-				</div>
-				<div className='row'>
-					<div className='col'>
-						<label style={{ color: "white" }}>Title</label>
-						<br />
-						<input type='text' onChange={(e) => setTitle(e.target.value)}/>
-					</div>
-					
-				</div>	
-				<br />
-				<div className='row'>
-
-					<div className='col'>
-						<label style={{ color: "white" }}>Key</label>
-						<input value={KEY[keyNum]} disabled />
-					</div>
-					<div className='col'>
-						<label style={{ color: "white" }}>Scale</label>
-						<input value={SCALE[scale]} disabled />
-					</div>
-					<div className='col'>
-						<label style={{ color: "white" }}>BPM</label>
-						<input value={BPM} disabled />
-					</div>
-				</div>			
+			<div>
+			<div>
+				<h2>Publish</h2>
 			</div>
+			<div>
+				<img src={Img} />
+				
+			</div>
+			<div> 
+				<label for="file-upload" className="custom-file-upload">
+    				Upload Image
+				</label>
+				<input id="file-upload" type="file"/>
+			</div>
+			<div> <input type="text" className='titleInput'/></div>
+			</div>
+			<p>Post Title</p>
+			<button className='publishButton' onClick={postFile}>Publish</button>
+			<br />
 			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Record </button>
-			<button className='arrowButtonMain' onClick={postFile}>Finish {<FaAngleRight />}</button>
+			
 			</>
 		)}
 		</div>
