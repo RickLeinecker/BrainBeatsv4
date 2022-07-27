@@ -10,7 +10,7 @@ const { getUserExists, getPostExists } = require("../../utils/database");
 // Create a post
 router.post('/createPost', async (req, res) => {
     try {
-        const { userID, title, bpm, key, midi, instruments, noteTypes, visibility, token} = req.body;
+        const { userID, title, bpm, key, midi, instruments, noteTypes, token} = req.body;
 
         const decoded = verifyJWT(token);
 
