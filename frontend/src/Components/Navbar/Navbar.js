@@ -4,7 +4,7 @@ import { Navbar, Container, Button, NavDropdown, Form } from 'react-bootstrap'
 import Logo from './Logo.jpg'
 import {
     FaHome, FaUserEdit, FaRegPlayCircle, FaDoorOpen, FaSearch, FaMusic, FaRegArrowAltCircleRight
-    , FaBars
+    , FaBars,FaRegClone
 } from 'react-icons/fa';
 import './Nav.css'
 import { useSetRecoilState, useRecoilState } from 'recoil';
@@ -22,15 +22,7 @@ const Navbars = () => {
         window.location.href = '/'
     }
 
-    const handleSearch =(event)=> {
-        if(event.target.value === '')
-            return
-        if(event.key === 'Enter'){
-            
-        }else{
-            console.log(event.target.value);
-        }
-    }
+    
 
     return (
         <>
@@ -38,10 +30,8 @@ const Navbars = () => {
                 <Container >
                     <Navbar.Brand className='d-flex justify-content-start'>
                         <NavDropdown title={<FaBars size={30} />}>
-                            <NavDropdown.Item href="/"><FaHome /> Home</NavDropdown.Item>
-                            <NavDropdown.Item href="/Search"><FaSearch /> Search</NavDropdown.Item>
-                            <NavDropdown.Item href="/Search"><FaSearch /> About Us</NavDropdown.Item>
-                            
+                            <NavDropdown.Item href="/Search"><FaSearch />Search</NavDropdown.Item>
+                            <NavDropdown.Item href="/About"><FaSearch /> About Us</NavDropdown.Item>
                         </NavDropdown>
                     </Navbar.Brand>
                     <Navbar.Brand className='d-flex justify-content-start'>
@@ -49,16 +39,6 @@ const Navbars = () => {
                             <img src={Logo} alt="Logo" className='homeImg' />
                         </Link>
                     </Navbar.Brand>
-                    <div className="d-flex">
-                        <input
-                            type="search"
-                            placeholder="Search"
-                            className="me-2"
-                            aria-label="Search"
-                            onKeyPress={handleSearch}
-                        />
-                        <Button variant="outline-success" onClick={handleSearch} style={{color: 'blue'}}>Search</Button>
-                    </div>
                     <Navbar.Collapse className="justify-content-end">
                         {user ?
                             <>
@@ -66,6 +46,8 @@ const Navbars = () => {
                                 <NavDropdown title={user.username}>
                                     <NavDropdown.Item href="/"><FaHome /> Home</NavDropdown.Item>
                                     <NavDropdown.Item href="/Profile"><FaUserEdit /> Profile</NavDropdown.Item>
+                                    <NavDropdown.Item href="/Playlist"><FaRegClone/> Playlist</NavDropdown.Item>
+                                    
                                     <NavDropdown.Divider />
                                     <NavDropdown.Item onClick={Logout}><FaDoorOpen />Logout</NavDropdown.Item>
                                 </NavDropdown>

@@ -146,9 +146,11 @@ function Record() {
 
 	const postFile = () => {
 		const bodyData ={
-			"userID": 'de0463ea-1745-4f47-a789-82a9d7eae746',
+			"userID": user.id,
   			"title": title,
   			"bpm": BPM,
+			"instruments" : instrumentList,
+			"noteTypes" : noteDuration,
   			"key": KEY[scale],
 			'token': jwt,
 		}
@@ -185,6 +187,10 @@ function Record() {
 
 	  //Default Selections for music generation
 	  function setToSlow(){
+		setFP1Inst(-3);
+		setFP2Inst(0);
+		setC3Inst(4);
+		setC4Inst(7);
 		setFP1Note(2);
 		setFP2Note(1);
 		setC3Note(1);
@@ -192,6 +198,10 @@ function Record() {
 		setBPM(100);
 	  }
 	  function setToMed(){
+		setFP1Inst(-3);
+		setFP2Inst(2);
+		setC3Inst(5);
+		setC4Inst(6);
 		setFP1Note(2);
 		setFP2Note(2);
 		setC3Note(1);
@@ -199,6 +209,10 @@ function Record() {
 		setBPM(120);
 	  }
 	  function setToQuick(){
+		setFP1Inst(4);
+		setFP2Inst(2);
+		setC3Inst(3);
+		setC4Inst(0);
 		setFP1Note(3);
 		setFP2Note(3);
 		setC3Note(2);
@@ -206,6 +220,10 @@ function Record() {
 		setBPM(140);
 	  }
 	  function setToFast(){
+		setFP1Inst(-3);
+		setFP2Inst(0);
+		setC3Inst(4);
+		setC4Inst(3);
 		setFP1Note(4);
 		setFP2Note(4);
 		setC3Note(3);
@@ -213,15 +231,6 @@ function Record() {
 		setBPM(160);
 	  }
 
-	  function checkScript(){
-		if(cards.length === 0 && youtubeLink === ''){
-			setMsg("Please Provide a script or skip this step")
-			return true
-		}else if(cards.length > 0 && youtubeLink !== ''){
-			setMsg("Please choose only one script type")
-			return true;
-		}else return false;
-	  }
 	  const renderBasicTips = (props) => (
 		<Tooltip id="button-tooltip" {...props}>
 		  Choose your desired tempo and instruments
@@ -265,7 +274,7 @@ function Record() {
 					<Accordion.Body>
 						<div>
 						<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderBasicTips}>
-							<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+							<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
 						</OverlayTrigger>
 						</div>
 						<div>
@@ -274,84 +283,6 @@ function Record() {
         					<input type="radio" onChange={setToQuick} className='defaultRadio' name='tempo' value='normal' checked/><label>Quick and Lively</label> 
 							<input type="radio" onChange={setToFast} className='defaultRadio' name='tempo' value='fast'/> <label>Fast and Frenzy</label>
       					</div>
-						<div className='row'>
-						<div className="col">
-							<div>FP1 Instrument</div>
-							<select
-								className="advanceInputBoxes"
-								onChange={(e) => setFP1Inst(e.target.value)}
-							>
-								<option value={-3}>SineWave</option>
-								<option value={-2}>TriangleWave</option>
-								<option value={-1}>SquareWave</option>
-								<option value={0}>Flute</option>
-								<option value={1}>Oboe</option>
-								<option value={2}>Clarinet</option>
-								<option value={3}>Bassoon</option>
-								<option value={4}>Trumpet</option>
-								<option value={5}>FrenchHorn</option>
-								<option value={6}>Trombone</option>
-								<option value={7}>Tuba</option>
-							</select>
-							</div>
-							<div className="col">
-							<div>FP2 Instrument</div>
-							<select
-								className="advanceInputBoxes"
-								onChange={(e) => setFP2Inst(e.target.value)}
-							>
-								<option value={-3}>SineWave</option>
-								<option value={-2}>TriangleWave</option>
-								<option value={-1}>SquareWave</option>
-								<option value={0}>Flute</option>
-								<option value={1}>Oboe</option>
-								<option value={2}>Clarinet</option>
-								<option value={3}>Bassoon</option>
-								<option value={4}>Trumpet</option>
-								<option value={5}>FrenchHorn</option>
-								<option value={6}>Trombone</option>
-								<option value={7}>Tuba</option>
-							</select>
-							</div>
-							<div className="col">
-							<div>C3 Instrument</div>
-							<select
-								className="advanceInputBoxes"
-								onChange={(e) => setC3Inst(e.target.value)}
-							>
-								<option value={-3}>SineWave</option>
-								<option value={-2}>TriangleWave</option>
-								<option value={-1}>SquareWave</option>
-								<option value={0}>Flute</option>
-								<option value={1}>Oboe</option>
-								<option value={2}>Clarinet</option>
-								<option value={3}>Bassoon</option>
-								<option value={4}>Trumpet</option>
-								<option value={5}>FrenchHorn</option>
-								<option value={6}>Trombone</option>
-								<option value={7}>Tuba</option>
-							</select>
-							</div>
-							<div className="col">
-							<div>C4 Instrument</div>
-							<select
-								className="advanceInputBoxes"
-								onChange={(e) => setC4Inst(e.target.value)}
-							>
-								<option value={-3}>SineWave</option>
-								<option value={-2}>TriangleWave</option>
-								<option value={-1}>SquareWave</option>
-								<option value={0}>Flute</option>
-								<option value={1}>Oboe</option>
-								<option value={2}>Clarinet</option>
-								<option value={3}>Bassoon</option>
-								<option value={4}>Trumpet</option>
-								<option value={5}>FrenchHorn</option>
-								<option value={6}>Trombone</option>
-								<option value={7}>Tuba</option>
-							</select>
-							</div>
-						</div>
 					</Accordion.Body>
 				  </Accordion.Item>
 				  <Accordion.Item eventKey="1">
@@ -359,13 +290,13 @@ function Record() {
 					<Accordion.Body>
 						<div>
 						<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderAdvanceTip}>
-							<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+							<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
 						</OverlayTrigger>
 						</div>
 					  <div className="row">
 						<div className="col">
 						  <div>FP1 Instrument</div>
-						  <select className='advanceInputBoxes' onChange={(e) => setFP1Inst(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setFP1Inst(e.target.value)} value={FP1Instrument}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -512,12 +443,17 @@ function Record() {
         {stage == 1 && (
         <div>
 			<div>
+			<div>
 				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderScriptTip}>
-					<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+					<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
 				</OverlayTrigger>
 			</div>
-          <div className="textHeader">Script</div>
-		  <div><p>{msg}</p></div>
+			<br />
+			<div>
+			<p className="textHeader">Script</p>
+			</div>
+			</div>
+          
           <div>
             <input
               className="InputForYoutube"
@@ -666,7 +602,7 @@ function Record() {
             {<FaAngleLeft />} Script{" "}
           </button>
           <button className="arrowButtonMain" onClick={goNext} disabled={(cards.length === 0) ^ (youtubeLink !== '')}>
-            Post {<FaAngleRight />}
+            Record {<FaAngleRight />}
           </button>
           <p className="line">
             <span className="wordInLine">OR</span>
@@ -684,14 +620,14 @@ function Record() {
 			<>
 			<div>
 				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderRecordTip}>
-					<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+					<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
 				</OverlayTrigger>
 			</div>
 			<h2>Record</h2>
 			<img src={Img} className="scriptless"/>
 			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} />
-			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
-			<button className='arrowButtonMain' onClick={goNext}>Publish {<FaAngleRight />}</button>
+			<button className='arrowButtonMain' onClick={() => {setStage(1)}}>{<FaAngleLeft />} Script </button>
+			<button className='arrowButtonMain' onClick={() => {setStage(3)}}>Publish {<FaAngleRight />}</button>
 			</>
 		)}
 		{//This displays cards
@@ -699,7 +635,7 @@ function Record() {
 			<>
 			<div>
 				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderRecordTip}>
-					<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+					<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
 				</OverlayTrigger>
 			</div>
 			<ValidScript slides={cards} setCurrentSlide={setCurrentSlide} autoplay={autoplay} currentSlide={currentSlide}/>
@@ -714,7 +650,7 @@ function Record() {
 			<>
 			<div>
 				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderRecordTip}>
-					<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+				<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
 				</OverlayTrigger>
 			</div>
 			<VidLink link={youtubeLink} />
@@ -729,7 +665,7 @@ function Record() {
 			<div>
 			<div>
 				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderPublishTip}>
-					<button style={{border: 'none', background: 'none', float:'right'}}><FaQuestion /></button>
+				<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
 				</OverlayTrigger>
 			</div>
 			<div>
@@ -741,7 +677,7 @@ function Record() {
 			</div>
 			<div> 
 				<label for="file-upload" className="custom-file-upload">
-    				Upload Image
+    				Upload Image (optional)
 				</label>
 				<input id="file-upload" type="file"/>
 			</div>
@@ -750,6 +686,7 @@ function Record() {
 			<p>Post Title</p>
 			<button className='publishButton' onClick={postFile}>Publish</button>
 			<br />
+			<p>{msg}</p>
 			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Record </button>
 			
 			</>
@@ -796,7 +733,7 @@ function ValidScript({slides, setCurrentSlide, currentSlide, autoplay}) {
     return (
         <>
             <h2>Record</h2>
-            <Carousel className='scriptDisplayCard' autoPlay={autoplay} width={700} showThumbs={false} showIndicators={false}
+            <Carousel className='scriptDisplayCard' autoPlay width={700} showThumbs={false} showIndicators={false}
                 infiniteLoop={true} dynamicHeight={true} interval={slides[currentSlide].speed} onChange={changeCarosel}>
                 {slides.map(
                     (slide,index) =>

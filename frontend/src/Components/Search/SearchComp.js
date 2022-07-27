@@ -27,8 +27,9 @@ const SearchComp = () => {
   const [playListTitle, setPlayListTitle] = useState("");
   const [picture, setPicture] = useState();
   const [message, setMessage] = useState("");
+  const [username, setUsername] = useState('');
 
-  const [currentSelectPost, setCurretSelectPost] = useState('');
+  const [currentSelectPost, setCurretSelectPost] = useState("");
 
   useEffect(() => {
     sendAPI("get", "/posts/getAllPosts").then((res) => {
@@ -45,9 +46,9 @@ const SearchComp = () => {
   }, []);
 
   function showAdd(event) {
-    console.log(event)
+    console.log(event);
     setAddPlay(true);
-    setCurretSelectPost(event.id)
+    setCurretSelectPost(event.id);
   }
 
   function showCreate() {
@@ -57,8 +58,18 @@ const SearchComp = () => {
   function hideModals() {
     setAddPlay(false);
     setCreatePlay(false);
-    setCurretSelectPost('');
-    setMessage('');
+    setCurretSelectPost("");
+    setMessage("");
+  }
+
+  function searchFuntion(){
+    const bodyData ={
+      username: username
+    }
+    sendAPI("get", "/posts/getUserPostsByUsername", bodyData)
+    .then((res) => {
+      setPost(res.data);
+    })
   }
 
   function createPlaylist() {
@@ -73,17 +84,22 @@ const SearchComp = () => {
   }
 
   function addToPlaylist(prop) {
-    const bodyData ={
+    const bodyData = {
       postID: currentSelectPost,
       playlistID: prop.id,
       token: jwt,
-    }
+    };
     console.log(bodyData);
-    sendAPI('post', '/playlists/addPostToPlaylist', bodyData)
-    .then((res) => {
+    sendAPI("post", "/playlists/addPostToPlaylist", bodyData).then((res) => {
       console.log(res);
-    })
+    });
   }
+
+  const handleSearch =(event)=> {
+    if(event.key === 'Enter'){
+      searchFuntion()
+    }
+}
 
   return (
     <>
@@ -110,7 +126,12 @@ const SearchComp = () => {
                     }}
                   >
                     <p className="ModalTitle">{item.name}</p>
-                    <button className="ModalAddButton" onClick={(e)=>addToPlaylist(item)}>Add to Playlist</button>
+                    <button
+                      className="ModalAddButton"
+                      onClick={(e) => addToPlaylist(item)}
+                    >
+                      Add to Playlist
+                    </button>
                   </div>
                 </div>
                 <hr />
@@ -148,7 +169,18 @@ const SearchComp = () => {
 
       <div className="searchMainBody">
         <div className="Header">
-          <p className="searchHeaderText">Search results for: ""</p>
+          <input
+            type="search"
+            placeholder="Search"
+            className="me-2"
+            aria-label="Search"
+            onKeyPress={handleSearch}
+            onChange={(e)=> setUsername(e.target.value)}
+          />
+          <Button className="buttonStyle" onClick={searchFuntion}>
+            Search
+          </Button>
+          <p className="searchHeaderText">Search results</p>
           <hr />
         </div>
         <div className="searchBody">
