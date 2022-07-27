@@ -202,8 +202,7 @@ router.post('/addPostToPlaylist', async (req, res) => {
             });
             res.json(newPost);
         }
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err);
         res.status(500).send({ msg: err });
     }
