@@ -36,10 +36,10 @@ function Record() {
 
 	//Music Generation States
 	const [numNotes, setNumNotes] = useState(21);
-	const [FP1, setFP1Inst] = useState(-3);
-	const [FP2, setFP2Inst] = useState(-3);
-	const [C3, setC3Inst] = useState(-3);
-	const [C4, setC4Inst] = useState(-3);
+	const [FP1, setFP1Inst] = useState(4);
+	const [FP2, setFP2Inst] = useState(2);
+	const [C3, setC3Inst] = useState(3);
+	const [C4, setC4Inst] = useState(0);
 	const [FP1Note, setFP1Note] = useState(2);
 	const [FP2Note, setFP2Note] = useState(2);
 	const [C3Note, setC3Note] = useState(1);
@@ -230,10 +230,20 @@ function Record() {
 		setC4Note(3);
 		setBPM(160);
 	  }
-
+	  const handel = () => {
+		  console.log('_____________________________________________')
+		  console.log(FP1)
+		  console.log(FP2)
+		  console.log(C3)
+		  console.log(C4)
+		  console.log(FP1Note)
+		  console.log(FP2Note)
+		  console.log(C3Note)
+		  console.log(C4Note)
+	  }
 	  const renderBasicTips = (props) => (
 		<Tooltip id="button-tooltip" {...props}>
-		  Choose your desired tempo and instruments
+		  Choose your desired tempo
 		</Tooltip>
 	  );
 	  const renderAdvanceTip = (props) => (
@@ -261,7 +271,7 @@ function Record() {
 	<div className="scriptBox">
 		{stage == 0 && (
 			<>
-			
+			<button onClick={handel}>button</button>
 			  <div>
 				<div className="row">
 				  <p className="textHeader">Music Setting</p>
@@ -279,7 +289,7 @@ function Record() {
 						</div>
 						<div>
         					<input type="radio"  onChange={setToSlow} className='defaultRadio' name='tempo' value='slow' /> <label>Slow and Melodic</label>
-        					<input type="radio" onChange={setToMed} className='defaultRadio' name='tempo' value='normal' checked/><label>Moderate and Timely</label> 
+        					<input type="radio" onChange={setToMed} className='defaultRadio' name='tempo' value='normal' /><label>Moderate and Timely</label> 
         					<input type="radio" onChange={setToQuick} className='defaultRadio' name='tempo' value='normal' checked/><label>Quick and Lively</label> 
 							<input type="radio" onChange={setToFast} className='defaultRadio' name='tempo' value='fast'/> <label>Fast and Frenzy</label>
       					</div>
@@ -296,7 +306,7 @@ function Record() {
 					  <div className="row">
 						<div className="col">
 						  <div>FP1 Instrument</div>
-						  <select className='advanceInputBoxes' onChange={(e) => setFP1Inst(e.target.value)} value={FP1Instrument}>
+						  <select className='advanceInputBoxes' onChange={(e) => setFP1Inst(e.target.value)} value={FP1}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -310,7 +320,7 @@ function Record() {
 							<option value={7}>Tuba</option>
 						  </select>
 						  <div>FP2 Instrument</div>
-						  <select className='advanceInputBoxes' onChange={(e) => setFP2Inst(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setFP2Inst(e.target.value)} value={FP2}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -324,7 +334,7 @@ function Record() {
 							<option value={7}>Tuba</option>
 						  </select>
 						  <div>C3 Instrument</div>
-						  <select className='advanceInputBoxes' onChange={(e) => setC3Inst(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setC3Inst(e.target.value)} value={C3}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -338,7 +348,7 @@ function Record() {
 							<option value={7}>Tuba</option>
 						  </select>
 						  <div>C4 Instrument</div>
-						  <select className='advanceInputBoxes' onChange={(e) => setC4Inst(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setC4Inst(e.target.value)} value={C4}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -354,7 +364,7 @@ function Record() {
 						</div>
 						<div className="col">
 						  <div>FP1 Note Type</div>
-						  <select className='advanceInputBoxes' onChange={(e) => setFP1Note(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setFP1Note(e.target.value)} value={FP1Note}>
 							<option value={0}>Whole</option>
 							<option value={1}>Half</option>
 							<option value={2}>Quarter</option>
@@ -362,7 +372,7 @@ function Record() {
 							<option value={4}>Sixteenth</option>
 						  </select>
 						  <div>FP2 Note Type</div>
-						  <select className='advanceInputBoxes' onChange={(e) => setFP2Note(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setFP2Note(e.target.value)} value={FP2Note}>
 							<option value={0}>Whole</option>
 							<option value={1}>Half</option>
 							<option value={2}>Quarter</option>
@@ -370,7 +380,7 @@ function Record() {
 							<option value={4}>Sixteenth</option>
 						  </select>
 						  <div>C3 Note Type</div>
-						  <select className='advanceInputBoxes' onChange={(e) => setC3Note(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setC3Note(e.target.value)} value={C3Note}>
 							<option value={0}>Whole</option>
 							<option value={1}>Half</option>
 							<option value={2}>Quarter</option>
@@ -378,7 +388,7 @@ function Record() {
 							<option value={4}>Sixteenth</option>
 						  </select>
 						  <div>C4 Note Type</div>
-						  <select className='advanceInputBoxes' onChange={(e) => setC4Note(e.target.value)}>
+						  <select className='advanceInputBoxes' onChange={(e) => setC4Note(e.target.value)} value={C4Note}>
 							<option value={0}>Whole</option>
 							<option value={1}>Half</option>
 							<option value={2}>Quarter</option>
@@ -394,7 +404,7 @@ function Record() {
 							<option value={3}>3</option>
 						  </select>
 						  <div>Tempo</div>
-						  <select className='advanceInputBoxes' onChange={(e) => setBPM(BPMArray[e.target.value])}>
+						  <select className='advanceInputBoxes' onChange={(e) => setBPM(BPMArray[e.target.value])} value={BPM}>
 							{BPMArray.map((item, index) => {
 							  return <option value={index}>{item}</option>;
 							})}
@@ -404,7 +414,7 @@ function Record() {
 						  <select
 							onChange={(e) => setKey(e.target.value)}
 							value={keyNum}
-							className='advanceInputBoxes' 
+							className='advanceInputBoxes'
 						  >
 							<option value={0}>C</option>
 							<option value={1}>C#/Db</option>
