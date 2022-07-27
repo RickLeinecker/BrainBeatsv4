@@ -1,63 +1,40 @@
 import React, { Component, useContext, useState } from "react";
 import './Login.css'
-import { AuthContext } from '../context/AuthContext'
-import axios from "axios";
+import { useRecoilState } from "recoil";
+import {userModeState, userJWT} from '../context/GlobalState'
+import sendAPI from "../sendAPI";
+
 
 const Login = () => {
 
+    const [userMode, setUserMode] = useRecoilState(userModeState);
+    const [userJwt, setUserJwt] = useRecoilState(userJWT);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errMsg, setErrMsg] = useState('');
-    const { dispatch } = useContext(AuthContext);
 
 
     const loginAccount = (event) => {
-
-        //allows form to work without problems on start and submit
-        event.preventDefault();
-
+        //need this else form will not work
+        event.preventDefault()
         //starting path for API endpoint
         const path = require('../Path');
 
         //put all input fields into a json object
         const loginCheck = {
             "email": email,
-            "password": password
+            "password": password,
+            //'token': userJwt,
         };
-        //create field to pass to axios
-        let config = {
-            method: 'post',
-            url: path.buildPath('/authentication/loginUser'),
-            data: loginCheck,
-        }
-        //tell useContext to start login procedure
-        dispatch({ type: 'LOGIN_START' });
-
-        axios(config)
-            .then(function (response) {
-                let res = response.data;
-                //login works, pass data into useContext
-                dispatch({ type: 'LOGIN_SUCCESS', payload: res });
-                
+        sendAPI('post', '/users/loginUser', loginCheck)
+            .then((res) =>{
+                setUserJwt(res.data.token)
+                setUserMode(res.data.user)
             })
-            .catch(function (err) {
-                //login fails send error msg
-                dispatch({ type: 'LOGIN_FAILURE', payload: err });
-                setErrMsg("Incorrect Email or Password");
+            .catch((err) =>{
+                setErrMsg(err.response.data);
             })
         
-    }
-
-
-    //Validates email field
-    const validateEmail = (event) => {
-        const regexp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        if (regexp.test(email)) {
-            loginAccount();
-        }
-        else {
-            alert("FALSE EMAIL");
-        }
     }
 
     return (
@@ -94,8 +71,8 @@ const Login = () => {
                                 <label className="custom-control-label" htmlFor="customCheck1">Remember me</label>
                             </div>
                         </div>
-                        <p>{errMsg}</p>
-                        <button type="submit" className="btn btn-primary btn-block">Submit</button>
+                        <p className='errMsg'>{errMsg}</p>
+                        <button type="submit" className="btn btn-primary btn-block submitButton">Submit</button>
 
                         <div id="HASH" className="blue-msg">
                             <p className="sign-up text-left">New here? <a href="/Register">Sign up</a></p>

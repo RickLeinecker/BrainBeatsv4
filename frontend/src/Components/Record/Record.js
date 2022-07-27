@@ -1,58 +1,125 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
-import RecordButton from './RecordButton';
+import React, { useContext, useState, useEffect, useCallback} from 'react';
 import { Carousel } from "react-responsive-carousel";
-import { SliderPicker } from 'react-color'
+import { SketchPicker } from 'react-color'
 import './record.css'
-import { FaAngleRight, FaAngleLeft, FaRegPlayCircle, FaRegPauseCircle } from "react-icons/fa";
-import { AuthContext } from '../context/AuthContext';
+import { FaAngleRight, FaAngleLeft, FaQuestion } from "react-icons/fa";
+import {Accordion, Button, OverlayTrigger, Tooltip} from 'react-bootstrap'
+import Img from '../Navbar/Logo.jpg'
+//import * as fs from 'fs/promises';
+// import {readFileSync, promises as fsPromises} from 'fs';
+// import * as fs from 'fs';
+
+// **** If more devices are needed, here are the node modules to begin their acquisition. **** \\
+// import muse from "https://cdn.jsdelivr.net/npm/@brainsatplay/muse@0.0.1/dist/index.esm.js"; // Muse board retrieval
+// import hegduino from "https://cdn.jsdelivr.net/npm/@brainsatplay/hegduino@0.0.3/dist/index.esm.js"; // Hegduino 8 channel board retrieval
+
+
 import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/dist/index.esm.js"; // UI
-import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js"; // Data acquisition
-import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // Device drivers
+// Data acquisition
+import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js"; 
+import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // This is the device aquisition for BrainBeats AKA the ganglion device.
 import * as XLSX from 'xlsx';
 import MidiPlayer from 'midi-player-js';
-import {cloneDeep} from 'lodash'
-import { buildPath } from '../Path';
-import axios from 'axios';
+import _, {cloneDeep, first} from 'lodash'
+
+import { useRecoilValue } from "recoil";
+import {userJWT, userModeState} from '../context/GlobalState'
+import sendAPI from '../sendAPI';
+// import { fsync } from 'fs';
 
 function Record() {
     //needed states
-    const { user } = useContext(AuthContext);
-    const [checked, setChecked] = useState(false);
+    const user = useRecoilValue(userModeState);
+	const jwt = useRecoilValue(userJWT);
+
 	const [stage, setStage] = useState(0);
-	const [numNotes, setNumNotes] = useState(7);
-	const [FP1, setFP1Inst] = useState(-3);
-	const [FP2, setFP2Inst] = useState(-3);
-	const [C3, setC3Inst] = useState(-3);
-	const [C4, setC4Inst] = useState(-3);
-	const [FP1Note, setFP1Note] = useState(0);
-	const [FP2Note, setFP2Note] = useState(0);
-	const [C3Note, setC3Note] = useState(0);
-	const [C4Note, setC4Note] = useState(0);
+
+	//Music Generation States
+	const [numNotes, setNumNotes] = useState(21);
+	const [FP1, setFP1Inst] = useState(4);
+	const [FP2, setFP2Inst] = useState(2);
+	const [C3, setC3Inst] = useState(3);
+	const [C4, setC4Inst] = useState(0);
+	const [FP1Note, setFP1Note] = useState(2);
+	const [FP2Note, setFP2Note] = useState(2);
+	const [C3Note, setC3Note] = useState(1);
+	const [C4Note, setC4Note] = useState(1);
 	const [keyNum, setKey] = useState(0);
 	const [scale, setScale] = useState(0);
 	const [BPMArray, setBPMArray] = useState([]);
 	const [BPM, setBPM] = useState(120);
-	const [vis, setVis] = useState(true);
+
+
+	const [currentSlide, setCurrentSlide] = useState(0);
+	const [autoplay, setAutoplay] = useState(true);
+
+	//Setting Up Script
+	//Text Cards
+	const initialBackground = {
+		displayColorPicker: false,
+		color: {
+		  r: '242',
+		  g: '242',
+		  b: '242',
+		  a: '1',
+		},
+	}
+	const initialTextColor = {
+		displayColorPicker: false,
+		color: {
+		  r: '0',
+		  g: '0',
+		  b: '0',
+		  a: '1',
+		},
+	}
+	const [cards, setCards] = useState([])
+	const [cardText, setCardTextState] = useState('');
+	const [speed, setSpeed] = useState(1)
+	const [backgroundColor, setBackgroundColor] =useState(initialBackground);
+	const [textColor, setTextColor] =useState(initialTextColor);
+	const [thumbnail, setThumbnail] = useState(user.thumbnail);
+
+	//Youtube Link
+	const [youtubeLink, setYoutubeLink] = useState('')
+	//Posting States
 	const [title, setTitle] = useState('');
 	const [msg, setMsg] = useState('');
+
+	
+
+	const [finishRec, setFinishRec] = useState();
 	
 	//passing these to Music Generation
-	const instrumentList = [FP1, FP2, C3, C4];
-	const noteDuration = [FP1Note, FP2Note, C3Note, C4Note];
+	const instrumentList = [parseInt(FP1), parseInt(FP2), parseInt(C3), parseInt(C4)];
+	const noteDuration = [parseInt(FP1Note), parseInt(FP2Note), parseInt(C3Note), parseInt(C4Note)];
 
 	const path = require('../Path')
 	const KEY=
-		[
-			"C", "C#", "D","D#", "E", "F","F#", "G", "G#", "A","A#","B"
-		];
+	[
+		"C", "C#", "D","D#", "E", "F","F#", "G", "G#", "A","A#","B"
+	];
+	const SCALE =
+	[
+		'Major', 'Minor'
+	]
+
+	const updateProfilePic = (file) => {
+        var file = document.querySelector('input[type=file]')['files'][0];
+        var reader = new FileReader();
+        var baseString;
+        reader.onloadend = function () {
+            baseString = reader.result;
+            setThumbnail(baseString); 
+        };
+        reader.readAsDataURL(file);
+    }
 
 	//get BPM from database
 	useEffect(()=>{
-		let config={
-			method: 'get',
-			url: path.buildPath('/music/getBPMValues'),
-		}
-		axios(config)
+
+		
+		sendAPI('get', '/music/getBPMValues')
 			.then((res) =>{
 				setBPMArray(res.data);
 			})
@@ -61,70 +128,198 @@ function Record() {
 			})
 	},[])
 
-    const handleChange = () => {
-        setChecked(!checked);
-      };
 	const goNext = () => {
 		setStage(stage + 1)
 	}
 	const goBack = () => {
 		setStage(stage - 1)
 	}
-	const handle = () => {
-		console.log(numNotes)
-		console.log(instrumentList);
-		console.log(noteDuration);
-		console.log(keyNum);
-		console.log(scale);
-		console.log(BPM);
-		console.log(BPMArray)
+	const addCard = () => {
+		if(cardText === ''){
+			alert("Invalid Card format")
+			return
+		}
+		let newCard ={
+			textColor: textColor.color,
+			backGroundColor: backgroundColor.color,
+			speed: speed * 1000,
+			text: cardText,
+		}
+		//set input back to default
+		setBackgroundColor(initialBackground);
+		setTextColor(initialTextColor);
+		setCardTextState('');
+		setSpeed(1);
+		setCards([...cards, newCard])
 	}
+	const noScript = () => {
+		setStage(4);
+	}
+
 	const postFile = () => {
 		const bodyData ={
-			"userID": 'de0463ea-1745-4f47-a789-82a9d7eae746',
+			"userID": user.id,
   			"title": title,
   			"bpm": BPM,
+			"instruments" : instrumentList,
+			"noteTypes" : noteDuration,
+			"thumbnail": thumbnail,
   			"key": KEY[scale],
-  			"visibility": vis
+			'token': jwt,
 		}
-		console.log(bodyData)
-		const config = {
-			method: 'post',
-			url: path.buildPath('/posts/createPost'),
-			data: bodyData
-		}
-		axios(config)
+		console.log(bodyData);
+
+		sendAPI('post', '/posts/createPost', bodyData)
 			.then((res) =>{
 				setMsg('Song posted')
 			})
 	}
-    return <>
+	
+	  //Background Color Picker Function
+	  const openBackgroundColor = () => {
+		setBackgroundColor({ displayColorPicker: !backgroundColor.displayColorPicker, color: backgroundColor.color });
+	  };
+	  const closeBackgroundColor = () => {
+		setBackgroundColor({ displayColorPicker: false, color: backgroundColor.color });
+	  };
+	  const setColorBackground = (color) => {
+		setBackgroundColor({ displayColorPicker: backgroundColor.displayColorPicker, color: color.rgb });
+	  };
+
+	  //Text Color Picker Function
+	  const openTextColor = () => {
+		setTextColor({ displayColorPicker: !textColor.displayColorPicker, color: textColor.color });
+	  };
+	  const closeTextColor = () => {
+		setTextColor({ displayColorPicker: false, color: textColor.color });
+	  };
+	  const setColorText = (color) => {
+		console.log(color)
+		setTextColor({ displayColorPicker: textColor.displayColorPicker, color: color.rgb });
+	  };
+
+	  //Default Selections for music generation
+	  function setToSlow(){
+		setFP1Inst(-3);
+		setFP2Inst(0);
+		setC3Inst(4);
+		setC4Inst(7);
+		setFP1Note(2);
+		setFP2Note(1);
+		setC3Note(1);
+		setC4Note(0);
+		setBPM(100);
+	  }
+	  function setToMed(){
+		setFP1Inst(-3);
+		setFP2Inst(2);
+		setC3Inst(5);
+		setC4Inst(6);
+		setFP1Note(2);
+		setFP2Note(2);
+		setC3Note(1);
+		setC4Note(1);
+		setBPM(120);
+	  }
+	  function setToQuick(){
+		setFP1Inst(4);
+		setFP2Inst(2);
+		setC3Inst(3);
+		setC4Inst(0);
+		setFP1Note(3);
+		setFP2Note(3);
+		setC3Note(2);
+		setC4Note(2);
+		setBPM(140);
+	  }
+	  function setToFast(){
+		setFP1Inst(-3);
+		setFP2Inst(0);
+		setC3Inst(4);
+		setC4Inst(3);
+		setFP1Note(4);
+		setFP2Note(4);
+		setC3Note(3);
+		setC4Note(3);
+		setBPM(160);
+	  }
+	  const handel = () => {
+		  console.log('_____________________________________________')
+		  console.log(FP1)
+		  console.log(FP2)
+		  console.log(C3)
+		  console.log(C4)
+		  console.log(FP1Note)
+		  console.log(FP2Note)
+		  console.log(C3Note)
+		  console.log(C4Note)
+	  }
+	  const renderBasicTips = (props) => (
+		<Tooltip id="button-tooltip" {...props}>
+		  Choose your desired tempo
+		</Tooltip>
+	  );
+	  const renderAdvanceTip = (props) => (
+		<Tooltip id="button-tooltip" {...props}>
+		  Customize your own experience
+		</Tooltip>
+	  );
+	  const renderScriptTip = (props) => (
+		<Tooltip id="button-tooltip" {...props}>
+		  Influence your brainwave via youtube link, creating your own cards or just skip this step
+		</Tooltip>
+	  );
+	  const renderRecordTip = (props) => (
+		<Tooltip id="button-tooltip" {...props}>
+		  Click start to start recording, and stop to stop
+		</Tooltip>
+	  );
+	  const renderPublishTip = (props) => (
+		<Tooltip id="button-tooltip" {...props}>
+			You can now publish your song to the world
+		</Tooltip>
+	  );
+
+	return <>
+	<div className="scriptBox">
 		{stage == 0 && (
 			<>
-			<div className='container scriptBox'>
-				<button onClick={handle}>HE</button>
-				<div>
-				<div className='row'>
-					<p className='textColor'>Music Setting</p>
+			<button onClick={handel}>button</button>
+			  <div>
+				<div className="row">
+				  <p className="textHeader">Music Setting</p>
 				</div>
-				<div className='row'>
-				<div className='col'>
-					<div style={{ color: "white" }}>FP1 Instrument</div>
-			  			<select onChange={(e) => setFP1Inst(e.target.value)}>
-                  			<option value={-3}>SineWave</option>
-                  			<option value={-2}>TriangleWave</option>
-				  			<option value={-1}>SquareWave</option>
-							<option value={0}>Flute</option>
-							<option value={1}>Oboe</option>
-							<option value={2}>Clarinet</option>
-							<option value={3}>Bassoon</option>
-							<option value={4}>Trumpet</option>
-							<option value={5}>FrenchHorn</option>
-							<option value={6}>Trombone</option>
-							<option value={7}>Tuba</option>
-            			</select>
-					<div style={{ color: "white" }}>FP2 Instrument</div>
-						<select onChange={(e) => setFP2Inst(e.target.value)}>
+				<Accordion defaultActiveKey="0">
+				  <Accordion.Item eventKey="0">
+					<Accordion.Header>Basic Setting
+							
+					</Accordion.Header>
+					<Accordion.Body>
+						<div>
+						<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderBasicTips}>
+							<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
+						</OverlayTrigger>
+						</div>
+						<div>
+        					<input type="radio"  onChange={setToSlow} className='defaultRadio' name='tempo' value='slow' /> <label>Slow and Melodic</label>
+        					<input type="radio" onChange={setToMed} className='defaultRadio' name='tempo' value='normal' /><label>Moderate and Timely</label> 
+        					<input type="radio" onChange={setToQuick} className='defaultRadio' name='tempo' value='normal' checked/><label>Quick and Lively</label> 
+							<input type="radio" onChange={setToFast} className='defaultRadio' name='tempo' value='fast'/> <label>Fast and Frenzy</label>
+      					</div>
+					</Accordion.Body>
+				  </Accordion.Item>
+				  <Accordion.Item eventKey="1">
+					<Accordion.Header>Advance Setting</Accordion.Header>
+					<Accordion.Body>
+						<div>
+						<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderAdvanceTip}>
+							<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
+						</OverlayTrigger>
+						</div>
+					  <div className="row">
+						<div className="col">
+						  <div>FP1 Instrument</div>
+						  <select className='advanceInputBoxes' onChange={(e) => setFP1Inst(e.target.value)} value={FP1}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -136,9 +331,9 @@ function Record() {
 							<option value={5}>FrenchHorn</option>
 							<option value={6}>Trombone</option>
 							<option value={7}>Tuba</option>
-            			</select>
-					<div style={{ color: "white" }}>C3 Instrument</div>
-						<select onChange={(e) => setC3Inst(e.target.value)}>
+						  </select>
+						  <div>FP2 Instrument</div>
+						  <select className='advanceInputBoxes' onChange={(e) => setFP2Inst(e.target.value)} value={FP2}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -150,9 +345,9 @@ function Record() {
 							<option value={5}>FrenchHorn</option>
 							<option value={6}>Trombone</option>
 							<option value={7}>Tuba</option>
-            			</select>
-					<div style={{ color: "white" }}>C4 Instrument</div>
-						<select onChange={(e) => setC4Inst(e.target.value)}>
+						  </select>
+						  <div>C3 Instrument</div>
+						  <select className='advanceInputBoxes' onChange={(e) => setC3Inst(e.target.value)} value={C3}>
 							<option value={-3}>SineWave</option>
 							<option value={-2}>TriangleWave</option>
 							<option value={-1}>SquareWave</option>
@@ -164,61 +359,76 @@ function Record() {
 							<option value={5}>FrenchHorn</option>
 							<option value={6}>Trombone</option>
 							<option value={7}>Tuba</option>
-            			</select>
-
-				</div>
-				<div className='col'>
-					<div style={{ color: "white" }}>FP1 Note Type</div>
-							<select onChange={(e) => setFP1Note(e.target.value)}>
-								<option value={0}>Whole</option>
-								<option value={1}>Half</option>
-								<option value={2}>Quarter</option>
-								<option value={3}>Eighth</option>
-								<option value={4}>Sixteenth</option>
-							</select>
-						<div style={{ color: "white" }}>FP2 Note Type</div>
-							<select onChange={(e) => setFP2Note(e.target.value)}>
-								<option value={0}>Whole</option>
-								<option value={1}>Half</option>
-								<option value={2}>Quarter</option>
-								<option value={3}>Eighth</option>
-								<option value={4}>Sixteenth</option>
-							</select>
-						<div style={{ color: "white" }}>C3 Note Type</div>
-							<select onChange={(e) => setC3Note(e.target.value)}>
-								<option value={0}>Whole</option>
-								<option value={1}>Half</option>
-								<option value={2}>Quarter</option>
-								<option value={3}>Eighth</option>
-								<option value={4}>Sixteenth</option>
-							</select>
-						<div style={{ color: "white" }}>C4 Note Type</div>
-							<select onChange={(e) => setC4Note(e.target.value)}>
-								<option value={0}>Whole</option>
-								<option value={1}>Half</option>
-								<option value={2}>Quarter</option>
-								<option value={3}>Eighth</option>
-								<option value={4}>Sixteenth</option>
-							</select>
-				</div>
-				<div className='col'>
-						<div style={{ color: "white" }}>Number of Octaves</div>
-							<select onChange={(e) =>  setNumNotes(e.target.value * 7)} >
-                  				<option value={1}>1</option>
-                  				<option value={2}>2</option>
-				  				<option value={3}>3</option>
-            				</select>
-					<div style={{ color: "white" }}>Tempo</div>
-					<select onChange={(e) => setBPM(BPMArray[e.target.value])}>
-						{BPMArray.map((item, index) => {
-							return (	
-								<option value={index}>{item}</option>
-							)
-						})}
-					</select>
-					<div style={{ color: "white" }}>Key Signature</div>
-
-						<select onChange={(e) => setKey(e.target.value)} value={keyNum}>
+						  </select>
+						  <div>C4 Instrument</div>
+						  <select className='advanceInputBoxes' onChange={(e) => setC4Inst(e.target.value)} value={C4}>
+							<option value={-3}>SineWave</option>
+							<option value={-2}>TriangleWave</option>
+							<option value={-1}>SquareWave</option>
+							<option value={0}>Flute</option>
+							<option value={1}>Oboe</option>
+							<option value={2}>Clarinet</option>
+							<option value={3}>Bassoon</option>
+							<option value={4}>Trumpet</option>
+							<option value={5}>FrenchHorn</option>
+							<option value={6}>Trombone</option>
+							<option value={7}>Tuba</option>
+						  </select>
+						</div>
+						<div className="col">
+						  <div>FP1 Note Type</div>
+						  <select className='advanceInputBoxes' onChange={(e) => setFP1Note(e.target.value)} value={FP1Note}>
+							<option value={0}>Whole</option>
+							<option value={1}>Half</option>
+							<option value={2}>Quarter</option>
+							<option value={3}>Eighth</option>
+							<option value={4}>Sixteenth</option>
+						  </select>
+						  <div>FP2 Note Type</div>
+						  <select className='advanceInputBoxes' onChange={(e) => setFP2Note(e.target.value)} value={FP2Note}>
+							<option value={0}>Whole</option>
+							<option value={1}>Half</option>
+							<option value={2}>Quarter</option>
+							<option value={3}>Eighth</option>
+							<option value={4}>Sixteenth</option>
+						  </select>
+						  <div>C3 Note Type</div>
+						  <select className='advanceInputBoxes' onChange={(e) => setC3Note(e.target.value)} value={C3Note}>
+							<option value={0}>Whole</option>
+							<option value={1}>Half</option>
+							<option value={2}>Quarter</option>
+							<option value={3}>Eighth</option>
+							<option value={4}>Sixteenth</option>
+						  </select>
+						  <div>C4 Note Type</div>
+						  <select className='advanceInputBoxes' onChange={(e) => setC4Note(e.target.value)} value={C4Note}>
+							<option value={0}>Whole</option>
+							<option value={1}>Half</option>
+							<option value={2}>Quarter</option>
+							<option value={3}>Eighth</option>
+							<option value={4}>Sixteenth</option>
+						  </select>
+						</div>
+						<div className="col">
+						  <div>Number of Octaves</div>
+						  <select className='advanceInputBoxes' onChange={(e) => setNumNotes(e.target.value * 7)}>
+							<option value={1}>1</option>
+							<option value={2}>2</option>
+							<option value={3}>3</option>
+						  </select>
+						  <div>Tempo</div>
+						  <select className='advanceInputBoxes' onChange={(e) => setBPM(BPMArray[e.target.value])} value={BPM}>
+							{BPMArray.map((item, index) => {
+							  return <option value={index}>{item}</option>;
+							})}
+						  </select>
+						  <div>Key Signature</div>
+	  
+						  <select
+							onChange={(e) => setKey(e.target.value)}
+							value={keyNum}
+							className='advanceInputBoxes'
+						  >
 							<option value={0}>C</option>
 							<option value={1}>C#/Db</option>
 							<option value={2}>D</option>
@@ -231,151 +441,300 @@ function Record() {
 							<option value={9}>A</option>
 							<option value={10}>A#/Bb</option>
 							<option value={11}>B</option>
-						</select>
-                	<div style={{ color: "white" }}>Scale</div>
-						<select onChange={(e) => setScale(e.target.value)} value={scale}>
+						  </select>
+						  <div>Scale</div>
+						  <select
+							onChange={(e) => setScale(e.target.value)}
+							value={scale}
+							className='advanceInputBoxes' 
+						  >
 							<option value={0}>Major</option>
 							<option value={1}>Minor</option>
-						</select>
-				</div>
-				</div>
-				</div>
-        </div>
-						<button className='arrowButtonMain' onClick={goNext}>Next {<FaAngleRight />}</button>
-			</>
+						  </select>
+						</div>
+					  </div>
+					</Accordion.Body>
+				  </Accordion.Item>
+				</Accordion>
+			  </div>
+			  	<button className="arrowButtonMain" onClick={goNext}>
+			  		Next {<FaAngleRight />}
+				</button>
+			
+		  </>
 		)}
         {stage == 1 && (
+        <div>
 			<div>
-            <div className="">
-                <label className="switch">
-                    <input type="checkbox" className="switch-input" checked={checked} onChange={handleChange}/>
-                    <span className="switch-label" data-on="Script" data-off="Link"></span>
-                    <span className="switch-handle"></span>
-                </label>
-            </div>
-            <ScriptThing show={checked === true} />
-            <LinkThing show={checked === false} />
-            <Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} key={keyNum} scale={scale} BPM={BPM}/>
-			
-			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Music Setting </button>
-			<button className='arrowButtonMain' onClick={goNext}>Post {<FaAngleRight />}</button>
-
-		</div>
-		)}
-		{stage == 2 && (
-			<>
-			<div className='container scriptBox'>
-				<div className='row'>
-					<p className='textColor'>Posting</p>
-					<p style={{ color: "white" }}>{msg}</p>	
-				</div>
-				<div className='row'>
-					<div className='col'>
-						<label style={{ color: "white" }}>Title</label>
-						<br />
-						<input type='text' onChange={(e) => setTitle(e.target.value)}/>
-					</div>
-					<div className='col'>
-						<label style={{ color: "white" }}>Visibility</label>
-						<br />
-						<label className='switch'>
-							<input type='checkbox' className='switch-input' checked={vis} onChange={() => setVis(!vis)}/>
-							<span className="switch-label" data-on="Public" data-off="Private"></span>
-                    		<span className="switch-handle"></span>
-						</label>
-						
-					</div>
-				</div>				
+			<div>
+				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderScriptTip}>
+					<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
+				</OverlayTrigger>
 			</div>
-			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Record </button>
-			<button className='arrowButtonMain' onClick={postFile}>Finish {<FaAngleRight />}</button>
+			<br />
+			<div>
+			<p className="textHeader">Script</p>
+			</div>
+			</div>
+          
+          <div>
+            <input
+              className="InputForYoutube"
+              placeholder="YouTube Link"
+              onChange={(e) => setYoutubeLink(e.target.value)}
+            />
+            <p className="line">
+              <span className="wordInLine">OR</span>
+            </p>
+            <br />
+            <input
+              className="inputForCard"
+              placeholder="YOUR TEXT HERE"
+              onChange={(e) => setCardTextState(e.target.value)}
+              style={{
+                color: `rgba(${textColor.color.r}, ${textColor.color.g}, ${textColor.color.b}, ${textColor.color.a})`,
+                background: `rgba(${backgroundColor.color.r}, ${backgroundColor.color.g}, ${backgroundColor.color.b}, ${backgroundColor.color.a})`,
+              }}
+              value={cardText}
+            />
+          </div>
+          <div className="row">
+            <div className="col-sm-2">
+			<p style={{position: 'relative', left: '45px'}}>Text Color</p>
+              <div>
+                <div
+                  style={{
+                    padding: "2px",
+                    background: "#fff",
+                    borderRadius: "1px",
+                    boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
+                    display: "inline-block",
+                    cursor: "pointer",
+					float: 'right'
+                  }}
+                  onClick={openTextColor}
+                >
+					
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "2px",
+                      background: `rgba(${textColor.color.r}, ${textColor.color.g}, ${textColor.color.b}, ${textColor.color.a})`,
+                    }}
+                  />
+                </div>
+                {textColor.displayColorPicker ? (
+                  <div
+                    style={{
+                      position: "absolute",
+                      zIndex: "2",
+                      bottom: "50px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        position: "fixed",
+                        top: "0px",
+                        right: "0px",
+                        bottom: "0px",
+                        left: "0px",
+                      }}
+                      onClick={closeTextColor}
+                    />
+                    <SketchPicker
+                      color={textColor.color}
+                      onChange={setColorText}
+                    />
+                  </div>
+                ) : null}
+				<br />
+				
+              </div>
+            </div>
+            <div className="col-sm-2">
+              <div>
+			  <p style={{position: 'relative', left: '0px'}}>Background Color</p>
+              
+                <div
+                  style={{
+                    padding: "2px",
+                    background: "#fff",
+                    borderRadius: "1px",
+                    boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
+                    display: "inline-block",
+                    cursor: "pointer",
+                  }}
+                  onClick={openBackgroundColor}
+                >
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "2px",
+                      background: `rgba(${backgroundColor.color.r}, ${backgroundColor.color.g}, ${backgroundColor.color.b}, ${backgroundColor.color.a})`,
+                    }}
+                  />
+                </div>
+                {backgroundColor.displayColorPicker ? (
+                  <div
+                    style={{
+                      position: "absolute",
+                      zIndex: "2",
+                      bottom: "50px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        position: "fixed",
+                        top: "0px",
+                        right: "0px",
+                        bottom: "0px",
+                        left: "0px",
+                      }}
+                      onClick={closeBackgroundColor}
+                    />
+                    <SketchPicker
+                      color={backgroundColor.color}
+                      onChange={setColorBackground}
+                    />
+                  </div>
+                ) : null}
+              </div>
+            </div>
+            <div className="col">
+              <input
+                type="number"
+                placeholder="Seconds"
+                className="timeInput"
+                onChange={(e) => setSpeed(e.target.value)}
+                value={speed}
+              />
+            </div>
+
+            <div className="col">
+              <Button
+                style={{ width: "100px", float: "center", marginTop: '10px'}}
+                onClick={addCard}
+              >
+                Add
+              </Button>
+            </div>
+          </div>
+          <button className="arrowButtonMain" onClick={goBack}>
+            {<FaAngleLeft />} Script{" "}
+          </button>
+          <button className="arrowButtonMain" onClick={goNext} disabled={(cards.length === 0) ^ (youtubeLink !== '')}>
+            Record {<FaAngleRight />}
+          </button>
+          <p className="line">
+            <span className="wordInLine">OR</span>
+          </p>
+          <Button
+            style={{ width: "100px", marginTop: "10px" }}
+            onClick={noScript}
+          >
+            SKIP
+          </Button>
+        </div>
+      )}
+		{//User does not want to script
+		stage == 4 && (
+			<>
+			<div>
+				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderRecordTip}>
+					<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
+				</OverlayTrigger>
+			</div>
+			<h2>Record</h2>
+			<img src={Img} className="scriptless"/>
+			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} />
+			<button className='arrowButtonMain' onClick={() => {setStage(1)}}>{<FaAngleLeft />} Script </button>
+			<button className='arrowButtonMain' onClick={() => {setStage(3)}}>Publish {<FaAngleRight />}</button>
 			</>
 		)}
+		{//This displays cards
+		stage == 2 && youtubeLink === '' && (
+			<>
+			<div>
+				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderRecordTip}>
+					<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
+				</OverlayTrigger>
+			</div>
+			<ValidScript slides={cards} setCurrentSlide={setCurrentSlide} autoplay={autoplay} currentSlide={currentSlide}/>
+			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} />
+			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
+			<button className='arrowButtonMain' onClick={goNext}>Publish {<FaAngleRight />}</button>
+			
+			</>
+		)}
+		{//This shows youtube
+		stage == 2 && cards.length === 0 && (
+			<>
+			<div>
+				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderRecordTip}>
+				<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
+				</OverlayTrigger>
+			</div>
+			<VidLink link={youtubeLink} />
+			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} />
+			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
+			<button className='arrowButtonMain' onClick={goNext}>Publish {<FaAngleRight />}</button>
+			
+			</>
+		)}
+		{stage == 3 && (
+			<>
+			<div>
+			<div>
+				<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderPublishTip}>
+				<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
+				</OverlayTrigger>
+			</div>
+			<div>
+				<h2>Publish</h2>
+			</div>
+			<div>
+				<img src={Img} />
+				
+			</div>
+			<div> 
+				<label for="file-upload" className="custom-file-upload">
+    				Upload Image (optional)
+				</label>
+				<input id="file-upload" onChange={(event) => updateProfilePic(event.target.files[0])} type="file"/>
+			</div>
+			<div> <input type="text" className='titleInput'/></div>
+			</div>
+			<p>Post Title</p>
+			<button className='publishButton' onClick={postFile}>Publish</button>
+			<br />
+			<p>{msg}</p>
+			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Record </button>
+			
+			</>
+		)}
+		</div>
 	</>
 		
 }
 
-function LinkThing(shown) {
-    //Link test
-    //https://www.youtube.com/watch?v=l0jJGlalLh8
-
-    const [id, setId] = useState('');
-    const [stage, setStage] = useState(0)
-
-    let correctLink = id.split('='); //return the string with youtube id
-
-    let url = correctLink[1];
-    const goNext = (e) => {
-        e.preventDefault()
-        setStage(stage + 1)
-    }
-    const goBack = (e) => {
-        e.preventDefault()
-        setStage(stage - 1)
-
-    }
-    if (shown.show) {
-        return <>
-            {stage == 0 && (
-                <>
-                    <div className='container scriptBox'>
-
-                        <p className='textColor'>Link Script</p>
-                        <br />
-                        <input placeholder='Youtube Link' onChange={(e) => setId(e.target.value)} />
-                        <br />
-                        <button className='nextButton' onClick={goNext}>RECORD {<FaAngleRight />}</button>
-
-                    </div>
-
-                    <br />
-
-                </>
-            )}
-            {stage == 1 && url == undefined && (
-                <>
-                    <br />
-                    <div className='container scriptBox'>
-
-                        <p className='textColor'>Invalid Link Please go back</p>
-
-                        <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
-                    </div>
-                </>
-            )}
-            {stage == 1 && url != undefined && (
-                <>
-                    <br />
-                    <div className='container scriptBox'>
-                        <VidLink link={url} />
-                        <br />
-                        <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
-
-                        <button className='nextButton' onClick={goNext}>POST {<FaAngleRight />}</button>
-
-                    </div>
-                </>
-            )}
-
-        </>
-    }
-    return <></>;
-}
-
-function VidLink(link) {
+function VidLink({link}) {
     //two type of YT URLS
     //https://www.youtube.com/watch?v=DSBBEDAGOTc
     //https://www.youtube.com/watch?v=ScMzIvxBSi4&ab_channel=BenMarquezTX
 
-
-    let tempID = link.link;
+	//get everything after the =
+    let tempID = link.split('=');
+	tempID = tempID[1];
     //this discards discards everything after the & sign giving the correct URL if the URL
     //in the second form
-    tempID = tempID.split('&')
+    tempID = tempID.split('&');
+	//offical youtube ID
     let id = tempID[0];
     return (
         <>
-
+			<h2>Record</h2>
             <iframe
                 src={`https://www.youtube.com/embed/${id}`}
                 frameBorder="0"
@@ -388,133 +747,26 @@ function VidLink(link) {
     )
 }
 
-function ScriptThing(shown) {
-    const [words, setWords] = useState('');
-    const [stage, setStage] = useState(0)
-	const [currentSlide, setCurrentSlide] = useState(0)
-	const [autoplay, setAutoPlay] = useState(false);
-
-	//let words = script.split(', ');
-
-	const [slides, setSlides] = useState([{word:'',speed:1000,background:'',textColor:''}])
-
-    const createSlides = useCallback(() =>{
-		
-		let tempSlides = [];
-		for(const word of words.split(', ')){
-			console.log(word)
-			tempSlides.push({word: word,speed:1000,background:'#fff',textColor:'#000'})
-		}
-		setSlides(tempSlides);
-	},[words])
-
-    //Go to next step in recording
-    const goNext = (e) => {
-        e.preventDefault()
-		if(stage == 0)
-			createSlides()
-        setStage(stage + 1)
-    }
-    //Go back a step in recording
-    const goBack = (e) => {
-        e.preventDefault()
-        setStage(stage - 1)
-
-    }
-	const editSlide = useCallback((slideIdx, updatedSlide) =>{
-		console.log('UPDATED: ',updatedSlide)
-		setSlides((slides) => {const tempSlides = cloneDeep(slides); tempSlides.splice(slideIdx, 1, updatedSlide); return tempSlides})
-	},[])
-
-	
-    if (shown.show) {
-        return <>
-            {stage == 0 && (
-                <>
-                    <div className='container scriptBox'>
-
-                        <p className='textColor'>Build Script</p>
-                        <br />
-                        <textarea value={words} className='scriptTextBox' rows='5' cols='50' placeholder='Wordbox (seperate inputs by commas and spaces)' onChange={(e) => setWords(e.target.value)} />
-                        <br />
-                        <button className='nextButton' onClick={goNext}>RECORD {<FaAngleRight />}</button>
-
-                    </div>
-
-                    <br />
-
-                </>
-            )}
-            {stage == 1 && words == '' && (
-                <div className='container scriptBox'>
-
-                    <p className='textColor'>Invalid Script Please go back</p>
-
-                    <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
-
-                </div>
-            )}
-			
-            {stage == 1 && words != '' && (
-                <>
-                    <div className='container'>
-                        <div className='row'>
-                            <div className='col'>
-                                <ValidScript setCurrentSlide={setCurrentSlide} slides={slides} autoplay={autoplay} currentSlide={currentSlide} />
-                            </div>
-                            <div className='col scriptBox'>
-                                <label className='textColor'>Slideshow Background</label>
-                                <SliderPicker color={slides[currentSlide].background} onChangeComplete={(e) => {
-									const tempSlide = slides[currentSlide];
-									tempSlide.background = e.hex;
-									editSlide(currentSlide,tempSlide)}} />
-
-                                <label className='textColor'>Text color</label>
-                                <SliderPicker color={slides[currentSlide].textColor} onChangeComplete={(e) => {
-									const tempSlide = slides[currentSlide];
-									tempSlide.textColor = e.hex;
-									editSlide(currentSlide,tempSlide)}} />
-
-								<label className='textColor'>Slideshow Speed</label> <br />
-                        		<input value={slides[currentSlide].speed / 1000} type='number' placeholder='(seconds)' onChange={(e) => {
-									const tempSlide = slides[currentSlide];
-									tempSlide.speed = e.target.value * 1000;
-									editSlide(currentSlide, tempSlide);
-								}} />
-                        
-								<button onClick={(e) => setAutoPlay(!autoplay)}>{autoplay ? 'true' : 'false'}</button>
-                                <button className='nextButton' onClick={goBack}>{<FaAngleLeft />}SCRIPT</button>
-                                <button className='nextButton' onClick={goNext}>POST {<FaAngleRight />}</button>
-                            </div>
-                        </div>
-                    </div>
-                </>
-            )}
-
-        </>
-    }
-    return <></>;
-}
 
 function ValidScript({slides, setCurrentSlide, currentSlide, autoplay}) {
-
 	const changeCarosel = useCallback((slide) => {
 		setCurrentSlide(slide)
 	},[])
-
+	console.log(autoplay)
     return (
         <>
-            <div>
-                To start click left or right side of slideshow
-            </div>
-            <Carousel autoPlay={autoplay} width={700} showThumbs={false} showIndicators={false}
+            <h2>Record</h2>
+            <Carousel className='scriptDisplayCard' autoPlay width={700} showThumbs={false} showIndicators={false}
                 infiniteLoop={true} dynamicHeight={true} interval={slides[currentSlide].speed} onChange={changeCarosel}>
                 {slides.map(
                     (slide,index) =>
-                        {console.log(autoplay)
+                        {console.log(currentSlide)
 							
-						return <div key={index} style={{ background: `${slide.background}`, color: `${slide.textColor}`, padding: '250px' }}>
-                            {slide.word}
+						return <div key={index} style={{ 
+							background: `rgba(${slide.backGroundColor.r}, ${slide.backGroundColor.g}, ${slide.backGroundColor.b}, ${slide.backGroundColor.a})`,
+							color: `rgba(${slide.textColor.r}, ${slide.textColor.g}, ${slide.textColor.b}, ${slide.textColor.a})`, 
+							padding: '250px'}}>
+                            {slide.text}
                         </div>})}
             </Carousel>
 
@@ -534,12 +786,12 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
         opacity: '1',
     }
 
-	console.log(numNotes)
-	console.log(instrumentArr)
-	console.log(noteDuration)
-	console.log(scale)
-	console.log(keyNum)
-	console.log(BPM)
+	console.log("numNotes: " + numNotes)
+	console.log("instrumentArr: " + instrumentArr)
+	console.log("noteDuration: " + noteDuration)
+	console.log("Scale: " + scale)
+	console.log("keyNum: " + keyNum)
+	console.log("BPM: " + BPM)
     const [record, setRecord] = useState(false);
 
 
@@ -556,12 +808,25 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 	let trackMap = new Map();
 	let contentHintToIndex = {};
 
+	const MidiWriter = require('midi-writer-js');
+
+	var trackFP1 = new MidiWriter.Track();
+	var trackFP2 = new MidiWriter.Track();
+	var trackC3 = new MidiWriter.Track();
+	var trackC4 = new MidiWriter.Track();
+
+	var noteFP1, noteFP2, noteC3, noteC4;
+
     useEffect(() => {
 
 		initMIDIWriterParams();
 
 		dataDevices = new datastreams.DataDevices();
 		dataDevices.load(ganglion);
+
+		// dataDevices.load(muse);
+		// dataDevices.load(device);
+		// dataDevices.load(hegduino);
 
 		// Set up graph (rough)
 		// const graphDiv = document.getElementById("graph");
@@ -671,17 +936,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 			
 		};
 
-		const downloadData = () => {
-			// Alter exponential values to get a more accurate readings
-			// //   console.log(JSON.stringify(allData));
-			var workbook = XLSX.utils.book_new();
-			const worksheet = XLSX.utils.json_to_sheet(allData);
-			XLSX.utils.sheet_add_aoa(worksheet, [["channel", "signal"]]);
-			XLSX.utils.book_append_sheet(workbook, worksheet, "SheetJS");
-			XLSX.writeFile(workbook, "sheetjs.csv", { compression: true });
-
-		}
-
 		// Acquisition function
 		const startAcquisition = async (label) => {
 			// Get device stream
@@ -747,6 +1001,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 				else
 					noteFP1 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(FP1NoteType).toString()});
 				trackFP1.addEvent(noteFP1);
+				//console.log("FP1 over");
 			}
 			else if (tracky.contentHint.localeCompare("FP2") == 0)
 			{
@@ -755,6 +1010,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 				else
 					noteFP2 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(FP2NoteType).toString()});
 				trackFP2.addEvent(noteFP2);
+				//console.log("FP2 over");
 			}
 			else if (tracky.contentHint.localeCompare("C3") == 0)
 			{
@@ -763,6 +1019,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 				else
 					noteC3 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(C3NoteType).toString()});
 				trackC3.addEvent(noteC3);
+				//console.log("C3 over");
 			}
 			else if (tracky.contentHint.localeCompare("C4") == 0)
 			{
@@ -771,6 +1028,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 				else
 					noteC4 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(C4NoteType).toString()});
 				trackC4.addEvent(noteC4);
+				//console.log("C4 over");
 			}
 
 			// Generate a data URI
@@ -793,11 +1051,11 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 			if (button.id === "ganglion") {
 				button.onclick = () => {rec=true;console.log(rec);startAcquisition(button.id)};
 			}
-			else if (button.id === "downloadBtn") {
-				button.onclick = () => downloadData();
-			}
+			// else if (button.id === "downloadBtn") {
+			// 	button.onclick = () => downloadData();
+			// }
 			else if (button.id === 'Disconnect'){
-				button.onclick = () => {rec=false;console.log("I GOT CLICKED" + rec)};
+				button.onclick = () => {rec=false;console.log("I GOT CLICKED " + rec)};
 			}
 	},[])
 
@@ -809,6 +1067,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 		console.log("FP1, FP2, C3, C4 Instruments: " + getInstrumentNameFromInt(FP1Instrument), ", " + getInstrumentNameFromInt(FP2Instrument) + ", "
 			+ getInstrumentNameFromInt(C3Instrument) + ", " + getInstrumentNameFromInt(C4Instrument));
 		console.log("FP1, FP2, C3, C4 Note Types: " + FP1NoteType, ", " + FP2NoteType + ", " + C3NoteType + ", " + C4NoteType);
+		console.log("----------------------------------------------");
 	}
 	// ------------------------------------------------------------------------------ CONSTANTS AND GLOBAL VARIABLES ------------------------------------------------------------------------------
 
@@ -936,16 +1195,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 		C3NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C3NoteType)],
 		C4NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C4NoteType)];
 
-	const MidiWriter = require('midi-writer-js');
-
-	const trackFP1 = new MidiWriter.Track();
-	const trackFP2 = new MidiWriter.Track();
-	const trackC3 = new MidiWriter.Track();
-	const trackC4 = new MidiWriter.Track();
-
-	var noteFP1, noteFP2, noteC3, noteC4;
-
-
 	// ------------------------------------------------------------------------------ USER-DEFINED VARIABLES ------------------------------------------------------------------------------
 
 
@@ -976,30 +1225,69 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 		
 	// ------------------------------------------------------------------------------ CUSTOM HELPER FUNCTIONS ------------------------------------------------------------------------------
 
+	var decodedMIDIString = '';
+
+	function previewFile() {
+		const [file] = document.querySelector('input[type=file]').files;
+		const reader = new FileReader();
+	  
+		reader.addEventListener("load", () =>
+		{
+			console.log("Data from MIDI file converted to base64: " + btoa(reader.result));
+			decodedMIDIString = btoa(reader.result);
+		}, false);
+	  
+		if (file)
+			//reader.readAsText(file);
+			reader.readAsBinaryString(file);
+	}
 
 	function playMidiFile(uri)
 	{
-		//var MidiPlayer = require('midi-player-js');
-
 		// Initialize player and register event handler
-		var Player = new MidiPlayer.Player(function(event) {
-			//console.log(event);
-		});
+		var Player = new MidiPlayer.Player(function(event) {});
 
-		// Load a MIDI file
-		Player.loadDataUri(uri);
+		// Load a MIDI file and start combing through it
+		//Player.loadDataUri(uri); this is the good one that you should use (:
+		//Player.loadDataUri(btoa("file://C:\Users\Noah\Documents\GitHub\BrainBeatsWeb\frontend\src\Components\Record/UseThisToTestMIDI.mid"));
+		
+		console.log("URI passed in: " + uri);
+		Player.loadDataUri("data:audio/midi;base64," + decodedMIDIString);
 		Player.play();
 
 		var eventCount = 0;
 
+		// We will be getting all of these from the database on a per-post basis, but for now setting them here.
+		var track1Inst = FP1Instrument, 
+			track2Inst = FP2Instrument, 
+			track3Inst = C3Instrument, 
+			track4Inst = C4Instrument;
+		var track1NoteType = FP1NoteType,
+			track2NoteType = FP2NoteType,
+			track3NoteType = C3NoteType,
+			track4NoteType = C4NoteType;
+
+		// Event listener for midiEvents
 		Player.on('midiEvent', function(event) {
-			// Do something when a MIDI event is fired.
-			console.log("WHAOAISHHASABSJHGAK " + eventCount);
+			if (event.noteNumber != 0 && event.noteNumber != undefined)// && eventCount % 2 == 0) // As long as the midiEvent is a valid NOTE (other events not supported) and not undefined
+			{
+				//console.log(event);
+				console.log("" + eventCount + ": " + event.noteNumber + ", AKA " + event.noteName + " [Track " + event.track + "]");
+
+				var midiNoteFrequency = getFrequencyFromNoteOctaveString(event.noteName);
+
+				if (event.track == 1) //FP1
+					playMidiNote(midiNoteFrequency, DEFAULT_VOLUME, track1Inst, track1NoteType);
+				else if (event.track == 2) // FP2
+					playMidiNote(midiNoteFrequency, DEFAULT_VOLUME, track2Inst, track2NoteType);
+				else if (event.track == 3) // FP3
+					playMidiNote(midiNoteFrequency, DEFAULT_VOLUME, track3Inst, track3NoteType);
+				else if (event.track == 4) // FP4
+					playMidiNote(midiNoteFrequency, DEFAULT_VOLUME, track4Inst, track4NoteType);
+			}
 			eventCount++;
-			// (this is the same as passing a function to MidiPlayer.Player() when instantiating.
 		});
 	}
-
 
 	function getNoteLengthStringFromInt(input)
 	{
@@ -1025,11 +1313,23 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 
 	function generateAndDownloadMIDIFile()
 	{
-		const write = new MidiWriter.Writer([trackFP1, trackFP2, trackC3, trackC4]);
-		var writeURI = write.dataUri()
-		downloadURI(writeURI, "BrainBeatsMasterpiece");
+		var write = new MidiWriter.Writer([trackFP1, trackFP2, trackC3, trackC4]);
+		var writeURI = write.dataUri();
+		//convertMidiFileToBase64String('./big_doog.mid');
+		//downloadURI(writeURI, "BrainBeatsMasterpiece");
 		playMidiFile(writeURI);
 		//console.log(write.dataUri());
+	}
+
+	function downloadData() 
+	{
+		// //   console.log(JSON.stringify(allData));
+		var workbook = XLSX.utils.book_new();
+		const worksheet = XLSX.utils.json_to_sheet(allData);
+		XLSX.utils.sheet_add_aoa(worksheet, [["channel", "signal"]]);
+		XLSX.utils.book_append_sheet(workbook, worksheet, "SheetJS");
+		XLSX.writeFile(workbook, "sheetjs.csv", { compression: true });
+
 	}
 
 	function initMIDIWriterParams()
@@ -1831,53 +2131,23 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
     
 	
 	return (
-      <>
-        <div style={st}>
-          <table style={{ width: "100%" }}>
-            <tr>
-              <td style={{ width: "25%", textAlign: "center" }}>
-                
-              </td>
-              <td style={{ width: "22%", textAlign: "left" }}>
-			  	
-			  </td>
-			
-			  <td style={{ width: "22%", textAlign: "left" }}>
-			  	
-              </td>
-              <td style={{ textAlign: "left" }}>
-				 <div id="buttons">
-                      <button
-                        id="ganglion"
-                        className="recordButton"
-                      >
-                        Connect
-                      </button>
-					  <button
-                        id="Disconnect"
-                        className="recordButton"
-                      >
-                        Disconnect
-                      </button>
-					  <button
-                        id="Download"
-                        className="downloadBtn"
-                      >
-                        Download
-                      </button>
-                    </div>
-
-              </td>
-              <td style={{ width: "25%", textAlign: "center" }}>
-				<div style={{ color: "white" }}>Helpful Buttons</div>
-					<button onClick={handleStuff}>Print Debug Stuff</button> <br></br>
-					<button onClick={generateAndDownloadMIDIFile}>Download MIDI and play WIP</button>
-              </td>
-			  
-            </tr>
-          </table>
-        </div>
-      </>
+		<>
+		<div id="buttons">
+		  <button id="ganglion" className="recordButton">
+			RECORD
+		  </button>
+		  <button id="Disconnect" className="stopButton">
+			STOP
+		  </button>
+		</div>
+		<input type="file" onChange={previewFile}></input>
+		<div style={{ color: "white" }}>Helpful Buttons</div>
+		<button onClick={handleStuff}>Print Debug Stuff</button> <br></br>
+		<button onClick={generateAndDownloadMIDIFile}>
+		  Download MIDI and play WIP
+		</button>
+		<button onClick={downloadData}>Download Raw Data</button> <br></br>
+	  </>
     );
 
 }

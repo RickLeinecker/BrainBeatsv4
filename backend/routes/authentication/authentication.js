@@ -1,15 +1,24 @@
 require("dotenv").config();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 var nodemailer = require("nodemailer");
-const jwtAPI = require("../../utils/jwt");
+const { getJWT, verifyJWT} = require("../../utils/jwt");
 // const { JSON } = require("express");
+const dbUtil = require("../../utils/database");
 
-const transporter = nodemailer.createTransport({
+router.get('/verifyJWT', async (req, res) => {
+    try {
+        const jwt = req.query.jwt;
+        res.json(verifyJWT(jwt));
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+});
+
+/*const transporter = nodemailer.createTransport({
     port: 465,               // true for 465, false for other ports
     host: "smtp.gmail.com",
     auth: {
@@ -18,7 +27,6 @@ const transporter = nodemailer.createTransport({
     },
     secure: true,
 });
-
 
 // Send Email to user to verify login
 router.post('/sendVerificationEmail', async (req, res) => {
@@ -54,53 +62,7 @@ router.post('/sendVerificationEmail', async (req, res) => {
         console.log(err)
         res.status(500).json({ msg: "User does not exist." })
     }
-});
-
-
-router.post('/jwtStuff', async (req, res) => {
-    try {
-
-
-    }
-    catch (err) {
-        console.log(err)
-        res.status(500).json({ msg: "Unable to create JWT token" })
-    }
-})
-
-// Login an existing user
-router.post('/loginUser', async (req, res) => {
-
-    try {
-
-        // Get user input
-        const { email, password } = req.body;
-
-        // Validate if user exist in our database
-        const user = await prisma.user.findUnique({
-            where: { email: email }
-        });
-
-        // if (jwtAPI.verifyJWT()) {
-        //   console.log("User logged in via JWT");
-        //   return res.status(200).json(user, {
-        //       msg: "User authenticated via JWT."
-        //   });
-        // }
-
-        // If password is related to the email console log a successful login
-        if (user && (await bcrypt.compare(password, user.password))) {
-            // res.json("Logged In!")
-            res.json(user)
-            // jwtAPI.giveLoginJWT({id: user.id, email: user.email})
-        } else {
-            return res.status(400).send("Invalid Credentials");
-        }
-    } catch (err) {
-        console.log(err)
-    }
-
-});
+});*/
 
 
 module.exports = router;

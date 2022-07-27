@@ -2,59 +2,82 @@
     position: relative;
 }
   
+
+.mainHomeBody {
+    position: relative;
+    background: #fff;
+    height: 108vh;
+    width: 70vw;
+    top: -3vh;
+    left: 15vw;
+}
+
+.mainHomebodyUser{
+    position: relative;
+    background: #fff;
+    height: 100vh;
+    width: 70vw;
+    top: -22px;
+    left: 15vw;
+}
+
 .containerOverflow {
-    height: 250px;
+    height: 275px;
     overflow-x: auto; 
     overflow-y: hidden; 
 }
 
+.cardStyle {
+    display: block; 
+    background: none;
+    width: 200px; 
+    height: 200px;
+    margin-left: 15px;
+    border: 0;
+}
+.cardText {
+    position: relative;
+    text-align: left;
+    color: black;
+    left: -10px;
+    top: -15px
+}
+
 .playhover {
     position: 'absolute';
-    width: 200px;
-    height: 200px;
 }
 .cardPlayButton{
     position: absolute;
     background: none;
     color: #fff;
     border: 0;
-    top: 55px;
+    top: 25px;
     left: 50px;
-    display: none;
+    opacity: 0;
+    transition: .2s ease-in-out;
 }
 
-.cardHeartButton {
+.cardStyle:hover .cardPlayButton{
+    opacity: 100;
+    transition: .2s ease-in-out;
+}
+
+.cardHeart{
     position: absolute;
     background: none;
+    border: 0px;
     color: rgb(239, 70, 70);
-    border: 0;
-    top: 200px;
-    left: 175px;
-    
+    top:147px;
+    left: 175px
+}
+
+.errMsg{
+    color:red;
+    font-size: 40px;
 }
 
 .playButtonIconStyle {
     color: #fff;
-    size: 100;
-}
-
-.cardStyle:hover .cardPlayButton{
-    display: block;
-}
-.cardStyle {
-    display: block; 
-    background: none;
-    width: 200px; 
-    height: 0px;
-    border-radius: 15px; 
-    margin-left: 5px;
-}
-
-.cardText {
-    position: relative;
-    text-align: left;
-    left: -10px;
-    top: -15px
 }
 
 .mediaPlayer {

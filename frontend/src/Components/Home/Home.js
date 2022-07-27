@@ -1,12 +1,13 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Button, Container } from 'react-bootstrap';
-import { CardList } from './CardList';
 import { FaHeart, FaPlayCircle, FaRegHeart } from 'react-icons/fa';
 import MidiPlayer from 'react-midi-player';
 import './homepage.css';
-import { AuthContext } from '../context/AuthContext';
-import axios from 'axios';
 import Carousel from '../Carousel/Carousel';
+import { useRecoilValue } from 'recoil';
+
+import {userJWT, userModeState} from '../context/GlobalState'
+import sendAPI from '../sendAPI';
 
 const Cards = () => {
     //post array
@@ -17,97 +18,79 @@ const Cards = () => {
     const [data, setData] = useState('');
     //boolean for botton nav
     const [showMedia, setShowMedia] = useState(false);
-    const { user } = useContext(AuthContext);
-    //Load data to be sent to MidiPlayer
-    let _data = atob(data);
-
-    const path = require('../Path');
+    const [beTheFirst, setBeTheFirst] = useState('');
+    const [yourFirst, setYourFirst] = useState('');
+    const user = useRecoilValue(userModeState)
+    const jwt = useRecoilValue(userJWT);
 
     const [liked, setLiked] = useState([]);
 
     useEffect(() => {
         //always run this api for homepage
-        let config = {
-            method: 'get',
-            url: path.buildPath('/posts/getAllPosts'),
-        }
-        axios(config)
-            .then((response) => {
-                setAllPost(response.data);
+        sendAPI('get', '/posts/getAllPosts')
+            .then((res) => {
+                setAllPost(res.data);
+                setBeTheFirst('');
             })
         //only run this api if user is logged in
         if(user){
             const dataBody = {
-                'userID': user.id
+                'userID': user.id,
             }
-            let config = {
-                method: 'get',
-                url: path.buildPath('/posts/getUserPostsByID'),
-                params: dataBody,
-            }
-            axios(config)
+            sendAPI('get', '/posts/getUserPostsByID', dataBody)
                 .then((res) => {
                     setUserPost(res.data);
                     setLog(res);
+                    setYourFirst('');
                 })
                 .catch((err) => {
                     setLog(err);
                 })
-
-            let config2 = {
-                method: 'get',
-                url: path.buildPath('/likes/getAllUserLikes'),
-                body:{
-                    "userID": user.id
-                }
-            }
-            axios(config2)
+                
+            sendAPI('get', '/likes/getAllUserLikes', dataBody)
                 .then((res) => {
                     setLiked(res.data);
                 })
+                
+        }
+        if(allPost.length == 0){
+            setBeTheFirst('Be the first to create music');
+        }
+        if(userPost.length == 0){
+            setYourFirst('Create your first piece');
         }
     }, [])
 
-    // if(user){
-    //     setUserPost(user.post);
-    // }
 
     const onLike = useCallback((post) => {
-
         let bodyData = {
             userID: user.id,
-            postID: post
+            postID: post,
+            token: jwt,
         }
-        let config = {
-            method: 'post',
-            url: path.buildPath('/likes/createUserLike'),
-            data: bodyData,
-        }
-        axios(config)
-            .then((res) => {
-                setLiked((l) => [... l,res.data])
-            })
-            .catch((err) => {
-                console.log(err.data)
-            })
+        console.log(jwt);
+        sendAPI('post', '/likes/createUserLike', bodyData)
+        .then((res) => {
+            setLiked((l) => [... l,res.data])
+        })
+        .catch((err) => {
+            console.log(err.data)
+        })
     },[])
 
     const onRemove = useCallback((post) => {
         let bodyData = {
             userID: user.id,
-            postID: post
+            postID: post,
+            token: jwt,
         }
-        let config = {
-            method: 'delete',
-            url: path.buildPath('/likes/removeUserLike'),
-            data: bodyData,
-        }
-        axios(config)
-            .then((res) => {
-                setLiked((l) => l.filter((p) => p.postID !== post))})
-            .catch((err) => {
-                console.log(err.data)
-            })
+        sendAPI('delete', '/likes/removeUserLike', bodyData)
+        .then((res) => {
+            setLiked((l) => l.filter((p) => p.postID !== post))})
+        .catch((err) => {
+            console.log(err.data)
+        })
+ 
     },[])
 
     const endPlay = () => {
@@ -123,35 +106,70 @@ const Cards = () => {
     }
     return (
         <>
-            {//if user is logged in dont display carousel
-                !user ? <div style={{ width: '50%', marginLeft: '25%' }}>
-                    <Carousel />
-                </div> : <></>
-            }
-            <h1>RECENT SONGS</h1>
-            <div style={{ overflowX: 'hidden' }}>
-                <div className='row'>
+        <div className={user ? 'mainHomebodyUser': 'mainHomeBody'}>
+                {//if user is logged in dont display carousel
+                !user ? <div style={{}}>
+                <Carousel />
+            </div> : <></>
+        }
+        <h1>RECENT SONGS</h1>
+        <div style={{ overflowX: 'hidden' }}>
+            <div className='row'>
+                <Container className='containerOverflow'>
+                    <div style={{ display: 'inline-flex' }}>
+                        <p>{beTheFirst}</p>
+                        {allPost.map((item, index) => {
+                            return (
+                                <div key={index}>
+                                    
+                                    <Card className='cardStyle'>
+                                        <Card.Img variant="top" className='playhover' src='https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png' />
+                                        <Card.Body>
+
+                                            <Card.Title className='cardText'>{item.title}</Card.Title>
+                                            <Card.Subtitle className='cardText'>{item.user.username}</Card.Subtitle>
+                                            <button className='cardPlayButton' onClick={(e) => {
+                                                e.preventDefault();
+                                                setData(item.data); //store this items midi string to Data
+                                                setShowMedia(true); //reveal midi player
+                                            }}><FaPlayCircle size={90} /></button>
+                                            <button className='cardHeart'>
+                                                {liked.filter((like) => like.postID === item.id).length ? <FaHeart onClick={()=>onRemove(item.id)}/> : <FaRegHeart onClick={() => onLike(item.id)}/>}
+                                            </button>
+
+                                        </Card.Body>
+                                    </Card>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </Container>
+            </div>
+            <div className='row'>
+                {//Only appears if user is signed in
+                    user ? <>
+                    <h1> YOUR SONG </h1>
                     <Container className='containerOverflow'>
                         <div style={{ display: 'inline-flex' }}>
-                            {allPost.map((item, index) => {
+                            <p>{yourFirst}</p>
+                            {userPost.map((item, index) => {
                                 return (
                                     <div key={index}>
-                                        
                                         <Card className='cardStyle'>
                                             <Card.Img variant="top" className='playhover' src='https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png' />
                                             <Card.Body>
-
+        
                                                 <Card.Title className='cardText'>{item.title}</Card.Title>
-                                                <Card.Subtitle className='cardText'>Name</Card.Subtitle>
+                                                <Card.Subtitle className='cardText'>{item.user.username}</Card.Subtitle>
                                                 <button className='cardPlayButton' onClick={(e) => {
                                                     e.preventDefault();
-                                                    setData(item.data); //store this items midi string to Data
-                                                    setShowMedia(true); //reveal midi player
+                                                    //setData(item.data); //store this items midi string to Data
+                                                    //setShowMedia(true); //reveal midi player
                                                 }}><FaPlayCircle size={90} /></button>
-                                                <button className='cardHeartButton'>
-                                                    {liked.filter((like) => like.postID === item.id).length ? <FaHeart onClick={()=>onRemove(item.id)}/> : <FaRegHeart onClick={() => onLike(item.id)}/>}
+                                                <button className='cardHeart'>
+                                                {liked.filter((like) => like.postID === item.id).length ? <FaHeart onClick={()=>onRemove(item.id)}/> : <FaRegHeart onClick={() => onLike(item.id)}/>}
                                                 </button>
-
+        
                                             </Card.Body>
                                         </Card>
                                     </div>
@@ -159,68 +177,20 @@ const Cards = () => {
                             })}
                         </div>
                     </Container>
-                </div>
-                <div className='row'>
-                    {//Only appears if user is signed in
-                        user ? <>
-                        <h1> YOUR SONG </h1>
-                        <Container className='containerOverflow'>
-                            <div style={{ display: 'inline-flex' }}>
-                                {userPost.map((item, index) => {
-                                    return (
-                                        <div key={index}>
-                                            <Card className='cardStyle'>
-                                                <Card.Img variant="top" className='playhover' src='https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png' />
-                                                <Card.Body>
-            
-                                                    <Card.Title className='cardText'>{item.title}</Card.Title>
-                                                    <Card.Subtitle className='cardText'>{item.artist}</Card.Subtitle>
-                                                    <button className='cardPlayButton' onClick={(e) => {
-                                                        e.preventDefault();
-                                                        //setData(item.data); //store this items midi string to Data
-                                                        //setShowMedia(true); //reveal midi player
-                                                    }}><FaPlayCircle size={90} /></button>
-                                                    <button className='cardHeartButton'>
-                                                    {liked.filter((like) => like.postID === item.id).length ? <FaHeart onClick={()=>onRemove(item.id)}/> : <FaRegHeart onClick={() => onLike(item.id)}/>}
-                                                    </button>
-            
-                                                </Card.Body>
-                                            </Card>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        </Container>
-                    </> : <></>}
-                </div>
-                <div className='row' style={{ height: '50px' }}>
-                    <div className={`${showMedia ? 'mediaPlayerAct' : 'mediaPlayer'}`}>
-                        <div>
-                            <MidiPlayer data={_data} autoplay onEnd={endPlay} />
-                        </div>
+                </> : <></>}
+            </div>
+            <div className='row' style={{ height: '50px' }}>
+                <div className={`${showMedia ? 'mediaPlayerAct' : 'mediaPlayer'}`}>
+                    <div>
+                        <MidiPlayer autoplay onEnd={endPlay} />
                     </div>
                 </div>
             </div>
+        </div>
+
+        </div>
+        
         </>
     )
 }
-
-// const LoggedIn = (prop) => {
-    
-//     const path = require('../Path');
-
-//     useEffect(() => {
-        
-        
-//     }, [userPost])
-
-//     const handle = () => {
-
-
-//         console.log(prop.prop.id)
-//         console.log(userPost)
-//         console.log(log)
-//     }
-    
-// }
 export default Cards

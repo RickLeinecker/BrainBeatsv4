@@ -1,6 +1,8 @@
 import React, { Component, useState } from "react";
-import axios from "axios";
 import { Button } from "react-bootstrap";
+import { useRecoilState } from "recoil";
+import { userJWT, userModeState } from '../context/GlobalState'
+import sendAPI from "../sendAPI";
 
 
 
@@ -15,6 +17,10 @@ const RegisterCard = () => {
     const [stage, setStage] = useState(0);
     const [errorMsg, setErrorMsg] = useState('');
     const [creationSuccess, setCreateSuccess] = useState('');
+
+    const [jwt, setJwt] = useRecoilState(userJWT);
+    const [user, setUser] = useRecoilState(userModeState)
+
 
 
     const emptyField = () => {
@@ -32,6 +38,10 @@ const RegisterCard = () => {
             setStage(0);
             return;
         }
+        if (ageCheck()) {
+            setErrorMsg("You are too young");
+            return;
+        }
 
         //starting path for API endpoint
         const path = require('../Path');
@@ -43,22 +53,15 @@ const RegisterCard = () => {
             "dob": dob + 'T00:00:00.000Z', //Date format for SQL
             "email": email,
             "username": username,
-            "password": password
+            "password": password,
+            'token': jwt,
         };
-        //create a json to pass into axois
-        let config = {
-            method: "post",
-            url: path.buildPath('/users/createUser'),
-            headers: {
-                "Content-Type": "application/json"
-            },
-            data: newUser
-        };
-        //axios command
-        axios(config).then(function (res) {
-            setCreateSuccess("Account Created!")
-
-        })
+        sendAPI('post', '/users/createUser', newUser)
+            .then(function (res) {
+                setCreateSuccess("Account Created!");
+                setUser(res.data.user);
+                setJwt(res.data.token);
+            })
             .catch(function (err) {
                 setErrorMsg(err.response.data.msg);
             })
@@ -72,6 +75,18 @@ const RegisterCard = () => {
         }
         else {
             return true;
+        }
+    }
+
+    const ageCheck = () => {
+        var today = new Date();
+        var birthDate = new Date(dob);
+        var age = today.getFullYear() - birthDate.getFullYear();
+        console.log("IN AGE CHECK")
+        if (age < 13) {
+            return true
+        } else {
+            return false
         }
     }
 
@@ -135,6 +150,9 @@ const RegisterCard = () => {
                                     <div style={{ textAlign: 'right' }}>
                                         <Button type="button" className="" onClick={nextStage}>Next</Button>
                                     </div>
+                                    <div id="HASH" className="blue-msg">
+                                        <p className="sign-up text-left">Already Signed up? <a href="/Login">Sign In</a></p>
+                                    </div>
                                 </>
                             )}
                             {stage == 1 && (
@@ -172,14 +190,17 @@ const RegisterCard = () => {
                                             onChange={(event) => setdob(event.target.value)}
                                         />
                                     </div>
-
                                     <p className="errMsg">{errorMsg}</p>
                                     <p>{creationSuccess}</p>
 
                                     <div id="HASH">
                                         <Button type="button" className='text-left' onClick={(e) => (e.preventDefault(), setStage(0))}>Prev</Button>
                                         <Button type="submit" className='text-right' >Submit</Button>
+                                    </div>
+                                    <div id="HASH" className="blue-msg">
+                                        <p className="sign-up text-left">Already Signed up? <a href="/Login">Sign In</a></p>
                                     </div></>
+
                             )}
 
                         </form>

@@ -1,16 +1,13 @@
 import React from 'react'
 import Navbar from '../Components/Navbar/Navbar'
-import Cards from '../Components/Home/Home'
-import Carousel from '../Components/Carousel/Carousel'
-
-import "react-responsive-carousel/lib/styles/carousel.min.css"
+import HomePage from '../Components/Home/Home'
 
 const Home = () => {
   return (
     <>
     <Navbar />
     <br />
-    <Cards />
+    <HomePage />
     </>
   )
 }

@@ -19,7 +19,7 @@ model User {
   username  String    @unique @db.VarChar(20)
   password  String
   bio       String?   @db.LongText
-  profilePicture String?   @db.LongText // Store file path in database instead of the actual image
+  profilePicture String? @db.LongText // Store file path in database instead of the actual image
   createdAt DateTime  @default(now())
   Posts Post[]
   Playlists Playlist[]
@@ -31,9 +31,11 @@ model Post {
   title    String
   bpm      Int       @db.Int
   key      String    @db.VarChar(255)
+  instruments Json
+  noteTypes Json
   likeCount Int
-  thumbnail String?   @db.LongText // Store file path in database instead of the actual image
-  visibility Boolean
+  midi     String?   @db.LongText // Store file path in database instead of the actual midi
+  thumbnail String? @db.LongText // Store file path in database instead of the actual image
   user   User      @relation(fields: [userID], references: [id], onDelete: Cascade)
   userID String // relation scalar field  (used in the `@relation` attribute above)
   createdAt DateTime  @default(now())
@@ -44,7 +46,7 @@ model Post {
 model Playlist {
   id       String    @id @default(uuid())
   name     String
-  thumbnail String?  @db.LongText // Store file path in database instead of the actual image
+  thumbnail String? @db.LongText // Store file path in database instead of the actual image
   user User          @relation(fields: [userID], references: [id], onDelete: Cascade)
   userID String
   PlaylistPosts PlaylistPost[]

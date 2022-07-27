@@ -10,28 +10,32 @@ import Profile from './Pages/Profile';
 import Search from './Pages/SearchPage'
 import Test from './Pages/Test';
 import Playlist from './Pages/Playlist'
+import AboutUs from './Pages/AboutUs'
 
 import Record from './Pages/Recording';
-import { useContext } from 'react';
-import { AuthContext } from './Components/context/AuthContext';
+
+import { useRecoilValue } from 'recoil';
+
+import {userModeState} from './Components/context/GlobalState'
 
 
 function App() {
 
-  const {user} = useContext(AuthContext);
+  const user = useRecoilValue(userModeState);
 
   return (
       <Router>
         <Routes>
           <Route exact path='/' element={<Home />} />
-          <Route path='/Login' element={user? <Home /> : <Login />}/>
-          <Route path='/Record' element={user ? <Record /> : <Navigate to='/Login' />} />
+          <Route path='/Login' element={user ? <Navigate to='/' /> : <Login />}/>
+          <Route path='/Record' element={<Record />} />
           <Route path='/Profile' element={user ? <Profile /> : <Navigate to='/Login' />} />
-          <Route path='/Search' element={user ? <Search /> : <Navigate to='/Login' />} />
+          <Route path='/Search' element={<Search />} />
           <Route path='/Playlist' element={<Playlist />} />
-          <Route path='/Register' element={<Register />} />
+          <Route path='/Register' element={user ? <Home /> :<Register />} />
           <Route path='/Forgot' element={<Forgot />} />
           <Route path='/Test' element={<Test />} />
+          <Route path='/About' element={<AboutUs />} />
         </Routes>
       </Router>
   );

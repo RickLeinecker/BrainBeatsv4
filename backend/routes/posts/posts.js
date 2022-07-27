@@ -1,34 +1,45 @@
 require("dotenv").config();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
+const { getJWT, verifyJWT} = require("../../utils/jwt");
+const { getUserExists, getPostExists } = require("../../utils/database");
+const multer  = require('multer')
+const upload = multer({limits: { fieldSize: 25 * 1024 * 1024 }})
 
 // Create a post
-router.post('/createPost', async (req, res) => {
-
+router.post('/createPost',  upload.single('thumbnail'), async (req, res) => {
     try {
-        const { userID, title, bpm, key, visibility} = req.body
-        const userExists = await prisma.User.findUnique({
-            where: { id: userID }
-        });
+        const { userID, title, bpm, key, midi, instruments, noteTypes, visibility, token, thumbnail} = req.body;
+
+        const decoded = verifyJWT(token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+            });
+        }
+
+        const userExists = await getUserExists(userID, "id");
 
         if (!userExists) {
             return res.status(400).json({
                 msg: "User not found"
-            })
+            });
         } else {
-            //Create a single record
+            // Create a single record
             const newPost = await prisma.Post.create({
                 data: {
                     userID: userID,
                     title: title,
                     bpm: bpm,
                     key: key,
-                    visibility: visibility,
+                    instruments: instruments,
+                    noteTypes: noteTypes,
+                    thumbnail: thumbnail,
+                    midi: midi,
                     likeCount: 0
                 }
             });
@@ -36,95 +47,113 @@ router.post('/createPost', async (req, res) => {
             res.json(newPost);
         }
     } catch (err) {
-        res.status(500).send({ msg: err })
+        console.log(err);
+        res.status(500).send({ msg: err });
     }
-
 });
 
 // Get all posts based on a username
 router.get('/getUserPostsByUsername', async (req, res) => {
     try {
-        const username = req.query.username
+        const username = req.query.username;
         if (username === "") {
-            const allPosts = await prisma.Post.findMany();
+            const allPosts = await prisma.Post.findMany({
+                include: {user : true}
+            });
+
             res.json(allPosts);
             return;
         }
 
-        const userExists = await prisma.User.findUnique({
-            where: { username }
-        });
+        const userExists = await getUserExists(username, "username");
 
         if (!userExists) {
-            //return empty if no user is found
-            res.json([])
-            return 
+            return res.status(400).json({
+                msg: "Username not found"
+            });
         } else {
             // Find the records
             const userPosts = await prisma.Post.findMany({
-                where: { userID: userExists.id }
+                where: { userID: userExists.id },
+                include: {user: true}
             });
 
             if (!userPosts) {
                 return res.status(400).json({
                     msg: "Posts not found"
-                })
+                });
             }
 
             res.json(userPosts);
         }
-    }
-    catch (err) {
-        res.status(500).send({ msg: err })
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ msg: err });
     }
 });
 
 // Get all posts based on a user ID
 router.get('/getUserPostsByID', async (req, res) => {
-    //res.json([req.body, 'hello'])
     try {
-        const userPosts = await prisma.Post.findMany({
-            where: { userID: req.query.userID },
-        });
-        //res.json([req.body, "hello"])
+        const userID = req.query.userID;
 
-        if (!userPosts) {
+        const userExists = await getUserExists(userID, "id");
+
+        if (!userExists) {
             return res.status(400).json({
-                msg: "User ID not found"
-            })
+                msg: "User not found"
+            });
+        } else {
+            const userPosts = await prisma.Post.findMany({
+                where: { userID: req.query.userID },
+                include: {user: true}
+            });
+
+            if (!userPosts) {
+                return res.status(400).json({
+                    msg: "User ID not found"
+                });
+            }
+
+            res.json(userPosts);
         }
-
-        res.json(userPosts)
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ msg: err });
     }
-    catch (err) {
-        res.status(500).send({ msg: err })
-    }
-
 });
 
 // Get all posts
 router.get('/getAllPosts', async (req, res) => {
     try {
-        const posts = await prisma.Post.findMany();
+        const posts = await prisma.Post.findMany({
+            include: {user: true}
+        });
 
-        res.json(posts)
+        res.json(posts);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ msg: err });
     }
-    catch (err) {
-        res.status(500).send({ msg: err })
-    }
-
 });
 
 // Delete a post
 router.delete('/deletePost', async (req, res) => {
     try {
-        console.log(req.body.id)
+        const decoded = verifyJWT(req.body.token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+                });
+        }
+
         const deletePost = await prisma.Post.delete({
             where: { id: req.body.id }
-        })
+        });
         res.status(200).send({ msg: "Deleted a user post" });
-    }
-    catch (err) {
+    } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 });
@@ -133,38 +162,41 @@ router.delete('/deletePost', async (req, res) => {
 router.put('/updatePost', async (req, res) => {
 
     try {
-        const { id, title, visibility, bio, thumbnail, likeCount} = req.body
+        const { id, title, midi, bio, thumbnail, likeCount, token} = req.body;
+
+        const decoded = verifyJWT(token);
+
+        if (!decoded) {
+            return res.status(400).json({
+                msg: "Invalid token"
+            });
+        }
 
         // Check if the id already exists in db
-        const userIDExists = await prisma.Post.findUnique({
-            where: { id },
-        });
+        const postExists = await getPostExists(id, "id");
 
-        if (!userIDExists) {
+        if (!postExists) {
             return res.status(400).json({
-                msg: "Post ID not found"
-            })
+                msg: "Post not found"
+            });
         } else {
-            
-        const updatePost = await prisma.Post.update({
-            where: { id },
-            data: {
-                title: title,
-                bio: bio,
-                likeCount: likeCount,
-                visibility: visibility,
-                thumbnail: thumbnail
-            }
-        })
-        //   res.status(200).send({msg: "Updated OK"});
-        res.json(updatePost);
-      }
-    }
+            const updatePost = await prisma.Post.update({
+                where: { id },
+                data: {
+                    title: title,
+                    bio: bio,
+                    likeCount: likeCount,
+                    midi: midi,
+                    thumbnail: thumbnail
+                }
+            });
 
-    catch (err) {
+            res.json(updatePost);
+      }
+    } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
-
 });
 
 module.exports = router;
