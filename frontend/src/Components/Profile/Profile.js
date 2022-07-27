@@ -2,14 +2,13 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import './profile.css'
 
 import { useRecoilValue } from 'recoil';
-import {userJWT, userModeState} from '../context/GlobalState'
+import { userJWT, userModeState } from '../context/GlobalState'
 import sendAPI from '../sendAPI';
 
 const Profile = () => {
 
     const user = useRecoilValue(userModeState);
     const jwt = useRecoilValue(userJWT);
-    // //useStates to get required fields
     const [email, setEmail] = useState(user.email);
     const [username, setUsername] = useState(user.username);
     const [firstName, setFirstName] = useState(user.firstName);
@@ -17,17 +16,45 @@ const Profile = () => {
     const [dob, setDob] = useState(user.dob);
     const [stage, setStage] = useState(0);
     const [bio, setBio] = useState(user.bio);
-    const [profilePicture, setProfilePicture] = useState("");
+    const [profilePicture, setProfilePicture] = useState(user.profilePicture);
     const [errorMsg, setErrorMsg] = useState('');
+
+    // API call to BE to get updated user info to input fields
+    useEffect(() => {
+        sendAPI('get', `/users/getUserByID?id=${user.id}`, null)
+            .then(function (res) {
+                setFirstName(res.data.firstName);
+                setLastName(res.data.lastName);
+                setDob(res.data.dob);
+                setEmail(res.data.email);
+                setUsername(res.data.username);
+                setBio(res.data.bio);
+                setProfilePicture(res.data.profilePicture);
+                console.log(user)
+
+            })
+            .catch(function (err) {
+                setErrorMsg(err.response.data.msg);
+            })
+    }, [])
 
     // const emptyField = () => {
     //     return (!email || !username || !firstName || !lastName || !bio || !profilePicture)
     // }
 
-    const profilePictureRef = useRef(null);
+    const updateProfilePic = (file) => {
+        var file = document.querySelector('input[type=file]')['files'][0];
+        var reader = new FileReader();
+        var baseString;
+        reader.onloadend = function () {
+            baseString = reader.result;
+            setProfilePicture(baseString); 
+        };
+        reader.readAsDataURL(file);
+        // setProfilePicture(baseString);
+    }
 
     const UpdateProfile = (event) => {
-        // previewFile();
         event.preventDefault();
         // if (emptyField()) {
         //     setErrorMsg("Fill out all fields please");
@@ -41,19 +68,7 @@ const Profile = () => {
 
         const path = require('../Path');
 
-        //put all input fields into a json object
-        // const newUser = {
-        //     "id": user.id,
-        //     "firstName": firstName,
-        //     "lastName": lastName,
-        //     'dob': dob,
-        //     "email": email,
-        //     "username": username,
-        //     "bio": bio,
-        //     "profilePicture": profilePicture
-        // };
-
-        var newUser = new FormData();
+        const newUser = new FormData();
         newUser.append('id', user.id);
         newUser.append('firstName', firstName);
         newUser.append('lastName', lastName);
@@ -62,13 +77,11 @@ const Profile = () => {
         newUser.append('username', username);
         newUser.append('bio', bio);
         newUser.append('profilePicture', profilePicture);
-        newUser.append('token', jwt)
+        newUser.append('token', jwt);
 
         // for (const value of newUser.values()) {
         //     console.log(value);
         //   }
-
-        console.log(newUser);
 
         sendAPI('put', '/users/updateUser', newUser)
             .then(function (res) {
@@ -77,6 +90,8 @@ const Profile = () => {
             .catch(function (err) {
                 setErrorMsg(err.response.data.msg);
             })
+
+        console.log(newUser);
     }
 
     let editProfile = false;
@@ -93,6 +108,7 @@ const Profile = () => {
         console.log(email)
         console.log(username)
         console.log(bio)
+        console.log(profilePicture)
     }
 
     //Validates email field
@@ -105,32 +121,6 @@ const Profile = () => {
             return true;
         }
     }
-
-    // const previewFile = (event) => {
-
-    //     const file = document.querySelector('input[type=file]').files[0];
-    //     const reader = new FileReader();
-
-    //     reader.addEventListener("load", function () {
-    //       // convert image file to base64 string
-    //       profilePictureRef.current.src = reader.result;
-    //     }, false);
-
-    //     if (file) {
-    //       reader.readAsDataURL(file);
-    //     }
-    //   }
-
-    useEffect(() => {
-        if (profilePicture) {
-            profilePictureRef.current.src = URL.createObjectURL(profilePicture);
-        }
-        console.log(profilePicture);
-    },
-        [profilePictureRef, profilePicture]
-    );
-
-
     return (
         <div className='content-fluid'>
             <div className='row'>
@@ -185,8 +175,10 @@ const Profile = () => {
                             <div className='row'>
                                 <div className="col-md-6">
                                     <div className="form-group">
-                                        <label>Upload Image</label>
-                                        <input type="file" onChange={(event) => setProfilePicture(event.target.files[0])} className="form-control" />
+                                    <label for="file-upload" className="custom-file-upload">
+                                        Upload Image (optional)
+                                    </label>
+                                    <input id="file-upload" onChange={(event) => updateProfilePic(event.target.files[0])} type="file"/>
                                     </div>
                                 </div>
                             </div>
@@ -199,7 +191,7 @@ const Profile = () => {
                 <div className='col-md-4'>
                     <div className="userCard">
                         <div className="author">
-                            <img className='profileImg' src={user.profilePicture} ref={profilePictureRef} ></img>
+                            <img className='profileImg' src={profilePicture}></img>
                             <p>{user ? user.firstName + " " + user.lastName : "First Name Last Name"}</p>
                         </div>
                         <div className='userBody'>
@@ -213,5 +205,6 @@ const Profile = () => {
         </div>
     )
 }
+
 
 export default Profile

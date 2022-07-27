@@ -5,12 +5,11 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
-const multer  = require('multer')
-const upload = multer()
-const fs = require('fs');
 const { getJWT, verifyJWT } = require("../../utils/jwt");
 const { getUserExists } = require("../../utils/database");
-
+const multer  = require('multer')
+const upload = multer({limits: { fieldSize: 25 * 1024 * 1024 }})
+const fs = require('fs');
 // Create a new user
 router.post('/createUser', async (req, res) => {
     try {
@@ -89,35 +88,7 @@ router.post('/loginUser', async (req, res) => {
 // Get all users in the database
 router.get('/getAllUsers', async (req, res) => {
     try {
-        const users = await prisma.User.findMany({
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                dob: true,
-                email: true,
-                username: true,
-                password: true,
-                profilePicture: false
-            }
-        });
-        res.json(users);
-    } catch (err) {
-        console.log(err);
-        res.status(500).send({ msg: err });
-    }
-});
-
-// Get all users in the database
-router.get('/getUserProfilePic', async (req, res) => {
-    try {
-        const id = req.query.id;
-        const users = await prisma.User.findMany({
-            where: {id: id},
-            select: {
-                profilePicture: true
-            }
-        });
+        const users = await prisma.User.findMany();
         res.json(users);
     } catch (err) {
         console.log(err);
@@ -162,8 +133,8 @@ router.get('/getUserByID', async (req, res) => {
 // Update user info 
 router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
     try{
-        const { id, firstName, lastName, dob, email, username, bio, token } = req.body;
-        const profilePicture = req.file;
+        const { id, firstName, lastName, dob, email, username, bio, token, profilePicture } = req.body;
+        
         const decoded = verifyJWT(token);
 
         if (!decoded) {
@@ -171,9 +142,6 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
                 msg: "Invalid token"
                 });
         }
-
-        // Required field for profilePicture as an entry
-        // const profilePicture = req.file;
                 
         // Check if the user already exists in db
         const userExists = await getUserExists(id, "id");
@@ -192,19 +160,9 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
                     dob: new Date(dob).toISOString(),
                     username: username,
                     bio: bio,
-                    profilePicture: profilePicture.buffer
-                }
-            });    
-        
-            const uploadPath = "../images/profilePicture/" + id;
-
-            fs.writeFile(uploadPath, profilePicture.buffer, (err) => {
-                if (err) {
-                    console.log(err);
+                    profilePicture: profilePicture
                 }
             });
-            // const profilepic2 = fs.readFile(uploadPath);
-            console.log(profilePicture);
             res.status(200).send({msg: "User was successfully updated"});
         }
     } catch (err) {

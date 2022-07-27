@@ -78,6 +78,7 @@ function Record() {
 	const [speed, setSpeed] = useState(1)
 	const [backgroundColor, setBackgroundColor] =useState(initialBackground);
 	const [textColor, setTextColor] =useState(initialTextColor);
+	const [thumbnail, setThumbnail] = useState(user.thumbnail);
 
 	//Youtube Link
 	const [youtubeLink, setYoutubeLink] = useState('')
@@ -102,6 +103,17 @@ function Record() {
 	[
 		'Major', 'Minor'
 	]
+
+	const updateProfilePic = (file) => {
+        var file = document.querySelector('input[type=file]')['files'][0];
+        var reader = new FileReader();
+        var baseString;
+        reader.onloadend = function () {
+            baseString = reader.result;
+            setThumbnail(baseString); 
+        };
+        reader.readAsDataURL(file);
+    }
 
 	//get BPM from database
 	useEffect(()=>{
@@ -151,10 +163,11 @@ function Record() {
   			"bpm": BPM,
 			"instruments" : instrumentList,
 			"noteTypes" : noteDuration,
+			"thumbnail": thumbnail,
   			"key": KEY[scale],
 			'token': jwt,
 		}
-		console.log(bodyData)
+		console.log(bodyData);
 
 		sendAPI('post', '/posts/createPost', bodyData)
 			.then((res) =>{
@@ -689,7 +702,7 @@ function Record() {
 				<label for="file-upload" className="custom-file-upload">
     				Upload Image (optional)
 				</label>
-				<input id="file-upload" type="file"/>
+				<input id="file-upload" onChange={(event) => updateProfilePic(event.target.files[0])} type="file"/>
 			</div>
 			<div> <input type="text" className='titleInput'/></div>
 			</div>
