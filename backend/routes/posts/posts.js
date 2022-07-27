@@ -10,7 +10,7 @@ const { getUserExists, getPostExists } = require("../../utils/database");
 // Create a post
 router.post('/createPost', async (req, res) => {
     try {
-        const { userID, title, bpm, key, instruments, noteTypes, visibility, token} = req.body;
+        const { userID, title, bpm, key, midi, instruments, noteTypes, visibility, token} = req.body;
 
         const decoded = verifyJWT(token);
 
@@ -36,6 +36,7 @@ router.post('/createPost', async (req, res) => {
                     key: key,
                     instruments: instruments,
                     noteTypes: noteTypes,
+                    midi: midi,
                     likeCount: 0
                 }
             });
@@ -158,7 +159,7 @@ router.delete('/deletePost', async (req, res) => {
 router.put('/updatePost', async (req, res) => {
 
     try {
-        const { id, title, visibility, bio, thumbnail, likeCount, token} = req.body;
+        const { id, title, midi, bio, thumbnail, likeCount, token} = req.body;
 
         const decoded = verifyJWT(token);
 
@@ -182,7 +183,7 @@ router.put('/updatePost', async (req, res) => {
                     title: title,
                     bio: bio,
                     likeCount: likeCount,
-                    visibility: visibility,
+                    midi: midi,
                     thumbnail: thumbnail
                 }
             });
