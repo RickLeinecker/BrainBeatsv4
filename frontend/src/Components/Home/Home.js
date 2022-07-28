@@ -9,6 +9,8 @@ import { useRecoilValue } from 'recoil';
 import {userJWT, userModeState} from '../context/GlobalState'
 import sendAPI from '../sendAPI';
 
+import {playMidiFile} from '../Record/Record';
+
 const Cards = () => {
     //post array
     const [allPost, setAllPost] = useState([]);
@@ -131,8 +133,10 @@ const Cards = () => {
                                             <Card.Subtitle className='cardText'>{item.user.username}</Card.Subtitle>
                                             <button className='cardPlayButton' onClick={(e) => {
                                                 e.preventDefault();
-                                                setData(item.data); //store this items midi string to Data
-                                                setShowMedia(true); //reveal midi player
+                                                console.log("INSTRUMENTS"+item.instruments)
+                                                console.log("NOTE DURATION"+ item.noteTypes)
+                                                console.log("MIDI: " + item.midi)
+                                                
                                             }}><FaPlayCircle size={90} /></button>
                                             <button className='cardHeart'>
                                                 {liked.filter((like) => like.postID === item.id).length ? <FaHeart onClick={()=>onRemove(item.id)}/> : <FaRegHeart onClick={() => onLike(item.id)}/>}

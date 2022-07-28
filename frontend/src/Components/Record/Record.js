@@ -48,6 +48,7 @@ function Record() {
 	const [scale, setScale] = useState(0);
 	const [BPMArray, setBPMArray] = useState([]);
 	const [BPM, setBPM] = useState(120);
+	const [MIDIFile, setMIDIFile] = useState("");
 
 
 	const [currentSlide, setCurrentSlide] = useState(0);
@@ -163,7 +164,7 @@ function Record() {
   			"bpm": BPM,
 			"instruments" : instrumentList,
 			"noteTypes" : noteDuration,
-			"thumbnail": thumbnail,
+			"midi": MIDIFile,
   			"key": KEY[scale],
 			'token': jwt,
 		}
@@ -647,8 +648,9 @@ function Record() {
 				</OverlayTrigger>
 			</div>
 			<h2>Record</h2>
+			<button onClick={() => console.log(MIDIFile)}>MIDI FILE</button>
 			<img src={Img} className="scriptless"/>
-			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} />
+			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} setMIDIFile={setMIDIFile}/>
 			<button className='arrowButtonMain' onClick={() => {setStage(1)}}>{<FaAngleLeft />} Script </button>
 			<button className='arrowButtonMain' onClick={() => {setStage(3)}}>Publish {<FaAngleRight />}</button>
 			</>
@@ -704,7 +706,7 @@ function Record() {
 				</label>
 				<input id="file-upload" onChange={(event) => updateProfilePic(event.target.files[0])} type="file"/>
 			</div>
-			<div> <input type="text" className='titleInput'/></div>
+			<div> <input type="text" className='titleInput' onChange={(e) => setTitle(e.target.value)}/></div>
 			</div>
 			<p>Post Title</p>
 			<button className='publishButton' onClick={postFile}>Publish</button>
@@ -776,7 +778,7 @@ function ValidScript({slides, setCurrentSlide, currentSlide, autoplay}) {
 
 }
 
-function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
+function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, setMIDIFile}) {
     let st = {
         height: '100px',
         position: 'fixed',
@@ -1231,15 +1233,15 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 		const [file] = document.querySelector('input[type=file]').files;
 		const reader = new FileReader();
 	  
+		if (file)
+			//reader.readAsText(file);
+			reader.readAsBinaryString(file);
+
 		reader.addEventListener("load", () =>
 		{
 			console.log("Data from MIDI file converted to base64: " + btoa(reader.result));
 			decodedMIDIString = btoa(reader.result);
 		}, false);
-	  
-		if (file)
-			//reader.readAsText(file);
-			reader.readAsBinaryString(file);
 	}
 
 	function playMidiFile(uri)
@@ -1251,8 +1253,8 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 		//Player.loadDataUri(uri); this is the good one that you should use (:
 		//Player.loadDataUri(btoa("file://C:\Users\Noah\Documents\GitHub\BrainBeatsWeb\frontend\src\Components\Record/UseThisToTestMIDI.mid"));
 		
-		console.log("URI passed in: " + uri);
-		Player.loadDataUri("data:audio/midi;base64," + decodedMIDIString);
+		//console.log("URI passed in: " + uri);
+		Player.loadDataUri(uri);
 		Player.play();
 
 		var eventCount = 0;
@@ -1315,10 +1317,14 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 	{
 		var write = new MidiWriter.Writer([trackFP1, trackFP2, trackC3, trackC4]);
 		var writeURI = write.dataUri();
-		//convertMidiFileToBase64String('./big_doog.mid');
-		//downloadURI(writeURI, "BrainBeatsMasterpiece");
-		playMidiFile(writeURI);
-		//console.log(write.dataUri());
+		//COOOL TRICK
+		//you can pass setState as a parameter and have it change in a different function
+		setMIDIFile(writeURI)
+		// pass writeURI to the database
+
+		// downloadURI(writeURI, "BrainBeatsMasterpiece"); // <------------ this is where the MIDI file is actually generated
+		// playMidiFile(writeURI);
+		console.log("From the function:" + writeURI);
 	}
 
 	function downloadData() 
@@ -2136,11 +2142,17 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM}) {
 		  <button id="ganglion" className="recordButton">
 			RECORD
 		  </button>
-		  <button id="Disconnect" className="stopButton">
+		  <button id="Disconnect" className="stopButton" onClick={generateAndDownloadMIDIFile}>
 			STOP
 		  </button>
 		</div>
-		<input type="file" onChange={previewFile}></input>
+		{/* <input type="file" onChange={previewFile}></input> */}
+
+		<label for="file-upload" className="custom-file-upload">
+    				Upload MIDI
+				</label>
+		<input id="file-upload" onChange={previewFile} type="file"/>
+
 		<div style={{ color: "white" }}>Helpful Buttons</div>
 		<button onClick={handleStuff}>Print Debug Stuff</button> <br></br>
 		<button onClick={generateAndDownloadMIDIFile}>
