@@ -138,7 +138,7 @@ router.get('/getPostsByPlaylistID', async (req, res) => {
             res.json(posts);
         }
 
-        res.json(playlist);
+        res.json(posts);
     } catch (err) {
         console.log(err);
         res.status(500).send({ msg: err });
