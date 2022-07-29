@@ -132,7 +132,8 @@ router.get('/getPostsByPlaylistID', async (req, res) => {
             });
         } else {
             const posts = await prisma.PlaylistPost.findMany({
-                where: { playlistID: req.query.id }
+                where: { playlistID: req.query.id },
+                select: { post: true }
             });
 
             res.json(posts);
