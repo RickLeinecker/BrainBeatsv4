@@ -28,7 +28,7 @@ const SearchComp = () => {
   const [picture, setPicture] = useState();
   const [message, setMessage] = useState("");
   const [username, setUsername] = useState('');
-
+  const [thumbnail, setThumbnail] = useState('');
   const [currentSelectPost, setCurretSelectPost] = useState("");
 
   useEffect(() => {
@@ -77,6 +77,7 @@ const SearchComp = () => {
       name: playListTitle,
       userID: user.id,
       token: jwt,
+      thumbnail: thumbnail
     };
     sendAPI("post", "/playlists/createPlaylist", dataBody).then((res) => {
       setMessage("Playlist Created");
@@ -99,7 +100,19 @@ const SearchComp = () => {
     if(event.key === 'Enter'){
       searchFuntion()
     }
-}
+  }
+
+  const updateProfilePic = (file) => {
+    var file = document.querySelector('input[type=file]')['files'][0];
+    var reader = new FileReader();
+    var baseString;
+    reader.onloadend = function () {
+        baseString = reader.result;
+        setThumbnail(baseString); 
+    };
+    reader.readAsDataURL(file);
+    // setProfilePicture(baseString);
+  }
 
   return (
     <>
@@ -114,7 +127,7 @@ const SearchComp = () => {
                 <div className="row" style={{ margin: "3px" }}>
                   <div className="col-sm-3">
                     <img
-                      src="https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png"
+                      src={thumbnail}
                       className="modalImg"
                     />
                   </div>
@@ -153,11 +166,10 @@ const SearchComp = () => {
             className="inputModal"
           />
           <p style={{ textAlign: "left" }}>Playlist Thumbnail</p>
-          <input
-            type="file"
-            onChange={(e) => setPicture(e.target.value)}
-            className="inputModal"
-          />
+          <label for="file-upload" className="custom-file-upload">
+    				Upload Image (optional)
+				</label>
+				<input id="file-upload" onChange={(event) => updateProfilePic(event.target.files[0])} type="file"/>
         </Modal.Body>
         <Modal.Footer>
           <p>{message}</p>
@@ -194,7 +206,7 @@ const SearchComp = () => {
                         <Card.Img
                           variant="top"
                           className="playhover"
-                          src="https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png"
+                          src={item.thumbnail}
                           style={{ height: "150px", width: "150px" }}
                         />
                         <Card.Body>

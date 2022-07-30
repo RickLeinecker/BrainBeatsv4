@@ -9,7 +9,7 @@ import sendAPI from "../sendAPI";
 const PlaylistBody = () => {
   const user = useRecoilValue(userModeState);
   const jwt = useRecoilValue(userJWT);
-
+  const [thumbnail, setThumbnail] = useState();
   const [noPlaylist, setNoPlaylist] = useState('');
   const [playlist, setPlaylist] = useState([]);
   const navigate = useNavigate();
@@ -17,7 +17,10 @@ const PlaylistBody = () => {
   useEffect(() =>{
 
     const params = {
-      userID: user.id
+      userID: user.id,
+      // title: title, 
+      thumbnail: thumbnail,
+      token: jwt,
     }
 
     sendAPI('get', '/playlists/getUserPlaylists', params)
@@ -25,6 +28,8 @@ const PlaylistBody = () => {
       setPlaylist(res.data)
     })
   },[])
+
+
 
   return (
     <>
@@ -48,7 +53,7 @@ const PlaylistBody = () => {
                       <Card.Img
                         variant="top"
                         className="playhover"
-                        src="https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png"
+                        src={item.thumbnail}
                       />
                       <Card.Body>
                         <Card.Title className="cardText">
