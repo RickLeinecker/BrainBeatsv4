@@ -9,6 +9,8 @@ const { getJWT, verifyJWT } = require("../../utils/jwt");
 const { getUserExists } = require("../../utils/database");
 const multer  = require('multer')
 const upload = multer({limits: { fieldSize: 25 * 1024 * 1024 }})
+const fs = require('fs');
+const crypto = require('crypto');
 
 // Create a new user
 router.post('/createUser', async (req, res) => {
@@ -166,7 +168,7 @@ router.get('/getUserImages', async (req, res) => {
 // Update user info 
 router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
     try{
-        const { id, firstName, lastName, dob, email, username, bio, token, profilePicture } = req.body;
+        const { id, firstName, lastName, password, dob, email, username, bio, token, profilePicture } = req.body;
         
         const decoded = verifyJWT(token);
 
@@ -184,6 +186,8 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
                 msg: "User ID not found"
             });
         } else {
+            encryptedPassword = await bcrypt.hash(password, 10);
+
             const updateUser = await prisma.User.update({
                 where: { id },
                 data: {
@@ -193,7 +197,8 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
                     dob: new Date(dob).toISOString(),
                     username: username,
                     bio: bio,
-                    profilePicture: profilePicture
+                    profilePicture: profilePicture,
+                    password: encryptedPassword
                 }
             });
             res.status(200).send({msg: "User was successfully updated"});
@@ -222,6 +227,94 @@ router.delete('/deleteUser', async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(500).send(err);
+    }
+});
+
+// Do forgot password
+router.post('/forgotPassword', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        const userExists = await getUserExists(email, "email");
+
+        if (!userExists) {
+            return res.status(400).json({
+                msg: "Email does not exist"
+            });
+        } else {
+            // Generate token
+            const token = crypto.randomBytes(48).toString('hex');
+
+            // Update user in database with token and expiry date
+            const updateUser = await prisma.User.update({
+                where: { email },
+                data: {
+                    resetPasswordToken: token,
+                    resetPasswordExpires: new Date(Date.now() + 3600000)
+                }
+            });
+
+            // Set up transporter for email
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: `${process.env.EMAIL_ADDRESS}`,
+                    pass: `${process.env.EMAIL_PASSWORD}`
+                }
+            });
+
+            // Create mailOptions to build the email
+            const mailOptions = {
+                from: `${process.env.EMAIL_ADDRESS}`,
+                to: email,
+                subject: 'Forgot Password - BrainBeats',
+                text:
+                    'Hi ' + `${updateUser.username}` + ', \n\n You are receiving this email beacuse you (or someone else) have requested to reset your password for your BrainBeats account. \n\n'
+                    + 'Please click the following link, or paste this into your browser to complete the process within one hour of receiving it: \n\n'
+                    + `http://brainbeats.dev/resetPassword?token=${token} \n\n`
+                    + 'If you did not request this, please ignore this email and your password will remain unchanged. \n\n',
+            };
+
+            // Send email
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                    res.status(200).json('Recovery email sent.');
+                }
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ msg: err });
+    }
+});
+
+// Confirms reset of a password from an email by verifying token integrity
+router.get('/reset', async (req, res) => {
+    try {
+        const resetPasswordToken = req.query.resetPasswordToken;
+
+        const user = await prisma.User.findUnique({
+            where: { 
+                resetPasswordToken: resetPasswordToken,
+                resetPasswordExpires: {
+                    $gt: Date.now(),
+                },
+            },
+        });
+
+        if (!user) {
+            return res.status(400).json({
+                msg: "Password reset link is invalid or has expired."
+            });
+        }
+            
+        res.json(user);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ msg: err });
     }
 });
 
