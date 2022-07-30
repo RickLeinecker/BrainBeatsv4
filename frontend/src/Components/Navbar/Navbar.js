@@ -1,5 +1,5 @@
 import { React, useState} from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Navbar, Container, Button, NavDropdown, Form } from 'react-bootstrap'
 import Logo from './Logo.jpg'
 import {
@@ -11,15 +11,17 @@ import { useSetRecoilState, useRecoilState } from 'recoil';
 import { userModeState, userJWT } from '../context/GlobalState'
 
 const Navbars = () => {
+    const navigate = useNavigate();
     const [user, setUser ] = useRecoilState(userModeState)
     const [jwt, setUserJwt] = useRecoilState(userJWT)
 
     const [search, setSearch] = useState('');
 
     const Logout = () => {
+        console.log("HELLO")
         setUser(null);
         setUserJwt(null)
-        window.location.href = '/'
+        navigate('/')
     }
 
     

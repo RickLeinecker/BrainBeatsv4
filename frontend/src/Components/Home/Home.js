@@ -146,7 +146,6 @@ const Cards = () => {
                                             <button className='cardHeart'>
                                                 {liked.filter((like) => like.postID === item.id).length ? <FaHeart onClick={()=>onRemove(item.id)}/> : <FaRegHeart onClick={() => onLike(item.id)}/>}
                                             </button>
-
                                         </Card.Body>
                                     </Card>
                                 </div>
