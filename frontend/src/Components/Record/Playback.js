@@ -1,10 +1,3 @@
-import React, {useEffect, useCallback, useRef} from 'react'
-
-import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/dist/index.esm.js"; // UI
-// Data acquisition
-import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js"; 
-import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // This is the device aquisition for BrainBeats AKA the ganglion device.
-import * as XLSX from 'xlsx';
 import MidiPlayer from 'midi-player-js';
 
 // ------------------------------------------------------------------------------ CONSTANTS AND GLOBAL VARIABLES ------------------------------------------------------------------------------
@@ -12,22 +5,6 @@ import MidiPlayer from 'midi-player-js';
 // We are using a standard sample rate of 44100hz. Would not recommend changing this. I don't know what would happen, but you still probably shouldn't. <3
 var sampleRate = 44100;
 const SAMPLE_RATE = 44100; // I don't know why there's 2 don't ask thanks
-
-// Beats Per Minute of the track [aka tempo]
-var BPM = 120;
-
-/* 
-Things we get from the database:
-- BPM
-- Instrument 1
-- Instrument 2
-- Instrument 3
-- Instrument 4
-- Instrument 1 Note Type
-- Instrument 2 Note Type
-- Instrument 3 Note Type
-- Instrument 4 Note Type
-*/
 
 const instrumentEnums =
 {
@@ -44,6 +21,19 @@ const instrumentEnums =
     Tuba: 7
 }
 
+// This will all be fed in from the DB
+var BPM = 120;
+var track1Inst = instrumentEnums.SquareWave;
+var track2Inst = instrumentEnums.Flute;
+var track3Inst = instrumentEnums.Oboe;
+var track4Inst = instrumentEnums.Trombone;
+var track1NoteType = "half";
+var track2NoteType = "quarter";
+var track3NoteType = "eighth";
+var track4NoteType = "sixteenth";
+
+var instrList;
+
 // ------------------------------------------------------------------------------ VOLUME STUFF PROBABLY JUST IGNORE LOL ------------------------------------------------------------------------------
 
 //Default volume value
@@ -54,12 +44,13 @@ var FP1VolChange = 0, FP2VolChange = 0, C3VolChange = 0, C4VolChange = 0
     
 // ------------------------------------------------------------------------------ CUSTOM HELPER FUNCTIONS ------------------------------------------------------------------------------
 
-function playMidiFile(uri)
+export function playMidiFile(uri, )
 {
     // Initialize player and register event handler
+    setupInstrumentList();
     var Player = new MidiPlayer.Player(function(event) {});
     
-    //console.log("URI passed in: " + uri);
+    console.log("URI passed in: " + uri);
     Player.loadDataUri(uri);
     Player.play();
 
@@ -85,46 +76,6 @@ function playMidiFile(uri)
         }
         eventCount++;
     });
-}
-
-function getInstrumentNameFromInt(input) {
-    if (input == -3) return "Sine Wave";
-    else if (input == -2) return "Triangle Wave";
-    else if (input == -1) return "Square Wave";
-    else if (input == 0) return "Flute";
-    else if (input == 1) return "Oboe";
-    else if (input == 2) return "Clarinet";
-    else if (input == 3) return "Bassoon";
-    else if (input == 4) return "Trumpet";
-    else if (input == 5) return "French Horn";
-    else if (input == 6) return "Trombone";
-    else if (input == 7) return "Tuba";
-}
-
-function getIntFromNoteTypeString(input) {
-    if (input.localeCompare("sixteenth") == 0) return 0;
-    else if (input.localeCompare("eighth") == 0) return 1;
-    else if (input.localeCompare("quarter") == 0) return 2;
-    else if (input.localeCompare("half") == 0) return 3;
-    else if (input.localeCompare("whole") == 0) return 4;
-}
-
-// This if/else stack returns a note length multiplier based off input. Quarter notes are used as the baseline (x1.0 multiplier).
-// Input should just be a lowercase string of the note type. Ex: "quarter", "half"
-function getNoteLengthMultiplier(noteType) {
-    var noteLengthMultiplier = 1;
-    if (noteType.localeCompare("sixteenth") == 0) // A sixteenth note is 1/4 the length of a quarter note.
-        noteLengthMultiplier = 0.25;
-    else if (noteType.localeCompare("eighth") == 0)
-        noteLengthMultiplier = 0.5;
-    else if (noteType.localeCompare("quarter") == 0)
-        noteLengthMultiplier = 1;
-    else if (noteType.localeCompare("half") == 0)
-        noteLengthMultiplier = 2;
-    else if (noteType.localeCompare("whole") == 0) // A whole note is 4x the length of a quarter note
-        noteLengthMultiplier = 4;
-
-    return noteLengthMultiplier;
 }
 
 // Takes in a BPM and returns the length of one QUARTER NOTE in milliseconds.
@@ -185,10 +136,9 @@ const timeForEachNoteARRAY =
     getMilliecondsFromBPM(BPM) * 4
 ];
 
-
 // ------------------------------------------------------------------------------ FUNCTIONS STOLEN FROM MICROTONALITY.NET ------------------------------------------------------------------------------
 
-// Places all instrument frequency/overtone data into one massive array.
+// Places all instrument frequency/overtone data into one massive array
 function setupInstrumentList() {
     instrList = [];
     instrList.push(flute);
@@ -230,7 +180,6 @@ var numContexts = 0;
 
 // The function that plays audio!
 function playMidiNote(frequency, amplitude, soundType, noteLength) {
-    //var ks = { freq: frequency, playing: false, ctx: 0, buffer: 0, node: 0, gain: 0, needToClose: false, number: numContexts };
     killOldestAudioContextIfNecessary();
 
     queueOfAudio.push({ freq: frequency, playing: false, ctx: 0, buffer: 0, node: 0, gain: 0, needToClose: false, number: numContexts });
@@ -283,13 +232,14 @@ function getNoteData(soundType, freq, amplitude, ctx, noteLength) {
     return buffer;
 }
 
-	// This function used to be called "getAmplitude", which I believe to be incorrect; it does math to determine overtone FREQUENCIES, not amplitudes.
+// This function used to be called "getAmplitude", which I believe to be incorrect; it does math to determine overtone FREQUENCIES, not amplitudes.
 function getOvertoneFrequencies(instrumentIndex, frequency) {
     // Get the list of note amplitude values for this instrument.
     let list = instrList[instrumentIndex];
 
     // We will start with a default value.
     let index = 0;
+    //console.log("frequency : " + frequency, ", list: " + list + ", instrumentIndex: " + instrumentIndex);
     let diff = Math.abs(frequency - list[0][0]);
 
     // Loop through the list of frequencies/amplitudes and find the closest match.

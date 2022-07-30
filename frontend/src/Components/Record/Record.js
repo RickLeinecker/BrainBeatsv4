@@ -5,6 +5,8 @@ import './record.css'
 import { FaAngleRight, FaAngleLeft, FaQuestion } from "react-icons/fa";
 import {Accordion, Button, OverlayTrigger, Tooltip} from 'react-bootstrap'
 import Img from '../Navbar/Logo.jpg'
+import {playMidiFile} from './Playback.js';
+
 //import * as fs from 'fs/promises';
 // import {readFileSync, promises as fsPromises} from 'fs';
 // import * as fs from 'fs';
@@ -12,7 +14,6 @@ import Img from '../Navbar/Logo.jpg'
 // **** If more devices are needed, here are the node modules to begin their acquisition. **** \\
 // import muse from "https://cdn.jsdelivr.net/npm/@brainsatplay/muse@0.0.1/dist/index.esm.js"; // Muse board retrieval
 // import hegduino from "https://cdn.jsdelivr.net/npm/@brainsatplay/hegduino@0.0.3/dist/index.esm.js"; // Hegduino 8 channel board retrieval
-
 
 import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/dist/index.esm.js"; // UI
 // Data acquisition
@@ -27,6 +28,8 @@ import {userJWT, userModeState} from '../context/GlobalState'
 import sendAPI from '../sendAPI';
 import useButtons from './midiUtil';
 // import { fsync } from 'fs';
+
+var fuckinBetterBeBro = "data:audio/midi;base64,TVRoZAAAAAYAAQACAGBNVHJrAAAAEwD/UQMHRB4A/1gEBAIYCAD/LwBNVHJrAAAAkQD/AwlTYW1wbGVyIDEAkDxkMIA8QACQPmQwgD5AAJBAZDCAQEAAkEFkMIBBQACQQ2QwgENAAJBFZDCARUAAkEdkMIBHQACQSGQwgEhAAJBIZDCASEAAkEdkMIBHQACQRWQwgEVAAJBDZDCAQ0AAkEFkMIBBQACQQGQwgEBAAJA+ZDCAPkAAkDxkMIA8QAD/LwA=";
 
 function Record() {
     //needed states
@@ -285,7 +288,7 @@ function Record() {
 		</Tooltip>
 	  );
 
-	const {MidiElement} = useButtons();
+	// const {MidiElement} = useButtons();
 
 
 	return <>
@@ -656,8 +659,11 @@ function Record() {
 			</div>
 			<h2>Record</h2>
 			<button onClick={() => console.log(MIDIFile)}>MIDI FILE</button>
+
+			<button onClick={() => console.log(playMidiFile(fuckinBetterBeBro))}>HOPEFULLY THIS PLAYS SOMETHING!</button>
+
 			<img src={Img} className="scriptless"/>
-			<MidiElement />
+			{/* <MidiElement /> */}
 			<button className='arrowButtonMain' onClick={() => {setStage(1)}}>{<FaAngleLeft />} Script </button>
 			<button className='arrowButtonMain' onClick={() => {setStage(3)}}>Publish {<FaAngleRight />}</button>
 			</>
@@ -671,7 +677,7 @@ function Record() {
 				</OverlayTrigger>
 			</div>
 			<ValidScript slides={cards} setCurrentSlide={setCurrentSlide} autoplay={autoplay} currentSlide={currentSlide}/>
-			<MidiElement />
+			{/* <MidiElement /> */}
 			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
 			<button className='arrowButtonMain' onClick={goNext}>Publish {<FaAngleRight />}</button>
 			
@@ -686,7 +692,7 @@ function Record() {
 				</OverlayTrigger>
 			</div>
 			<VidLink link={youtubeLink} />
-			<MidiElement />
+			{/* <MidiElement /> */}
 			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
 			<button className='arrowButtonMain' onClick={goNext}>Publish {<FaAngleRight />}</button>
 			
