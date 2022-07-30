@@ -9,7 +9,7 @@ const { getJWT, verifyJWT } = require("../../utils/jwt");
 const { getUserExists } = require("../../utils/database");
 const multer  = require('multer')
 const upload = multer({limits: { fieldSize: 25 * 1024 * 1024 }})
-const fs = require('fs');
+
 // Create a new user
 router.post('/createUser', async (req, res) => {
     try {
@@ -88,7 +88,19 @@ router.post('/loginUser', async (req, res) => {
 // Get all users in the database
 router.get('/getAllUsers', async (req, res) => {
     try {
-        const users = await prisma.User.findMany();
+        const users = await prisma.User.findMany({
+            select: {
+                id: true,  
+                firstName: true,
+                lastName: true,
+                email: true,
+                dob: true,
+                username: true,
+                password: true,
+                bio: true,
+                createdAt: true,
+            }
+        });
         res.json(users);
     } catch (err) {
         console.log(err);
@@ -117,6 +129,27 @@ router.get('/getUserByUsername', async (req, res) => {
 router.get('/getUserByID', async (req, res) => {
     try {
         const userExists = await getUserExists(req.query.id, "id");
+
+        if (!userExists) {
+            return res.status(400).json({
+                msg: "User does not exist"
+            });
+        }
+        res.json(userExists);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ msg: err });
+    }
+});
+
+// Get user profilePictures by id
+router.get('/getUserImages', async (req, res) => {
+    try {
+        const userExists = await getUserExists(req.query.id, "id", {
+            include: {
+                profilePicture: true,
+            }
+        });
 
         if (!userExists) {
             return res.status(400).json({

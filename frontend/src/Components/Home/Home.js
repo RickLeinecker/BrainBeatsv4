@@ -126,7 +126,7 @@ const Cards = () => {
                                 <div key={index}>
                                     
                                     <Card className='cardStyle'>
-                                        <Card.Img variant="top" className='playhover' src='https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png' />
+                                        <Card.Img variant="top" className='playhover' src={item.thumbnail} />
                                         <Card.Body>
 
                                             <Card.Title className='cardText'>{item.title}</Card.Title>
@@ -161,7 +161,7 @@ const Cards = () => {
                                 return (
                                     <div key={index}>
                                         <Card className='cardStyle'>
-                                            <Card.Img variant="top" className='playhover' src='https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png' />
+                                            <Card.Img variant="top" className='playhover' src={item.thumbnail} style= {{height: "100px", width: "100px"}} />
                                             <Card.Body>
         
                                                 <Card.Title className='cardText'>{item.title}</Card.Title>

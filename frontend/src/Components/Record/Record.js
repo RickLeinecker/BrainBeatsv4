@@ -80,7 +80,8 @@ function Record() {
 	const [backgroundColor, setBackgroundColor] =useState(initialBackground);
 	const [textColor, setTextColor] =useState(initialTextColor);
 	const [thumbnail, setThumbnail] = useState(user.thumbnail);
-
+	const [errorMsg, setErrorMsg] = useState('');
+	
 	//Youtube Link
 	const [youtubeLink, setYoutubeLink] = useState('')
 	//Posting States
@@ -95,15 +96,17 @@ function Record() {
 	const instrumentList = [parseInt(FP1), parseInt(FP2), parseInt(C3), parseInt(C4)];
 	const noteDuration = [parseInt(FP1Note), parseInt(FP2Note), parseInt(C3Note), parseInt(C4Note)];
 
-	const path = require('../Path')
-	const KEY=
-	[
-		"C", "C#", "D","D#", "E", "F","F#", "G", "G#", "A","A#","B"
-	];
-	const SCALE =
-	[
-		'Major', 'Minor'
-	]
+	// API call to BE to get updated user info to input fields
+	useEffect(() => {
+		sendAPI('get', `/users/getUserPostsByID?id=${user.id}`, null)
+			.then(function (res) {
+				setThumbnail(res.data.thumbnail);
+				console.log(user)
+			})
+			.catch(function (err) {
+				setErrorMsg(err.response.data.msg);
+			})
+	}, [])
 
 	const updateProfilePic = (file) => {
         var file = document.querySelector('input[type=file]')['files'][0];
@@ -115,6 +118,16 @@ function Record() {
         };
         reader.readAsDataURL(file);
     }
+
+	const path = require('../Path')
+	const KEY=
+	[
+		"C", "C#", "D","D#", "E", "F","F#", "G", "G#", "A","A#","B"
+	];
+	const SCALE =
+	[
+		'Major', 'Minor'
+	]
 
 	//get BPM from database
 	useEffect(()=>{
@@ -158,18 +171,17 @@ function Record() {
 	}
 
 	const postFile = () => {
-		const bodyData ={
-			"userID": user.id,
-  			"title": title,
-  			"bpm": BPM,
-			"instruments" : instrumentList,
-			"noteTypes" : noteDuration,
-			"midi": MIDIFile,
-  			"key": KEY[scale],
-			'token': jwt,
-		}
-		console.log(bodyData);
-
+		const bodyData = {
+		"userID": user.id,
+		"title": title,
+		"bpm": BPM,
+		"instruments" : instrumentList,
+		"noteTypes" : noteDuration,
+		"midi": MIDIFile,
+		"key": KEY[scale],
+		"thumbnail": thumbnail,
+		'token': jwt,
+	}
 		sendAPI('post', '/posts/createPost', bodyData)
 			.then((res) =>{
 				setMsg('Song posted')
@@ -697,7 +709,7 @@ function Record() {
 				<h2>Publish</h2>
 			</div>
 			<div>
-				<img src={Img} />
+				<img src={thumbnail} style = {{height: "400px", width: "400px"}} />
 				
 			</div>
 			<div> 
