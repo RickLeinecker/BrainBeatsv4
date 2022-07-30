@@ -9,7 +9,7 @@ import Forgot from './Pages/Forgot'
 import Profile from './Pages/Profile';
 import Search from './Pages/SearchPage'
 import Test from './Pages/Test';
-import Playlist from './Pages/Playlist'
+import {Playlist,Playlists} from './Pages/Playlist'
 import AboutUs from './Pages/AboutUs'
 
 import Record from './Pages/Recording';
@@ -31,7 +31,8 @@ function App() {
           <Route path='/Record' element={<Record />} />
           <Route path='/Profile' element={user ? <Profile /> : <Navigate to='/Login' />} />
           <Route path='/Search' element={<Search />} />
-          <Route path='/Playlist' element={<Playlist />} />
+          <Route path='/Playlist' element={<Playlists />} />
+          <Route path='/Playlist/:pid' element={<Playlist />} />
           <Route path='/Register' element={user ? <Home /> :<Register />} />
           <Route path='/Forgot' element={<Forgot />} />
           <Route path='/Test' element={<Test />} />

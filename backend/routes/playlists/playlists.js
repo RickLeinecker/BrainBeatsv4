@@ -7,7 +7,7 @@ const { user, post } = new PrismaClient();
 const { getJWT, verifyJWT } = require("../../utils/jwt");
 const { getUserExists, getPostExists, getPlaylistExists} = require("../../utils/database");
 const multer  = require('multer')
-const upload = multer()
+const upload = multer({limits: { fieldSize: 25 * 1024 * 1024 }})
 
 // Create a new playlist
 
@@ -132,13 +132,12 @@ router.get('/getPostsByPlaylistID', async (req, res) => {
             });
         } else {
             const posts = await prisma.PlaylistPost.findMany({
-                where: { playlistID: req.query.id }
+                where: { playlistID: req.query.id },
+                select: { post: true }
             });
 
             res.json(posts);
         }
-
-        res.json(playlist);
     } catch (err) {
         console.log(err);
         res.status(500).send({ msg: err });

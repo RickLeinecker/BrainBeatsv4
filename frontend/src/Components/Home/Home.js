@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Button, Container } from 'react-bootstrap';
-import { FaHeart, FaPlayCircle, FaRegHeart } from 'react-icons/fa';
+import { FaHeart, FaPlayCircle, FaRegHeart, FaTrash } from 'react-icons/fa';
 import MidiPlayer from 'react-midi-player';
 import './homepage.css';
 import Carousel from '../Carousel/Carousel';
@@ -29,48 +29,43 @@ const Cards = () => {
 
     useEffect(() => {
         //always run this api for homepage
+            getAllSong()
+        //only run this api if user is logged in
+        if(user){
+            getUserPostInfo()
+        }
+    }, [allPost, userPost])
+
+    const getAllSong = () => {
         sendAPI('get', '/posts/getAllPosts')
             .then((res) => {
                 setAllPost(res.data);
-                setBeTheFirst('');
             })
-        //only run this api if user is logged in
-        if(user){
-            const dataBody = {
-                'userID': user.id,
-            }
-            sendAPI('get', '/posts/getUserPostsByID', dataBody)
-                .then((res) => {
-                    setUserPost(res.data);
-                    setLog(res);
-                    setYourFirst('');
-                })
-                .catch((err) => {
-                    setLog(err);
-                })
-                
-            sendAPI('get', '/likes/getAllUserLikes', dataBody)
-                .then((res) => {
-                    setLiked(res.data);
-                })
-                
+    }
+    const getUserPostInfo = () => {
+        const dataBody = {
+            'userID': user.id,
         }
-        if(allPost.length == 0){
-            setBeTheFirst('Be the first to create music');
-        }
-        if(userPost.length == 0){
-            setYourFirst('Create your first piece');
-        }
-    }, [])
-
-
+        sendAPI('get', '/posts/getUserPostsByID', dataBody)
+            .then((res) => {
+                setUserPost(res.data);
+                setLog(res);
+            })
+            .catch((err) => {
+                setLog(err);
+            })
+            
+        sendAPI('get', '/likes/getAllUserLikes', dataBody)
+            .then((res) => {
+                setLiked(res.data);
+            })
+    }
     const onLike = useCallback((post) => {
         let bodyData = {
             userID: user.id,
             postID: post,
             token: jwt,
         }
-        console.log(jwt);
         sendAPI('post', '/likes/createUserLike', bodyData)
         .then((res) => {
             setLiked((l) => [... l,res.data])
@@ -95,16 +90,26 @@ const Cards = () => {
  
     },[])
 
+    const onRemovePost = useCallback((post) => {
+        console.log("HELLO")
+        let bodyData = {
+            id: post,
+            token: jwt,
+        }
+        sendAPI('delete', '/posts/deletePost', bodyData)
+        .then((res) => {
+            getAllSong()
+            getUserPostInfo()
+        })
+        .catch((err) => {
+            console.log(err.data)
+        })
+ 
+    },[])
+
     const endPlay = () => {
         setData('');
         setShowMedia(false);
-    }
-    const checkData = () => {
-        console.log(allPost);
-        console.log(user);
-    }
-    const handle = () => {
-        console.log(liked)
     }
     return (
         <>
@@ -126,7 +131,7 @@ const Cards = () => {
                                 <div key={index}>
                                     
                                     <Card className='cardStyle'>
-                                        <Card.Img variant="top" className='playhover' src='https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png' />
+                                        <Card.Img variant="top" className='playhover cardImg' src={item.thumbnail} />
                                         <Card.Body>
 
                                             <Card.Title className='cardText'>{item.title}</Card.Title>
@@ -141,7 +146,6 @@ const Cards = () => {
                                             <button className='cardHeart'>
                                                 {liked.filter((like) => like.postID === item.id).length ? <FaHeart onClick={()=>onRemove(item.id)}/> : <FaRegHeart onClick={() => onLike(item.id)}/>}
                                             </button>
-
                                         </Card.Body>
                                     </Card>
                                 </div>
@@ -161,7 +165,7 @@ const Cards = () => {
                                 return (
                                     <div key={index}>
                                         <Card className='cardStyle'>
-                                            <Card.Img variant="top" className='playhover' src='https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png' />
+                                            <Card.Img variant="top" className='playhover cardImg' src={item.thumbnail}/>
                                             <Card.Body>
         
                                                 <Card.Title className='cardText'>{item.title}</Card.Title>
@@ -170,11 +174,14 @@ const Cards = () => {
                                                     e.preventDefault();
                                                     //setData(item.data); //store this items midi string to Data
                                                     //setShowMedia(true); //reveal midi player
-                                                }}><FaPlayCircle size={90} /></button>
+                                                }}><FaPlayCircle size={90} />
+                                                </button>
                                                 <button className='cardHeart'>
                                                 {liked.filter((like) => like.postID === item.id).length ? <FaHeart onClick={()=>onRemove(item.id)}/> : <FaRegHeart onClick={() => onLike(item.id)}/>}
                                                 </button>
-        
+                                                <button className='cardTrash'>
+                                                    <FaTrash onClick={()=>onRemovePost(item.id)} className='cardTrash'/>
+                                                </button>        
                                             </Card.Body>
                                         </Card>
                                     </div>
