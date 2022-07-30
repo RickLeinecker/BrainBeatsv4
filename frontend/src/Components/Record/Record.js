@@ -5,6 +5,7 @@ import './record.css'
 import { FaAngleRight, FaAngleLeft, FaQuestion } from "react-icons/fa";
 import {Accordion, Button, OverlayTrigger, Tooltip} from 'react-bootstrap'
 import Img from '../Navbar/Logo.jpg'
+import { useNavigate } from 'react-router-dom';
 //import * as fs from 'fs/promises';
 // import {readFileSync, promises as fsPromises} from 'fs';
 // import * as fs from 'fs';
@@ -31,6 +32,7 @@ function Record() {
     //needed states
     const user = useRecoilValue(userModeState);
 	const jwt = useRecoilValue(userJWT);
+	const navigate = useNavigate();
 
 	const [stage, setStage] = useState(0);
 
@@ -186,6 +188,7 @@ function Record() {
 			.then((res) =>{
 				setMsg('Song posted')
 			})
+		navigate('/');
 	}
 	
 	  //Background Color Picker Function
@@ -660,7 +663,6 @@ function Record() {
 				</OverlayTrigger>
 			</div>
 			<h2>Record</h2>
-			<button onClick={() => console.log(MIDIFile)}>MIDI FILE</button>
 			<img src={Img} className="scriptless"/>
 			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} setMIDIFile={setMIDIFile}/>
 			<button className='arrowButtonMain' onClick={() => {setStage(1)}}>{<FaAngleLeft />} Script </button>

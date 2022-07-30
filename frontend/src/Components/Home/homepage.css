@@ -65,17 +65,17 @@
     background: none;
     border: 0px;
     color: rgb(239, 70, 70);
-    top:147px;
-    left: 175px
+    bottom: -10px;
+    right: 9px
 }
 
 .cardTrash{
-    position: absolute;
+    position: relative;
     background: none;
     border: 0px;
-    color: rgb(128, 128, 128);
-    top:147px;
-    left: -175px
+    left: 20px;
+    bottom: 32px
+
 }
 
 .errMsg{
@@ -107,3 +107,7 @@
     transition: .5s ease-in-out;
 }
   
+.cardImg {
+    width: 185px;
+    height: 185px;
+}
