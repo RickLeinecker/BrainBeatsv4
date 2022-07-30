@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Button, Container } from 'react-bootstrap';
-import { FaHeart, FaPlayCircle, FaRegHeart } from 'react-icons/fa';
+import { FaHeart, FaPlayCircle, FaRegHeart, FaTrash } from 'react-icons/fa';
 import MidiPlayer from 'react-midi-player';
 import './homepage.css';
 import Carousel from '../Carousel/Carousel';
@@ -26,6 +26,7 @@ const Cards = () => {
     const jwt = useRecoilValue(userJWT);
 
     const [liked, setLiked] = useState([]);
+    const [removedPost, setRemovedPost] = useState([]);
 
     useEffect(() => {
         //always run this api for homepage
@@ -53,7 +54,6 @@ const Cards = () => {
                 .then((res) => {
                     setLiked(res.data);
                 })
-                
         }
         if(allPost.length == 0){
             setBeTheFirst('Be the first to create music');
@@ -89,6 +89,21 @@ const Cards = () => {
         sendAPI('delete', '/likes/removeUserLike', bodyData)
         .then((res) => {
             setLiked((l) => l.filter((p) => p.postID !== post))})
+        .catch((err) => {
+            console.log(err.data)
+        })
+ 
+    },[])
+
+    const onRemovePost = useCallback((post) => {
+        let bodyData = {
+            userID: user.id,
+            postID: post,
+            token: jwt,
+        }
+        sendAPI('delete', '/posts/deletePost', bodyData)
+        .then((res) => {
+            setRemovedPost(res.data.post)})
         .catch((err) => {
             console.log(err.data)
         })
@@ -170,11 +185,14 @@ const Cards = () => {
                                                     e.preventDefault();
                                                     //setData(item.data); //store this items midi string to Data
                                                     //setShowMedia(true); //reveal midi player
-                                                }}><FaPlayCircle size={90} /></button>
+                                                }}><FaPlayCircle size={90} />
+                                                </button>
                                                 <button className='cardHeart'>
                                                 {liked.filter((like) => like.postID === item.id).length ? <FaHeart onClick={()=>onRemove(item.id)}/> : <FaRegHeart onClick={() => onLike(item.id)}/>}
                                                 </button>
-        
+                                                <button className='cardTrash'>
+                                                {<FaTrash onClick={()=>onRemovePost(item.id)}/>}
+                                                </button>        
                                             </Card.Body>
                                         </Card>
                                     </div>

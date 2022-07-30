@@ -71,6 +71,15 @@
     left: 175px
 }
 
+.cardTrash{
+    position: absolute;
+    background: none;
+    border: 0px;
+    color: rgb(128, 128, 128);
+    top:147px;
+    left: -175px
+}
+
 .errMsg{
     color:red;
     font-size: 40px;
