@@ -1,4 +1,63 @@
 import * as module from './GeneralHelperFunctions.js';
+import {getMilliecondsFromBPM, getIntFromNoteTypeString, getNoteLengthStringFromInt, instrumentEnums, getInstrumentNameFromInt} from './GeneralHelperFunctions.js';
+
+var BPM = 120;
+
+// The amount of time (in milliseconds) that each of the supported notes would take at the specified BPM.
+const timeForEachNoteARRAY =
+[
+    getMilliecondsFromBPM(BPM) / 4,
+    getMilliecondsFromBPM(BPM) / 2,
+    getMilliecondsFromBPM(BPM),
+    getMilliecondsFromBPM(BPM) * 2,
+    getMilliecondsFromBPM(BPM) * 4
+];
+
+//this rec is to stop the infinite loop from track.subscribe
+let rec;
+
+let letMeRecord = true;
+
+// Global variables
+const allData = [];
+let channels = 0;
+let trackMap = new Map();
+let contentHintToIndex = {};
+
+const MidiWriter = require('midi-writer-js');
+
+const FP1Note = 2, FP2Note = 2, C3Note = 1, C4Note = 1;
+const noteDuration = [parseInt(FP1Note), parseInt(FP2Note), parseInt(C3Note), parseInt(C4Note)];
+
+// The instrument that each channel will be "playing" SineWave as a default unless changed from GUI
+var FP1Instrument = instrumentEnums.Flute,
+    FP2Instrument = instrumentEnums.Oboe,
+    C3Instrument = instrumentEnums.Tuba,
+    C4Instrument = instrumentEnums.SineWave;
+
+var FP1Ready = 1,
+    FP2Ready = 1,
+    C3Ready = 1,
+    C4Ready = 1,
+    TempoCounterReady = 1;
+
+var FP1NoteType = getNoteLengthStringFromInt(noteDuration[0]),
+    FP2NoteType = getNoteLengthStringFromInt(noteDuration[1]),
+    C3NoteType = getNoteLengthStringFromInt(noteDuration[2]),
+    C4NoteType = getNoteLengthStringFromInt(noteDuration[3]);
+
+var FP1NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(FP1NoteType)],
+    FP2NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(FP2NoteType)],
+    C3NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C3NoteType)],
+    C4NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C4NoteType)];
+
+const DEFAULT_VOLUME = 0.1;
+var FP1Volume = DEFAULT_VOLUME,
+    FP2Volume = DEFAULT_VOLUME,
+    C3Volume = DEFAULT_VOLUME,
+    C4Volume = DEFAULT_VOLUME;
+
+var numNotes = 21;
 
 // The array of size numNotes that is used to house the cutoffs for each of the numNotes incremements. 
 // The value of MIN_MAX_AMPLITUDE_DIFFERENCE is divided by numNotes, and the result (let's call this X) is then used to 
@@ -10,21 +69,6 @@ import * as module from './GeneralHelperFunctions.js';
 // incrementArr[1] is 0.5, and incrementArr[2] is 1.0. The headset relays data equal to 0.75. Because 0.75 falls
 // between incrementArr[1] and [2], it will be assigned to note 1, the floor of the indexes it fell between.
 var incrementArr = new Array(numNotes);
-
-const instrumentEnums =
-{
-	SineWave: -3,
-	TriangleWave: -2,
-	SquareWave: -1,
-	Flute: 0,
-	Oboe: 1,
-	Clarinet: 2,
-	Bassoon: 3,
-	Trumpet: 4,
-	FrenchHorn: 5,
-	Trombone: 6,
-	Tuba: 7
-}
 
 // The highest and lowest possible values of the headset's data that we will actually use and parse into musical data.
 // Anything under the maximum and above the minimum will be sorted into respective notes, but anything above the maximum
@@ -72,20 +116,22 @@ const KEY_SIGNATURES_MINOR =
 ];
 const KEY_SIGNATURES = [KEY_SIGNATURES_MAJOR, KEY_SIGNATURES_MINOR]
 
+var keySignature = KEY_SIGNATURES[1][2];
+
 export async function musicGenerationDriverFunction(track, data, instrument, noteType, noteVolume)
 {
     InitIncrementArr();
 
     // This entire handleTrack section needs to run 4 times total, once for each channel, every tick.
-    if (channelCounter < 3)
-        channelCounter++;
-    else if (channelCounter >= 3) {
-        if (firstTickSkipped == 0)
-            firstTickSkipped = 1;
-        else
-            //waitForNextTick(quickNoteType);
-            channelCounter = 0;
-    }
+    // if (channelCounter < 3)
+    //     channelCounter++;
+    // else if (channelCounter >= 3) {
+    //     if (firstTickSkipped == 0)
+    //         firstTickSkipped = 1;
+    //     else
+    //         //waitForNextTick(quickNoteType);
+    //         channelCounter = 0;
+    // }
 
     var declaredNote = NoteDeclarationRaw(data, track.contentHint); // Get note increment
     var noteAndOctave = GetNoteWRTKey(declaredNote); // Get the actual note and its octave
@@ -102,26 +148,26 @@ export async function musicGenerationDriverFunction(track, data, instrument, not
 
     if (noteAndOctave.note != -1)
     {
-        if (tracky.contentHint.localeCompare("FP1") == 0)
+        if (track.contentHint.localeCompare("FP1") == 0)
             console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP1Instrument) + " playing " + FP1NoteType + " notes] " + data);
-        else if (tracky.contentHint.localeCompare("FP2") == 0)
+        else if (track.contentHint.localeCompare("FP2") == 0)
             console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP2Instrument) + " playing " + FP2NoteType + " notes] " + data);
-        else if (tracky.contentHint.localeCompare("C3") == 0)
+        else if (track.contentHint.localeCompare("C3") == 0)
             console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C3Instrument) + " playing " + C3NoteType + " notes] " + data);
-        else if (tracky.contentHint.localeCompare("C4") == 0)
+        else if (track.contentHint.localeCompare("C4") == 0)
             console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C4Instrument) + " playing " + C4NoteType + " notes] " + data);
 
         return {noteFrequency, noteVolume, instrument, noteType};
         //playMidiNote(noteFrequency, noteVolume, instrument, noteType);
     }				
 
-    if (tracky.contentHint.localeCompare("FP1") == 0)
+    if (track.contentHint.localeCompare("FP1") == 0)
         FP1Ready = 1;
-    else if (tracky.contentHint.localeCompare("FP2") == 0)
+    else if (track.contentHint.localeCompare("FP2") == 0)
         FP2Ready = 1;
-    else if (tracky.contentHint.localeCompare("C3") == 0)
+    else if (track.contentHint.localeCompare("C3") == 0)
         C3Ready = 1;
-    else if (tracky.contentHint.localeCompare("C4") == 0)
+    else if (track.contentHint.localeCompare("C4") == 0)
         C4Ready = 1;
 };
 

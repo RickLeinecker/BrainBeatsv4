@@ -136,27 +136,31 @@ const handleTrack = (track) => {
             // TODO: Comment what this does :)
             if (track.contentHint.localeCompare("FP1") == 0 && FP1Ready == 1 ) 
             {
-                console.log("1");
+                //console.log("1");
                 FP1Ready = 0;
                 setTimeout(() => { musicGenerationDriverFunction(track, data, FP1Instrument, FP1NoteType, FP1Volume) }, FP1NoteLengthMS)
+                setTimeout(FP1Ready = 1, FP1NoteLengthMS)
             }
             else if (track.contentHint.localeCompare("FP2") == 0 && FP2Ready == 1 ) 
             {
-                console.log("2");
+                //console.log("2");
                 FP2Ready = 0;
                 setTimeout(() => { musicGenerationDriverFunction(track, data, FP2Instrument, FP2NoteType, FP2Volume) }, FP2NoteLengthMS)
+                FP2Ready = 1;
             }
             else if (track.contentHint.localeCompare("C3") == 0 && C3Ready == 1 ) 
             {
-                console.log("3");
+                //console.log("3");
                 C3Ready = 0;
                 setTimeout(() => { musicGenerationDriverFunction(track, data, C3Instrument, C3NoteType, C3Volume) }, C3NoteLengthMS)
+                C3Ready = 1;
             }
             else if (track.contentHint.localeCompare("C4") == 0 && C4Ready == 1) 
             {
-                console.log("4");
+                //console.log("4");
                 C4Ready = 0;
                 setTimeout(() => { musicGenerationDriverFunction(track, data, C4Instrument, C4NoteType, C4Volume) }, C4NoteLengthMS)
+                C4Ready = 1;
             }
             // If you want to support more than 4 channels, here is where you'd add more. As you can see above, there's an if/else block
             // for each channel that is currently supported. All you need to do to make more is copy what you see above, but set the
