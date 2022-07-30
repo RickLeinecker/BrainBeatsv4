@@ -168,7 +168,7 @@ router.get('/getUserImages', async (req, res) => {
 // Update user info 
 router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
     try{
-        const { id, firstName, lastName, dob, email, username, bio, token, profilePicture } = req.body;
+        const { id, firstName, lastName, password, dob, email, username, bio, token, profilePicture } = req.body;
         
         const decoded = verifyJWT(token);
 
@@ -186,6 +186,8 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
                 msg: "User ID not found"
             });
         } else {
+            encryptedPassword = await bcrypt.hash(password, 10);
+
             const updateUser = await prisma.User.update({
                 where: { id },
                 data: {
@@ -195,7 +197,8 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
                     dob: new Date(dob).toISOString(),
                     username: username,
                     bio: bio,
-                    profilePicture: profilePicture
+                    profilePicture: profilePicture,
+                    password: encryptedPassword
                 }
             });
             res.status(200).send({msg: "User was successfully updated"});
@@ -230,8 +233,6 @@ router.delete('/deleteUser', async (req, res) => {
 // Do forgot password
 router.post('/forgotPassword', async (req, res) => {
     try {
-        // TODO : Do normal JWT management
-
         const { email } = req.body;
 
         const userExists = await getUserExists(email, "email");
