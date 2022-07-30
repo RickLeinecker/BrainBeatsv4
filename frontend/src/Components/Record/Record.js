@@ -5,12 +5,9 @@ import './record.css'
 import { FaAngleRight, FaAngleLeft, FaQuestion } from "react-icons/fa";
 import {Accordion, Button, OverlayTrigger, Tooltip} from 'react-bootstrap'
 import Img from '../Navbar/Logo.jpg'
-<<<<<<< HEAD
 import {playMidiFile} from './Playback.js';
 
-=======
 import { useNavigate } from 'react-router-dom';
->>>>>>> dev
 //import * as fs from 'fs/promises';
 // import {readFileSync, promises as fsPromises} from 'fs';
 // import * as fs from 'fs';
@@ -674,13 +671,10 @@ function Record() {
 				</OverlayTrigger>
 			</div>
 			<h2>Record</h2>
-<<<<<<< HEAD
 			<button onClick={() => console.log(MIDIFile)}>MIDI FILE</button>
 
 			<button onClick={() => console.log(playMidiFile(midiData, instrumentArr, noteTypeArr, BPM))}>HOPEFULLY THIS PLAYS SOMETHING!</button>
 
-=======
->>>>>>> dev
 			<img src={Img} className="scriptless"/>
 			{/* <MidiElement /> */}
 			<button className='arrowButtonMain' onClick={() => {setStage(1)}}>{<FaAngleLeft />} Script </button>

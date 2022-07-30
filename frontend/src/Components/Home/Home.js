@@ -9,7 +9,7 @@ import { useRecoilValue } from 'recoil';
 import {userJWT, userModeState} from '../context/GlobalState'
 import sendAPI from '../sendAPI';
 
-import {playMidiFile} from '../Record/Record';
+import {playMidiFile} from '../Record/Playback.js'
 
 const Cards = () => {
     //post array
@@ -107,9 +107,12 @@ const Cards = () => {
  
     },[])
 
-    const endPlay = () => {
-        setData('');
-        setShowMedia(false);
+    const playSong =(midi, instruments, noteTypes, bpm) => {
+        console.log(midi)
+        console.log(instruments)
+        console.log(noteTypes)
+        console.log(bpm)
+        playMidiFile(midi, instruments, noteTypes, bpm);
     }
     return (
         <>
@@ -138,9 +141,7 @@ const Cards = () => {
                                             <Card.Subtitle className='cardText'>{item.user.username}</Card.Subtitle>
                                             <button className='cardPlayButton' onClick={(e) => {
                                                 e.preventDefault();
-                                                console.log("INSTRUMENTS"+item.instruments)
-                                                console.log("NOTE DURATION"+ item.noteTypes)
-                                                console.log("MIDI: " + item.midi)
+                                                playSong(item.midi, item.instruments, item.noteTypes, item.bpm)
                                                 
                                             }}><FaPlayCircle size={90} /></button>
                                             <button className='cardHeart'>
@@ -190,13 +191,6 @@ const Cards = () => {
                         </div>
                     </Container>
                 </> : <></>}
-            </div>
-            <div className='row' style={{ height: '50px' }}>
-                <div className={`${showMedia ? 'mediaPlayerAct' : 'mediaPlayer'}`}>
-                    <div>
-                        <MidiPlayer autoplay onEnd={endPlay} />
-                    </div>
-                </div>
             </div>
         </div>
 
