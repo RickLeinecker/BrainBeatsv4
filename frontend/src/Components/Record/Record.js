@@ -29,14 +29,16 @@ import sendAPI from '../sendAPI';
 import useButtons from './midiUtil';
 // import { fsync } from 'fs';
 
-var fuckinBetterBeBro = "data:audio/midi;base64,TVRoZAAAAAYAAQACAGBNVHJrAAAAEwD/UQMHRB4A/1gEBAIYCAD/LwBNVHJrAAAAkQD/AwlTYW1wbGVyIDEAkDxkMIA8QACQPmQwgD5AAJBAZDCAQEAAkEFkMIBBQACQQ2QwgENAAJBFZDCARUAAkEdkMIBHQACQSGQwgEhAAJBIZDCASEAAkEdkMIBHQACQRWQwgEVAAJBDZDCAQ0AAkEFkMIBBQACQQGQwgEBAAJA+ZDCAPkAAkDxkMIA8QAD/LwA=";
+// This will all be fed in from the DB
+var midiData = "data:audio/midi;base64,TVRoZAAAAAYAAQACAGBNVHJrAAAAEwD/UQMHRB4A/1gEBAIYCAD/LwBNVHJrAAAAkQD/AwlTYW1wbGVyIDEAkDxkMIA8QACQPmQwgD5AAJBAZDCAQEAAkEFkMIBBQACQQ2QwgENAAJBFZDCARUAAkEdkMIBHQACQSGQwgEhAAJBIZDCASEAAkEdkMIBHQACQRWQwgEVAAJBDZDCAQ0AAkEFkMIBBQACQQGQwgEBAAJA+ZDCAPkAAkDxkMIA8QAD/LwA=";
+var instrumentArr = [-1, 0, 1, 2];
+var noteTypeArr = [1, 2, 3, 4];
 
 function Record() {
     //needed states
     const user = useRecoilValue(userModeState);
 	const jwt = useRecoilValue(userJWT);
 
-	
 	const [stage, setStage] = useState(0);
 
 	//Music Generation States
@@ -54,12 +56,8 @@ function Record() {
 	const [BPMArray, setBPMArray] = useState([]);
 	const [BPM, setBPM] = useState(120);
 	const [MIDIFile, setMIDIFile] = useState("");
-
-
 	const [currentSlide, setCurrentSlide] = useState(0);
 	const [autoplay, setAutoplay] = useState(true);
-
-	
 
 	//Setting Up Script
 	//Text Cards
@@ -660,7 +658,7 @@ function Record() {
 			<h2>Record</h2>
 			<button onClick={() => console.log(MIDIFile)}>MIDI FILE</button>
 
-			<button onClick={() => console.log(playMidiFile(fuckinBetterBeBro))}>HOPEFULLY THIS PLAYS SOMETHING!</button>
+			<button onClick={() => console.log(playMidiFile(midiData, instrumentArr, noteTypeArr, BPM))}>HOPEFULLY THIS PLAYS SOMETHING!</button>
 
 			<img src={Img} className="scriptless"/>
 			{/* <MidiElement /> */}
