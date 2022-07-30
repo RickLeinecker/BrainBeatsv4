@@ -120,8 +120,10 @@
 .defaultRadio {
   margin: 2rem;
 }
-.scriptDisplayCard {
-  margin-left: 13%;
+.alignSlide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .scriptless{

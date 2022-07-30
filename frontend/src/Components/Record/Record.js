@@ -689,7 +689,11 @@ function Record() {
 					<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
 				</OverlayTrigger>
 			</div>
-			<ValidScript slides={cards} setCurrentSlide={setCurrentSlide} autoplay={autoplay} currentSlide={currentSlide}/>
+			<div><h2>Record</h2></div>
+			<div className='alignSlide'>
+				
+				<ValidScript slides={cards} setCurrentSlide={setCurrentSlide} autoplay={autoplay} currentSlide={currentSlide}/>
+			</div>
 			{/* <MidiElement /> */}
 			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
 			<button className='arrowButtonMain' onClick={goNext}>Publish {<FaAngleRight />}</button>
@@ -704,6 +708,7 @@ function Record() {
 				<button style={{display: 'flex', border: 'none', background: 'none', justifyContent: 'left'}}><FaQuestion /></button>
 				</OverlayTrigger>
 			</div>
+			<h2>Record</h2>
 			<VidLink link={youtubeLink} />
 			{/* <MidiElement /> */}
 			<button className='arrowButtonMain' onClick={goBack}>{<FaAngleLeft />} Script </button>
@@ -762,7 +767,6 @@ function VidLink({link}) {
     let id = tempID[0];
     return (
         <>
-			<h2>Record</h2>
             <iframe
                 src={`https://www.youtube.com/embed/${id}`}
                 frameBorder="0"
@@ -783,7 +787,7 @@ function ValidScript({slides, setCurrentSlide, currentSlide, autoplay}) {
 	console.log(autoplay)
     return (
         <>
-            <h2>Record</h2>
+            
             <Carousel className='scriptDisplayCard' autoPlay width={700} showThumbs={false} showIndicators={false}
                 infiniteLoop={true} dynamicHeight={true} interval={slides[currentSlide].speed} onChange={changeCarosel}>
                 {slides.map(

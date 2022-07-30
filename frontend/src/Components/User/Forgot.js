@@ -1,57 +1,77 @@
 import React, { Component, useState } from "react";
-import './Login.css'
+import sendAPI from "../sendAPI.js";
+import "./Login.css";
 
 const Forgot = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [stage, setStage] = useState(1);
-    const [confirmPassword, setconfirmPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [errMsg, setErrMsg] = useState("");
+  const [showErr, setShowErr] = useState(false);
+  const [serverMsg, setServerMsg] = useState("");
 
-    const onSubmit = (event) => {
-        alert(email);
-        setStage(2);
+  const sendEmail = (e) => {
+    e.preventDefault();
+    if (email === "") {
+      setErrMsg("");
+      setShowErr(false);
+    } else {
+      const dataBody = {
+        email: email,
+      };
+      sendAPI("post", "/users/forgotPassword", dataBody)
+        .then((res) => {
+          if (res.data === "recovery email send") {
+            console.log("recovery sent");
+            setShowErr(false);
+            setServerMsg(res.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err.response.data.msg);
+          if (err.response.data.msg === "Email does not exist") {
+            setShowErr(true);
+            setErrMsg(err.response.data.msg);
+          }
+        });
     }
-    const onSubmit2 = (event) =>{
-        alert(password + " " + confirmPassword) 
-        setStage(1);
-    }
-    
-    //Validates email field
-    const validateEmail = (event) => {
-        const regexp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        if(regexp.test(email))
-        {
-            onSubmit();
-        }
-        else
-        {
-            alert("FALSE EMAIL");
-        }
-    }
+  };
 
-    return (
-        <div class="box">
-            <div class="form-box">
-                {stage == 1 && (
-                    <div className="">
-                        <form>
-                            <h3>Forgot Account</h3>
-                            <div className="form-group">
-                                <label>Email address</label>
-                                <input
-                                    type="email"
-                                    className="form-control"
-                                    placeholder="Enter email"
-                                    value={email}
-                                    onChange={(event) => setEmail(event.target.value)}
-                                />
-                            </div>
-                            <button type="submit" className="btn btn-primary btn-block" onClick={validateEmail}>Submit</button>
-                        </form>
-                    </div>
-                )}
+  return (
+    <div className="box">
+      <div className="form-box">
+        <div className="">
+          <form>
+            <h3>Forgot Account</h3>
+            <div className="form-group">
+              <label>Email address</label>
+              <input
+                type="email"
+                className="form-control"
+                placeholder="Enter email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </div>
+            {showErr && (
+              <div>
+                <p>{errMsg}</p>
+              </div>
+            )}
+            {serverMsg === "recovery email sent" && (
+              <div>
+                <h3>Password reset successfully sent</h3>
+              </div>
+            )}
+            <button
+              type="submit"
+              className="btn btn-primary btn-block"
+              onClick={sendEmail}
+            >
+              Submit
+            </button>
+          </form>
+        </div>
 
-                {stage == 2 && (
+        {/* {stage == 2 && (
                     <div className="">
                         <form>
                             <h3>New Password</h3>
@@ -82,10 +102,10 @@ const Forgot = () => {
                         </form>
                     </div>
 
-                )}
-            </div>
-        </div>
-    )
-}
+                )} */}
+      </div>
+    </div>
+  );
+};
 
 export default Forgot;
