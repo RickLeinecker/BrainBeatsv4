@@ -9,11 +9,8 @@ const { getJWT, verifyJWT } = require("../../utils/jwt");
 const { getUserExists } = require("../../utils/database");
 const multer  = require('multer')
 const upload = multer({limits: { fieldSize: 25 * 1024 * 1024 }})
-<<<<<<< Updated upstream
-=======
 const fs = require('fs');
-const cryupto = require('crypto');
->>>>>>> Stashed changes
+const crypto = require('crypto');
 
 // Create a new user
 router.post('/createUser', async (req, res) => {
