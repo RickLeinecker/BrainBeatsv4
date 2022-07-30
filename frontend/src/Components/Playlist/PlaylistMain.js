@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Card, Container} from "react-bootstrap";
 import "./Playlist.css";
-
 import { useRecoilValue } from "recoil";
-
+import {useNavigate} from 'react-router-dom'
 import { userJWT, userModeState } from "../context/GlobalState";
 import sendAPI from "../sendAPI";
 
@@ -13,6 +12,7 @@ const PlaylistBody = () => {
 
   const [noPlaylist, setNoPlaylist] = useState('');
   const [playlist, setPlaylist] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() =>{
 
@@ -28,7 +28,7 @@ const PlaylistBody = () => {
 
   return (
     <>
-      <div className="playlistBody">
+      <div className="playlistMain">
         <div className="Header">
           <p className="headerText">Your Playlists</p>
           <hr />
@@ -38,9 +38,13 @@ const PlaylistBody = () => {
             <div className="displayBodyCard">
               <p>{noPlaylist}</p>
               {playlist.map((item, index) => {
+
+                const onClick = () => {
+                    navigate("/Playlist/"+item.id)
+                }
+
                 return (
-                  <div key={index}>
-                    <Card className="cardStyle">
+                    <Card className="cardStyle" key={index} onClick={onClick}>
                       <Card.Img
                         variant="top"
                         className="playhover"
@@ -52,7 +56,6 @@ const PlaylistBody = () => {
                         </Card.Title>
                       </Card.Body>
                     </Card>
-                  </div>
                 );
               })}
             </div>

@@ -1,15 +1,32 @@
-.playlistBody {
+.playlistMain {
     position: relative;
     background: #fff;
     height: 100vh;
     width: 70vw;
     top: 0vh;
     left: 15vw;
-    padding: 40px 40px 0px 40px;
     overflow: hidden;
     overflow-y: scroll;
 }
 
+.playlistHeader{
+    display: flex;
+    height: 30vh;
+    width: 100%;
+    align-items: center;
+    background: rgb(0,47,119);
+    background: linear-gradient(324deg, rgba(0,47,119,1) 0%, rgba(0,183,255,1) 100%);
+}
+.playlistTitle {
+    position: relative;
+    right: 100px;
+    bottom: 70px;
+    font-size: 20px;
+    background: black;
+    color: white;
+    padding: 5px;
+    opacity: 80%;
+}
 .headerText {
     text-align: left;
     font-size: 25px;
@@ -18,4 +35,47 @@
 .displayBodyCard{
     display: flex;
     flex-wrap: wrap;
+}
+
+.playlistSinglePic{
+    width: 200px;
+    height: 200px;
+    float: left;
+    
+}
+.thumbnailInput {
+    display: none;
+  }
+  .editButton {
+    position: relative;
+    border: 1px solid black;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    margin-top: 20px;
+    background: white;
+    left:7px;
+    bottom: 20px;
+  }
+
+.postListFromPlaylist{
+    display: flex;
+    margin: 5px;
+}
+
+.smallPostThumbnail {
+    width: 100px;
+    height: 100px;
+}
+
+.smallPostText{
+    font-size: 20px;
+    text-align: left;
+    width: 75vw;
+}
+.playlistPostButton {
+    background: none;
+    border: none;
+    width: 100px;
+    height: 100px;
 }

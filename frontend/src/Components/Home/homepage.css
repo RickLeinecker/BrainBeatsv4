@@ -6,7 +6,7 @@
 .mainHomeBody {
     position: relative;
     background: #fff;
-    height: 108vh;
+    height: 111vh;
     width: 70vw;
     left: 15vw;
 }
@@ -16,7 +16,6 @@
     background: #fff;
     height: 100vh;
     width: 70vw;
-    top: -22px;
     left: 15vw;
 }
 
