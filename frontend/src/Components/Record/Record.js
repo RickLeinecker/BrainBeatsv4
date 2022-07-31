@@ -952,25 +952,64 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 
 					// These asynchronously call the driver function for music generation, allowing the program at-large to continue running while handling multiple notes at once.
 					// To add more tracks, you'd simply copy what's below but change the variable names (after declaring them, of course) and string comparisons to match your sensor names.
+					// You should be able to swap out the generation algorithm as you please, as long as your algorithm function(s) ultimately return something in the form of:
+					// 1 object with 4 parameters:
+					//     - noteFrequency: a float, with a value (hopefully) between 20 and 20,000
+					//     - noteVolume: a float, between 0 and 1. You could probably go higher but we didn't try to.
+					//     - instrument: an int that corresponds to the chosen instrument (see instrumentEnums in Constants.js)
+					//     - noteType: a string that says the note type. v3 supports "sixteenth" "eighth" "quarter" "half" and "whole", nothing else.
+					// If your driver function returns an object that abides by all of the above standards, it should be plug-and-play!
 					if (track.contentHint.localeCompare("FP1") == 0 && FP1Ready == true) 
 					{
-						FP1Ready = false;
-						setTimeout(() => { mainDriverFunction(track, data, FP1Instrument, FP1NoteType, FP1Volume) }, FP1NoteLengthMS)
+						FP1Ready = false; // Stops the program from generating anything for FP1
+						setTimeout(() => 
+						{ 
+							let output = mainDriverFunction(track, data, FP1Instrument, FP1NoteType, FP1Volume); // <--------- This is where you'd swap out the algorithm (mainDriverFunction)
+							output.then(value => {
+								if (value !== -1)
+									playMidiNote(value.noteFrequency, value.noteVolume, value.instrument, value.noteType);
+							})
+							FP1Ready = true; // Allows the program to start generating notes for FP1 again
+						}, FP1NoteLengthMS) 
 					}
 					else if (track.contentHint.localeCompare("FP2") == 0 && FP2Ready == true) 
 					{
-						FP2Ready = false;
-						setTimeout(() => { mainDriverFunction(track, data, FP2Instrument, FP2NoteType, FP2Volume) }, FP2NoteLengthMS)
+						FP2Ready = false; // Stops the program from generating anything for FP2
+						setTimeout(() => 
+						{ 
+							let output = mainDriverFunction(track, data, FP2Instrument, FP2NoteType, FP2Volume);
+							output.then(value => {
+								if (value !== -1)
+									playMidiNote(value.noteFrequency, value.noteVolume, value.instrument, value.noteType);
+							})
+							FP2Ready = true; // Allows the program to start generating notes for FP2 again
+						}, FP2NoteLengthMS)
 					}
 					else if (track.contentHint.localeCompare("C3") == 0 && C3Ready == true) 
 					{
-						C3Ready = false;
-						setTimeout(() => { mainDriverFunction(track, data, C3Instrument, C3NoteType, C3Volume) }, C3NoteLengthMS)
+						C3Ready = false; // Stops the program from generating anything for C3
+						setTimeout(() => 
+						{ 
+							let output = mainDriverFunction(track, data, C3Instrument, C3NoteType, C3Volume);
+							output.then(value => {
+								if (value !== -1)
+									playMidiNote(value.noteFrequency, value.noteVolume, value.instrument, value.noteType);
+							})
+							C3Ready = true; // Allows the program to start generating notes for C3 again
+						}, C3NoteLengthMS)
 					}
 					else if (track.contentHint.localeCompare("C4") == 0 && C4Ready == true) 
 					{
-						C4Ready = false;
-						setTimeout(() => { mainDriverFunction(track, data, C4Instrument, C4NoteType, C4Volume) }, C4NoteLengthMS)
+						C4Ready = false; // Stops the program from generating anything for C4
+						setTimeout(() => 
+						{ 
+							let output = mainDriverFunction(track, data, C4Instrument, C4NoteType, C4Volume);
+							output.then(value => {
+								if (value !== -1)
+									playMidiNote(value.noteFrequency, value.noteVolume, value.instrument, value.noteType);
+							})
+							C4Ready = true; // Allows the program to start generating notes for C4 again
+						}, C4NoteLengthMS)
 					}
 				}
 			});
@@ -983,29 +1022,26 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			var noteAndOctave = GetNoteWRTKey(declaredNote); // Get the actual note and its octave
 			var floorOctave = GetFloorOctave(numNotes); // Get the lowest octave that will be used in the song
 
-			let noteOctaveString; // Combination string of note and octave (ex: 'C#5', 'F4')
-			let noteFrequency;
+			var noteOctaveString; // Combination string of note and octave (ex: 'C#5', 'F4')
+			var noteFrequency;
 
-			if (noteAndOctave.note != -1) // If the generated note is not invalid
+			if (noteAndOctave.note != -1) // If the generated note is not a rest
 			{
 				noteOctaveString = noteAndOctave.note + (noteAndOctave.octave + floorOctave);
 				noteFrequency = getFrequencyFromNoteOctaveString(noteOctaveString);
 			}
 
-			if (noteAndOctave.note != -1) // If the generated note is not invalid
+			if (noteAndOctave.note != -1  && showMusicRelatedConsoleOutput) // If the generated note is not a rest
 			{
 				// This if/else stack is just for console output, nothing important happens here.
-				if (track.contentHint.localeCompare("FP1") == 0 && showMusicRelatedConsoleOutput)
+				if (track.contentHint.localeCompare("FP1") == 0)
 					console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP1Instrument) + " playing " + noteType + " notes] " + data);
-				else if (track.contentHint.localeCompare("FP2") == 0 && showMusicRelatedConsoleOutput)
+				else if (track.contentHint.localeCompare("FP2") == 0)
 					console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP2Instrument) + " playing " + noteType + " notes] " + data);
-				else if (track.contentHint.localeCompare("C3") == 0 && showMusicRelatedConsoleOutput)
+				else if (track.contentHint.localeCompare("C3") == 0)
 					console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C3Instrument) + " playing " + noteType + " notes] " + data);
-				else if (track.contentHint.localeCompare("C4") == 0 && showMusicRelatedConsoleOutput)
+				else if (track.contentHint.localeCompare("C4") == 0)
 					console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C4Instrument) + " playing " + noteType + " notes] " + data);
-				
-				// This is what plays audio! See Playback.js for more.
-				playMidiNote(noteFrequency, noteVolume, instrument, noteType);
 			}				
 
 			// This adds the current note to the MIDI stream
@@ -1018,18 +1054,9 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			else if (track.contentHint.localeCompare("C4") == 0)
 				addNoteToMIDITrack(track, noteAndOctave, noteOctaveString, noteType)
 
-			// !!! IMPORTANT !!!
-			// Regardless of how you make your own music generation algorithm, you need to have this happen at the end of it. FP1Ready, FP2Ready, etc are used to
-			// tell the program whether or not to start generating another note when headset data is received. They are set to false when mainDriverFunction() is
-			// called, and need to be set back to true at the end of each note generation or notes will stop generating altogether.
-			if (track.contentHint.localeCompare("FP1") == 0)
-				FP1Ready = true;
-			else if (track.contentHint.localeCompare("FP2") == 0)
-				FP2Ready = true;
-			else if (track.contentHint.localeCompare("C3") == 0)
-				C3Ready = true;
-			else if (track.contentHint.localeCompare("C4") == 0)
-				C4Ready = true;
+			if (noteAndOctave.note != -1) // If the generated note is not a rest, return all the generated data
+				return {noteFrequency, noteVolume, instrument, noteType};
+			else return -1; // If the note is a rest (or something went wrong), return -1.
 		};
 
 		// Set button functionality
