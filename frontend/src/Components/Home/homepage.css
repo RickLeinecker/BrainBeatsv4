@@ -44,10 +44,10 @@
 .playhover {
     position: 'absolute';
 }
-.cardPlayButton{
+.homePlayButton{
     position: absolute;
     background: none;
-    color: #fff;
+    color: red;
     border: 0;
     top: 20px;
     left: 50px;

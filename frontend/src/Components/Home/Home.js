@@ -139,7 +139,7 @@ const Cards = () => {
 
                                             <Card.Title className='cardText'>{item.title}</Card.Title>
                                             <Card.Subtitle className='cardText'>{item.user.username}</Card.Subtitle>
-                                            <button className='cardPlayButton' onClick={(e) => {
+                                            <button className='homePlayButton' onClick={(e) => {
                                                 e.preventDefault();
                                                 playSong(item.midi, item.instruments, item.noteTypes, item.bpm)
                                                 
@@ -171,7 +171,7 @@ const Cards = () => {
         
                                                 <Card.Title className='cardText'>{item.title}</Card.Title>
                                                 <Card.Subtitle className='cardText'>{item.user.username}</Card.Subtitle>
-                                                <button className='cardPlayButton' onClick={(e) => {
+                                                <button className='homePlayButton' onClick={(e) => {
                                                     e.preventDefault();
                                                     //setData(item.data); //store this items midi string to Data
                                                     //setShowMedia(true); //reveal midi player

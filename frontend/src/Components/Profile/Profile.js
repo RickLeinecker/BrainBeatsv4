@@ -13,7 +13,6 @@ const Profile = () => {
     const [username, setUsername] = useState(user.username);
     const [firstName, setFirstName] = useState(user.firstName);
     const [lastName, setLastName] = useState(user.lastName);
-    const [dob, setDob] = useState(user.dob);
     const [stage, setStage] = useState(0);
     const [bio, setBio] = useState(user.bio);
     const [profilePicture, setProfilePicture] = useState(user.profilePicture);
@@ -25,12 +24,10 @@ const Profile = () => {
             .then(function (res) {
                 setFirstName(res.data.firstName);
                 setLastName(res.data.lastName);
-                setDob(res.data.dob);
                 setEmail(res.data.email);
                 setUsername(res.data.username);
                 setBio(res.data.bio);
                 setProfilePicture(res.data.profilePicture);
-                console.log(user)
 
             })
             .catch(function (err) {
@@ -68,20 +65,22 @@ const Profile = () => {
 
         const path = require('../Path');
 
-        const newUser = new FormData();
-        newUser.append('id', user.id);
-        newUser.append('firstName', firstName);
-        newUser.append('lastName', lastName);
-        newUser.append('dob', dob);
-        newUser.append('email', email);
-        newUser.append('username', username);
-        newUser.append('bio', bio);
-        newUser.append('profilePicture', profilePicture);
-        newUser.append('token', jwt);
+        const newUser = {
+            'id': user.id,
+            'firstName': firstName,
+            'lastName': lastName,
+            'email': email,
+            'username': username,
+            'bio': bio,
+            'profilePicture': profilePicture,
+            'token': jwt
+        };
+        
 
         // for (const value of newUser.values()) {
         //     console.log(value);
         //   }
+        console.log(newUser);
 
         sendAPI('put', '/users/updateUser', newUser)
             .then(function (res) {
@@ -94,22 +93,6 @@ const Profile = () => {
         console.log(newUser);
     }
 
-    let editProfile = false;
-
-    const editTrue = () => {
-        editProfile = true;
-    }
-    const handle = (e) => {
-        e.preventDefault();
-        console.log(user);
-        console.log(firstName)
-        console.log(lastName)
-        console.log(dob)
-        console.log(email)
-        console.log(username)
-        console.log(bio)
-        console.log(profilePicture)
-    }
 
     //Validates email field
     const validateEmail = (event) => {
@@ -138,9 +121,12 @@ const Profile = () => {
                                     </div>
                                 </div>
                                 <div className="px-1 col-md-3">
-                                    <div className="form-group">
-                                        <label>DOB</label>
-                                        <input type="date" className="form-control" onChange={(e) => setDob(e.target.value)} />
+                                <div className="form-group">
+                                    <label>Profile Picture</label>
+                                    <label for="file-upload" className="custom-file-upload" style={{position: 'relative', bottom: '18px', left: '5px'}}>
+                                        Upload Image (optional)
+                                    </label>
+                                    <input id="file-upload" onChange={(event) => updateProfilePic(event.target.files[0])} type="file"/>
                                     </div>
                                 </div>
                                 <div className="pl-1 col-md-6">
@@ -174,12 +160,7 @@ const Profile = () => {
                             </div>
                             <div className='row'>
                                 <div className="col-md-6">
-                                    <div className="form-group">
-                                    <label for="file-upload" className="custom-file-upload">
-                                        Upload Image (optional)
-                                    </label>
-                                    <input id="file-upload" onChange={(event) => updateProfilePic(event.target.files[0])} type="file"/>
-                                    </div>
+                                    
                                 </div>
                             </div>
                             <div className="cardButton">
@@ -195,7 +176,7 @@ const Profile = () => {
                             <p>{user ? user.firstName + " " + user.lastName : "First Name Last Name"}</p>
                         </div>
                         <div className='userBody'>
-                            <p>{user.bio ? user.bio : 'Please fill in your bio'}</p>
+                            <p>{bio ? bio : 'Please fill in your bio'}</p>
                         </div>
                     </div>
 
