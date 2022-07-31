@@ -168,7 +168,7 @@ router.get('/getUserImages', async (req, res) => {
 // Update user info 
 router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
     try{
-        const { id, firstName, lastName, password, dob, email, username, bio, token, profilePicture } = req.body;
+        const { id, firstName, lastName, password, email, username, bio, token, profilePicture } = req.body;
         
         const decoded = verifyJWT(token);
 
