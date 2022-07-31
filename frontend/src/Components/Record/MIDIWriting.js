@@ -1,3 +1,5 @@
+// This file houses all functions and variables relating to writing and downloading MIDI data. Most functions here are called somewhere in Record.js.
+
 import {
 	getNoteLengthStringFromInt,
 	getInstrumentNameFromInt,
@@ -91,6 +93,7 @@ export function generateMIDIFileFromURI(uri)
     downloadURI(uri);
 }
 
+// This function takes the notes that have been added to each track (trackFP1, trackFP2, etc) and turns them into a combined URI which is actually useful!
 export function generateMIDIURI()
 {
     var write = new MidiWriter.Writer([trackFP1, trackFP2, trackC3, trackC4]);

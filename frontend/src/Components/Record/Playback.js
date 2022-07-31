@@ -1,3 +1,6 @@
+// This file houses all necessary data/functions/variables to play back individual MIDI notes [using playMidiNote()] or entire MIDI files [using playMidiFile()]
+// Special thanks to Dr. Leinecker and Dr. Ayers, this file houses a lot of data and functionality from their "microtonality" project, found at microtonality.net.
+
 import MidiPlayer from 'midi-player-js';
 import * as Constants from './Constants.js'
 import {
@@ -87,8 +90,6 @@ function killOldestAudioContextIfNecessary() {
     }
 }
 
-// ------------------------------------------------------------------------------ FUNCTIONS FROM MICROTONALITY.NET ------------------------------------------------------------------------------
-
 // Places all instrument frequency/overtone data into one massive array
 function setupInstrumentList() {
     instrList = [];
@@ -103,6 +104,11 @@ function setupInstrumentList() {
 }
 
 // The function that plays audio!
+// Frequency is the raw frequency of the note you want to play, in hz. [float]
+//     - See getFrequencyFromNoteOctaveString function in HelperFunctions.js for help with converting.
+// Amplitude is volume control [float]
+// SoundType is the instrument being used to play the note [int]
+// NoteLength is whether the note is sixteenth, eighth, quarter, half, or whole [string]
 export function playMidiNote(frequency, amplitude, soundType, noteLength) {
     killOldestAudioContextIfNecessary();
 
@@ -188,7 +194,7 @@ function getOvertoneFrequencies(instrumentIndex, frequency) {
     return retList;
 }
 
-// ------------------------------------------------------------------------------ INSTRUMENT-SPECIFIC FUNCTIONS AND DATA FROM MICROTONALITY.NET ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ INSTRUMENT-SPECIFIC FUNCTIONS AND DATA ------------------------------------------------------------------------------
 
 
 // Sine wave
@@ -363,9 +369,20 @@ function instrumentWave(numSamples, frequency, ctx, soundType) {
 	return buffer;
 }
 
+// These massive arrays look daunting, but fret not; they are arrays that house the fundamental frequencies as the first entry in 
+// each row (so for flute, 261.626, then 277.183, etc), followed by multiple overtone frequency multipliers, for each note. 
+// Each row (flute_note0, flute_note1, etc) is a different note, and all get consolidated into one big array that is simply named after the 
+// instrument it is for (ex: "flute", or "oboe", see below).
+// These are used in instrumentWave(), the function that plays all notes for "real" instruments (not the sine, square, and triangle waves).
+// If you do not understand fundamental and overtone frequencies (it's music theory, kinda?) and find yourself working with this file a lot, 
+// I would highly recommend spending some time researching and/or watching some crash-course videos on them so you can grasp what's going on.
+// Dr. Leinecker got these values from https://hackage.haskell.org/package/sharc-timbre-0.2/src/, but used a script to get them in the array
+// format below. You should be able to add any instrument from that website, as long as you can get its data formatted EXACTLY the same as
+// the arrays below. Good luck!
+
 // Flute note fundamentals and overtones.
 {
-    var flute_note0 = [261.626, 0.09836, 0.2957, 0.141921, 0.079014, 0.112871, 0.042798, 0.029077]; // C4
+    var flute_note0 = [261.626, 0.09836, 0.2957, 0.141921, 0.079014, 0.112871, 0.042798, 0.029077]; // C4 (these comments might be wrong, don't trust them)
     var flute_note1 = [277.183, 0.123199, 0.3478, 0.124674, 0.084353, 0.124837, 0.017114, 0.024019];
     var flute_note2 = [293.665, 0.297172, 0.527, 0.100852, 0.094155, 0.165888, 0.003781, 0.026072]; // D4
     var flute_note3 = [311.127, 0.336687, 0.4666, 0.093167, 0.100954, 0.071699, 0.020557, 0.000982];

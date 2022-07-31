@@ -9,8 +9,7 @@ import Img from '../Navbar/Logo.jpg'
 // import muse from "https://cdn.jsdelivr.net/npm/@brainsatplay/muse@0.0.1/dist/index.esm.js"; // Muse board retrieval
 // import hegduino from "https://cdn.jsdelivr.net/npm/@brainsatplay/hegduino@0.0.3/dist/index.esm.js"; // Hegduino 8 channel board retrieval
 import * as components from "https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/dist/index.esm.js"; // UI
-// Data acquisition
-import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js"; 
+import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js"; // Data acquisition
 import ganglion from "https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion@0.0.2/dist/index.esm.js"; // This is the device aquisition for BrainBeats AKA the ganglion device.
 import * as XLSX from 'xlsx';
 import MidiPlayer from 'midi-player-js';
@@ -18,25 +17,15 @@ import _, {cloneDeep, first} from 'lodash'
 import { useRecoilValue } from "recoil";
 import {userJWT, userModeState} from '../context/GlobalState'
 import sendAPI from '../sendAPI';
-import {
-	getNoteLengthStringFromInt,
-	getInstrumentNameFromInt,
-	getIntFromNoteTypeString,
-	getIntFromNoteTypeStringWithMidiWriterJsValues,
-	getNoteLengthMultiplier,
-	getMilliecondsFromBPM,
-	GetFloorOctave,
-	findNumSamples,
-	getFrequencyFromNoteOctaveString} from './HelperFunctions.js';
+import {getNoteLengthStringFromInt, getInstrumentNameFromInt, getIntFromNoteTypeString, getIntFromNoteTypeStringWithMidiWriterJsValues,
+	getNoteLengthMultiplier, getMilliecondsFromBPM, GetFloorOctave, findNumSamples, getFrequencyFromNoteOctaveString} from './HelperFunctions.js';
 import * as Constants from './Constants.js';
 import {playMidiNote} from './Playback.js';
-import {
-	initMIDIWriter, 
-	addNoteToMIDITrack, 
-	printTrack, 
-	generateMIDIURIAndDownloadFile, 
-	generateMIDIURI, 
-	generateMIDIFileFromURI} from './MIDIWriting.js';
+import {initMIDIWriter, addNoteToMIDITrack, printTrack, generateMIDIURIAndDownloadFile, generateMIDIURI, generateMIDIFileFromURI} from './MIDIWriting.js';
+
+// This variable is for devs. Yes, you reading this! Set this to true if you want console output that shows what's happening musically in
+// real-time, and set to false if not. I don't *think* this has any effect on the live server, only when running on your local machine.
+var showMusicRelatedConsoleOutput = true;
 
 function Record() {
     //needed states
@@ -798,18 +787,23 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
         opacity: '1',
     }
 
-	console.log("numNotes: " + numNotes)
-	console.log("instrumentArr: " + instrumentArr)
-	console.log("noteDuration: " + noteDuration)
-	console.log("Scale: " + scale)
-	console.log("keyNum: " + keyNum)
-	console.log("BPM: " + BPM)
-    const [record, setRecord] = useState(false);
+	// Just some console logs for debug purposes
+	if (showMusicRelatedConsoleOutput)
+	{
+		console.log("numNotes: " + numNotes)
+		console.log("instrumentArr: " + instrumentArr)
+		console.log("noteDuration: " + noteDuration)
+		console.log("Scale: " + scale)
+		console.log("keyNum: " + keyNum)
+		console.log("BPM: " + BPM)
+	}
 
-	// ------------------------------------------------------------------------------ WILL BE RETIREVED FROM USER ------------------------------------------------------------------------------
+	const [record, setRecord] = useState(false);
 
-	// This isnt a constant its a user variable but it needs to be at the top I'm sorry I can move it later probably hopefully
-	var BPM = 120; // Beats Per Minute of the track [aka tempo]
+	// ------------------------------------------------------------------------------ DEFINED BY USER IN EARLY STAGES OF RECORD PAGE ------------------------------------------------------------------------------
+
+	// Beats Per Minute of the track [aka tempo]
+	var BPM = 120;
 
 	// This isnt a constant its a user variable but it needs to be at the top I'm sorry I can move it later probably hopefully
 	// The type of note for each channel. sixteenth, eighth, quarter, half, or whole. Don't forget the ""!
@@ -841,7 +835,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 	// that aren't multiples of 7. Works best with 7, 14, and 21. Do not ever exceed 63.
 	// NOTE: This software works using 7-note octaves, meaning that the root note's octave jump is not included in
 	//       the scale. For example, C major is C, D, E, F, G, A, B. It does NOT include the C of the next octave.
-	//var numNotes = 7;
+	// var numNotes = 7;
 
 	// The array of size numNotes that is used to house the cutoffs for each of the numNotes incremements. 
 	// The value of MIN_MAX_AMPLITUDE_DIFFERENCE is divided by numNotes, and the result (let's call this X) is then used to 
@@ -854,55 +848,48 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 	// between incrementArr[1] and [2], it will be assigned to note 1, the floor of the indexes it fell between.
 	var incrementArr = new Array(numNotes);
 
-	// These act as booleans
-	var FP1Ready = true, FP2Ready = true, C3Ready = true, C4Ready = true, TempoCounterReady = true;
+	// These booleans are used to allow and disallow new notes to be generated for each channel. 
+	// Turned off (false) when a channel is generating and/or playing back a real-time note, and turned on when the channel is inactive (AKA ready to generate a note)
+	var FP1Ready = true, FP2Ready = true, C3Ready = true, C4Ready = true, 
+		TempoCounterReady = true; // This one is used for console debugging, you can probably ignore it.
 
+	// The length in milliseconds of each channel's note type.
 	var FP1NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(FP1NoteType)],
 		FP2NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(FP2NoteType)],
 		C3NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C3NoteType)],
 		C4NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C4NoteType)];
 
-	//These values will determine all instrument volume which is changed in GUI
-	var FP1VolChange = 0, FP2VolChange = 0, C3VolChange = 0, C4VolChange = 0
+	// We do not currently support volume changes, but you can use these values to implement that if you want!
+	// These are the differences between the default volume and target volume, per channel. Positive values make it louder, negative values make it quieter.
+	var FP1VolDelta = 0, FP2VolDelta = 0, C3VolDelta = 0, C4VolDelta = 0
+	// These are the variables that are used in the program to determine volume. Currently all channels are the same volume but you can adjust the deltas above
+	// to achieve different results, and it should just work since we've already added them in below.
+	var FP1Volume = Constants.DEFAULT_VOLUME + FP1VolDelta,
+		FP2Volume = Constants.DEFAULT_VOLUME + FP2VolDelta,
+		C3Volume = Constants.DEFAULT_VOLUME + C3VolDelta,
+		C4Volume = Constants.DEFAULT_VOLUME + C4VolDelta;
 
-	var FP1Volume = Constants.DEFAULT_VOLUME - FP1VolChange,
-		FP2Volume = Constants.DEFAULT_VOLUME -  FP2VolChange,
-		C3Volume = Constants.DEFAULT_VOLUME - C3VolChange,
-		C4Volume = Constants.DEFAULT_VOLUME - C4VolChange;
-
+	// Scale and keynum are retrieved from the user's choice of major/minor [index] and key signature [index], respectively
 	var keySignature = Constants.KEY_SIGNATURES[scale][keyNum];
 
-	//this rec is to stop the infinite loop from track.subscribe
-	let rec;
-
-	let dataDevices;
-
-	let letMeRecord = true;
+	let rec; // Used to stop the infinite loop from track.subscribe
+	let dataDevices; // Holds data regarding the connection to the headset.
 	
-	// Global variables
+	// "Global" variables for bluetooth and headset data retrieval
 	const allData = [];
 	let channels = 0;
 	let trackMap = new Map();
 	let contentHintToIndex = {};
 
-	const MidiWriter = require('midi-writer-js');
-
-	var trackFP1 = new MidiWriter.Track();
-	var trackFP2 = new MidiWriter.Track();
-	var trackC3 = new MidiWriter.Track();
-	var trackC4 = new MidiWriter.Track();
-
-	var noteFP1, noteFP2, noteC3, noteC4;
+	// ------------------------------------------------------------------------------ THE IMPORTANT PART ------------------------------------------------------------------------------
 
     useEffect(() => {
 
-		initMIDIWriter(BPM);
+		initMIDIWriter(BPM); // Prepares the program to store/write MIDI data
 
+		// Setup for data streaming
 		dataDevices = new datastreams.DataDevices();
 		dataDevices.load(ganglion);
-		// dataDevices.load(muse);
-		// dataDevices.load(device);
-		// dataDevices.load(hegduino);
 
 		// This runs when the headset is successfully connected via Bluetooth
 		const startAcquisition = async (label) => {
@@ -917,9 +904,8 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			stream.onaddtrack = (e) => handleTrack(e.track);
 		};
 
-		// Track handler - Should support as many tracks as the connected headset has
+		// Track handler
 		const handleTrack = (track) => {
-
 			// Map track information to index
 			if (!trackMap.has(track.contentHint)) {
 				const index = trackMap.size;
@@ -931,15 +917,12 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			const i = contentHintToIndex[track.contentHint];
 			channels = i > channels ? i : channels; // Assign channels as max track number
 
-			// This track.subscribe block is basically a big infinite loop that iterates every time a new "tick" or "frame" of data
-			// is sent from the headset, which happens multiple times per second. Think of it as a listener for data from the headset.
+			// This track.subscribe block is essentially a big infinite loop that iterates every time a new "tick" of data is sent from the headset,
+			// which happens many times per second. Think of it as a listener for data from the headset.
 			track.subscribe((data) => {
-				//Stops the recording
-				//TODO: find solution to unsubscribe the tracks
-				if(!rec)
-				{
-					//console.log(track.unsubscribe(track))
-				}
+				// Stops/pauses the recording. Simple but works!
+				if (!rec){}
+					//console.log("Recording stopped");
 				else
 				{
 					// Store and organize new data
@@ -947,8 +930,8 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 					for (let j = 0; j <= channels; j++)
 						i === j ? arr.push(data) : arr.push([]);
 
-					// This is a block meant for debugging only; it prints out some information every time a quarter note elapses. Think of it as a metronome. 
-					if (TempoCounterReady == true) {
+					// This is a block meant for debugging only; it prints some information every time a quarter note elapses. Think of it as a metronome. 
+					if (TempoCounterReady == true && showMusicRelatedConsoleOutput) {
 						TempoCounterReady = false;
 						setTimeout(() => {
 							console.log("----- It's been " + getMilliecondsFromBPM(BPM) + "ms (one quarter note at " + BPM + "bpm) -----");
@@ -956,7 +939,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 						}, getMilliecondsFromBPM(BPM));
 					}
 
-					// This is to save the read-in raw headset data (shortened to 7 decimal points). It saves the most recent data (the data that caused the track.subscribe block to iterate) into an array,
+					// This is to save the raw headset data (shortened to 7 decimal points). It writes the most recent headset data (the data that caused track.subscribe to iterate) into an array,
 					// and then later on the user has the ability to download a .csv file with all of the values.
 					if (data[0] != null) {
 						allData.push(
@@ -969,12 +952,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 
 					// These asynchronously call the driver function for music generation, allowing the program at-large to continue running while handling multiple notes at once.
 					// To add more tracks, you'd simply copy what's below but change the variable names (after declaring them, of course) and string comparisons to match your sensor names.
-					// For example, if you were adding a new channel "T5", you'd do this:
-					// else if (track.contentHint.localeCompare("T5") == 0 && T5Ready == 1) 
-					// {
-					//     T5Ready = 0;
-					//     setTimeout(() => { mainDriverFunction(track, data, T5Instrument, T5NoteType, T5Volume) }, T5NoteLengthMS)
-					// }
 					if (track.contentHint.localeCompare("FP1") == 0 && FP1Ready == true) 
 					{
 						FP1Ready = false;
@@ -996,39 +973,38 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 						setTimeout(() => { mainDriverFunction(track, data, C4Instrument, C4NoteType, C4Volume) }, C4NoteLengthMS)
 					}
 				}
-				
 			});
-			
 		};
 
 		// This is the function that handles all of the note generation. It has various supporting functions that it calls, but it all stems from here.
 		const mainDriverFunction = async (track, data, instrument, noteType, noteVolume) => {
 			InitIncrementArr();
-
 			var declaredNote = NoteDeclarationRaw(data); // Get note increment
 			var noteAndOctave = GetNoteWRTKey(declaredNote); // Get the actual note and its octave
 			var floorOctave = GetFloorOctave(numNotes); // Get the lowest octave that will be used in the song
 
-			let noteOctaveString;
+			let noteOctaveString; // Combination string of note and octave (ex: 'C#5', 'F4')
 			let noteFrequency;
 
-			if (noteAndOctave.note != -1)
+			if (noteAndOctave.note != -1) // If the generated note is not invalid
 			{
 				noteOctaveString = noteAndOctave.note + (noteAndOctave.octave + floorOctave);
 				noteFrequency = getFrequencyFromNoteOctaveString(noteOctaveString);
 			}
 
-			if (noteAndOctave.note != -1)
+			if (noteAndOctave.note != -1) // If the generated note is not invalid
 			{
-				if (track.contentHint.localeCompare("FP1") == 0)
-					console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP1Instrument) + " playing " + FP1NoteType + " notes] " + data);
-				else if (track.contentHint.localeCompare("FP2") == 0)
-					console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP2Instrument) + " playing " + FP2NoteType + " notes] " + data);
-				else if (track.contentHint.localeCompare("C3") == 0)
-					console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C3Instrument) + " playing " + C3NoteType + " notes] " + data);
-				else if (track.contentHint.localeCompare("C4") == 0)
-					console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C4Instrument) + " playing " + C4NoteType + " notes] " + data);
+				// This if/else stack is just for console output, nothing important happens here.
+				if (track.contentHint.localeCompare("FP1") == 0 && showMusicRelatedConsoleOutput)
+					console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP1Instrument) + " playing " + noteType + " notes] " + data);
+				else if (track.contentHint.localeCompare("FP2") == 0 && showMusicRelatedConsoleOutput)
+					console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(FP2Instrument) + " playing " + noteType + " notes] " + data);
+				else if (track.contentHint.localeCompare("C3") == 0 && showMusicRelatedConsoleOutput)
+					console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C3Instrument) + " playing " + noteType + " notes] " + data);
+				else if (track.contentHint.localeCompare("C4") == 0 && showMusicRelatedConsoleOutput)
+					console.log(track.contentHint + ": " + noteOctaveString + " [" + getInstrumentNameFromInt(C4Instrument) + " playing " + noteType + " notes] " + data);
 				
+				// This is what plays audio! See Playback.js for more.
 				playMidiNote(noteFrequency, noteVolume, instrument, noteType);
 			}				
 
@@ -1042,6 +1018,10 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			else if (track.contentHint.localeCompare("C4") == 0)
 				addNoteToMIDITrack(track, noteAndOctave, noteOctaveString, noteType)
 
+			// !!! IMPORTANT !!!
+			// Regardless of how you make your own music generation algorithm, you need to have this happen at the end of it. FP1Ready, FP2Ready, etc are used to
+			// tell the program whether or not to start generating another note when headset data is received. They are set to false when mainDriverFunction() is
+			// called, and need to be set back to true at the end of each note generation or notes will stop generating altogether.
 			if (track.contentHint.localeCompare("FP1") == 0)
 				FP1Ready = true;
 			else if (track.contentHint.localeCompare("FP2") == 0)
@@ -1056,7 +1036,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		const buttons = document.querySelector("#buttons");
 		for (let button of buttons.querySelectorAll("button"))
 			if (button.id === "ganglion") {
-				button.onclick = () => {rec=true;console.log(rec);startAcquisition(button.id)};
+				button.onclick = () => {rec = true; startAcquisition(button.id)};
 			}
 			// else if (button.id === "downloadBtn") {
 			// 	button.onclick = () => downloadData();
@@ -1068,6 +1048,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		
 	// ------------------------------------------------------------------------------ FUNCTIONS RELATED TO RAW DATA ------------------------------------------------------------------------------
 
+	// This downloads the raw headset output .csv file
 	function downloadData() 
 	{
 		// //   console.log(JSON.stringify(allData));
@@ -1080,26 +1061,25 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 
 	// ------------------------------------------------------------------------------ FUNCTIONS RELATED TO MUSIC GENERATION ------------------------------------------------------------------------------
 
-	// This creates the array in which different "increments" for notes are housed. I already sort-of explained this
-	// near the top of this file in the comment for "var incrementArr".
+	// This creates the array in which different "increments" for notes are housed. For more info see the comment for "var incrementArr"
 	function InitIncrementArr() {
 		var incrementAmount = Constants.MIN_MAX_AMPLITUDE_DIFFERENCE / numNotes; // Dividing the total range by the number of notes
 
 		incrementArr[0] = 0; // First index will always be 0
-		incrementArr[numNotes - 1] = Constants.MAX_AMPLITUDE + Constants.AMPLITUDE_OFFSET; // Last index will always be the max value + the offset that was used to remove negative numbers.
+		incrementArr[numNotes - 1] = Constants.MAX_AMPLITUDE + Constants.AMPLITUDE_OFFSET; // Last index will always be the max value + the offset
 
 		// Fill out the array so that each index is populated with incrementAmount * index
 		for (var i = 1; i < numNotes - 1; i++)
 			incrementArr[i] = incrementAmount * i + Constants.AMPLITUDE_OFFSET;
 	}
 
-	// Takes in the raw value from the headset and the sensor it came from and assigns a note.
+	// Takes in a raw value from the headset and assigns a note.
 	function NoteDeclarationRaw(ampValue) {
 		let ampValue2 = 0;
 		ampValue2 = (ampValue - -Constants.AMPLITUDE_OFFSET); // Applies the offset to the headset's raw data
 
-		// For every possible note, check to see if ampValue falls between two array positions. If so, return that position.
-		// If not, it will be treated as a rest (returning -1).
+		// For every possible note, check to see if ampValue falls between two array positions. 
+		// If so, return that position. If not, it will be treated as a rest (returning -1).
 		for (var i = 0; i <= numNotes - 1; i++) {
 			if (ampValue2 >= incrementArr[i] && ampValue2 <= incrementArr[i + 1])
 				return i;
@@ -1107,7 +1087,8 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		return -1;
 	}
 
-	// Gets the actual note from the previously-obtained note increment (see NoteDeclarationRaw())
+	// Gets the actual note from the previously-obtained note INCREMENT (see NoteDeclarationRaw())
+	// WRT stands for "with respect to", so this is "get note with respect to key"
 	function GetNoteWRTKey(note) {
 		// If the note increment is between 1 and 7, simply return that index in the key array with octave being zero.
 		if (note <= 7 && note >= 1)

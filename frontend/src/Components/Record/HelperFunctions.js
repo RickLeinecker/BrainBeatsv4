@@ -1,3 +1,5 @@
+// This file houses functions that are commonly used by multiple different parts of the software
+
 import * as Constants from './Constants.js'
 
 // ------------------------------------------------------------------------------ NOTE TYPE/LENGTH FUNCTIONS ------------------------------------------------------------------------------

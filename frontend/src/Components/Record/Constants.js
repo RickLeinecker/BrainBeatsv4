@@ -1,4 +1,4 @@
-// This file is all stuff that shouldn't ever be changed. Read, not write.
+// This file is all stuff that isn't changed often, and are referred to by different parts of the software.
 
 // The highest and lowest possible values of the headset's data that we will actually use and parse into musical data.
 // Anything under the maximum and above the minimum will be sorted into respective notes, but anything above the maximum
