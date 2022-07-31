@@ -87,7 +87,7 @@ function killOldestAudioContextIfNecessary() {
     }
 }
 
-// ------------------------------------------------------------------------------ FUNCTIONS STOLEN FROM MICROTONALITY.NET ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ FUNCTIONS FROM MICROTONALITY.NET ------------------------------------------------------------------------------
 
 // Places all instrument frequency/overtone data into one massive array
 function setupInstrumentList() {
@@ -188,7 +188,7 @@ function getOvertoneFrequencies(instrumentIndex, frequency) {
     return retList;
 }
 
-// ------------------------------------------------------------------------------ INSTRUMENT DATA STOLEN FROM MICROTONALITY.NET ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ INSTRUMENT-SPECIFIC FUNCTIONS AND DATA FROM MICROTONALITY.NET ------------------------------------------------------------------------------
 
 
 // Sine wave
@@ -402,7 +402,6 @@ function instrumentWave(numSamples, frequency, ctx, soundType) {
     // Aggregate flute notes
     var flute = [flute_note0, flute_note1, flute_note2, flute_note3, flute_note4, flute_note5, flute_note6, flute_note7, flute_note8, flute_note9, flute_note10, flute_note11, flute_note12, flute_note13, flute_note14, flute_note15, flute_note16, flute_note17, flute_note18, flute_note19, flute_note20, flute_note21, flute_note22, flute_note23, flute_note24, flute_note25, flute_note26, flute_note27, flute_note28, flute_note29, flute_note30, flute_note31, flute_note32, flute_note33];
 }
-
 // Oboe note fundamentals and overtones.
 {
     var oboe_note0 = [233.082, 0.121894, 0.157061, 0.322307, 0.230436, 0.6367, 0.253799, 0.102276];
@@ -440,7 +439,6 @@ function instrumentWave(numSamples, frequency, ctx, soundType) {
     // Aggregate oboe notes
     var oboe = [oboe_note0, oboe_note1, oboe_note2, oboe_note3, oboe_note4, oboe_note5, oboe_note6, oboe_note7, oboe_note8, oboe_note9, oboe_note10, oboe_note11, oboe_note12, oboe_note13, oboe_note14, oboe_note15, oboe_note16, oboe_note17, oboe_note18, oboe_note19, oboe_note20, oboe_note21, oboe_note22, oboe_note23, oboe_note24, oboe_note25, oboe_note26, oboe_note27, oboe_note28, oboe_note29, oboe_note30, oboe_note31];
 }
-
 // Clarinet note fundamentals and overtones.
 {
     var clarinet_note0 = [146.832, 0.2129, 0.014125, 0.150138, 0.049777, 0.157843, 0.082485, 0.05724];
@@ -483,7 +481,6 @@ function instrumentWave(numSamples, frequency, ctx, soundType) {
     // Aggregate clarinet notes
     var clarinet = [clarinet_note0, clarinet_note1, clarinet_note2, clarinet_note3, clarinet_note4, clarinet_note5, clarinet_note6, clarinet_note7, clarinet_note8, clarinet_note9, clarinet_note10, clarinet_note11, clarinet_note12, clarinet_note13, clarinet_note14, clarinet_note15, clarinet_note16, clarinet_note17, clarinet_note18, clarinet_note19, clarinet_note20, clarinet_note21, clarinet_note22, clarinet_note23, clarinet_note24, clarinet_note25, clarinet_note26, clarinet_note27, clarinet_note28, clarinet_note29, clarinet_note30, clarinet_note31, clarinet_note32, clarinet_note33, clarinet_note34, clarinet_note35, clarinet_note36];
 }
-
 // Bassoon note fundamentals and overtones.
 {
     var bassoon_note0 = [58.27, 0.149602, 0.176013, 0.14631, 0.149406, 0.055489, 0.182866, 0.32672];
@@ -521,7 +518,6 @@ function instrumentWave(numSamples, frequency, ctx, soundType) {
     // Aggregate bassoon notes
     var bassoon = [bassoon_note0, bassoon_note1, bassoon_note2, bassoon_note3, bassoon_note4, bassoon_note5, bassoon_note6, bassoon_note7, bassoon_note8, bassoon_note9, bassoon_note10, bassoon_note11, bassoon_note12, bassoon_note13, bassoon_note14, bassoon_note15, bassoon_note16, bassoon_note17, bassoon_note18, bassoon_note19, bassoon_note20, bassoon_note21, bassoon_note22, bassoon_note23, bassoon_note24, bassoon_note25, bassoon_note26, bassoon_note27, bassoon_note28, bassoon_note29, bassoon_note30, bassoon_note31];
 }
-
 // Trumpet note fundamentals and overtones.
 {
     var trumpet_note0 = [184.997, 0.068589, 0.118634, 0.077804, 0.154649, 0.168596, 0.2918, 0.129903];
@@ -561,7 +557,6 @@ function instrumentWave(numSamples, frequency, ctx, soundType) {
     // Aggregate trumpet notes
     var trumpet = [trumpet_note0, trumpet_note1, trumpet_note2, trumpet_note3, trumpet_note4, trumpet_note5, trumpet_note6, trumpet_note7, trumpet_note8, trumpet_note9, trumpet_note10, trumpet_note11, trumpet_note12, trumpet_note13, trumpet_note14, trumpet_note15, trumpet_note16, trumpet_note17, trumpet_note18, trumpet_note19, trumpet_note20, trumpet_note21, trumpet_note22, trumpet_note23, trumpet_note24, trumpet_note25, trumpet_note26, trumpet_note27, trumpet_note28, trumpet_note29, trumpet_note30, trumpet_note31, trumpet_note32, trumpet_note33];
 }
-
 // French Horn note fundamentals and overtones.
 {
     var frenchhorn_note0 = [73.416, 0.070697, 0.147718, 0.264715, 0.428841, 0.674782, 0.715, 0.696342];
@@ -604,7 +599,6 @@ function instrumentWave(numSamples, frequency, ctx, soundType) {
     // Aggregate french horn notes
     var frenchhorn = [frenchhorn_note0, frenchhorn_note1, frenchhorn_note2, frenchhorn_note3, frenchhorn_note4, frenchhorn_note5, frenchhorn_note6, frenchhorn_note7, frenchhorn_note8, frenchhorn_note9, frenchhorn_note10, frenchhorn_note11, frenchhorn_note12, frenchhorn_note13, frenchhorn_note14, frenchhorn_note15, frenchhorn_note16, frenchhorn_note17, frenchhorn_note18, frenchhorn_note19, frenchhorn_note20, frenchhorn_note21, frenchhorn_note22, frenchhorn_note23, frenchhorn_note24, frenchhorn_note25, frenchhorn_note26, frenchhorn_note27, frenchhorn_note28, frenchhorn_note29, frenchhorn_note30, frenchhorn_note31, frenchhorn_note32, frenchhorn_note33, frenchhorn_note34, frenchhorn_note35, frenchhorn_note36];
 }
-
 // Trombone note fundamentals and overtones.
 {
     var trombone_note0 = [82.407, 0.111951, 0.282449, 0.422485, 0.288118, 0.561584, 0.723852, 0.9186];
@@ -646,7 +640,6 @@ function instrumentWave(numSamples, frequency, ctx, soundType) {
     // Aggregate trombone notes
     var trombone = [trombone_note0, trombone_note1, trombone_note2, trombone_note3, trombone_note4, trombone_note5, trombone_note6, trombone_note7, trombone_note8, trombone_note9, trombone_note10, trombone_note11, trombone_note12, trombone_note13, trombone_note14, trombone_note15, trombone_note16, trombone_note17, trombone_note18, trombone_note19, trombone_note20, trombone_note21, trombone_note22, trombone_note23, trombone_note24, trombone_note25, trombone_note26, trombone_note27, trombone_note28, trombone_note29, trombone_note30, trombone_note31, trombone_note32, trombone_note33, trombone_note34, trombone_note35];
 }
-
 // Tuba note fundamentals and overtones.
 {
     var tuba_note0 = [65.406, 0.084388, 0.2099, 0.087893, 0.18847, 0.194373, 0.07389, 0.07504];
@@ -683,6 +676,3 @@ function instrumentWave(numSamples, frequency, ctx, soundType) {
     // Aggregate tuba notes
     var tuba = [tuba_note0, tuba_note1, tuba_note2, tuba_note3, tuba_note4, tuba_note5, tuba_note6, tuba_note7, tuba_note8, tuba_note9, tuba_note10, tuba_note11, tuba_note12, tuba_note13, tuba_note14, tuba_note15, tuba_note16, tuba_note17, tuba_note18, tuba_note19, tuba_note20, tuba_note21, tuba_note22, tuba_note23, tuba_note24, tuba_note25, tuba_note26, tuba_note27, tuba_note28, tuba_note29, tuba_note30];
 }
-
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

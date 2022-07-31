@@ -42,8 +42,6 @@ import * as Constants from './Constants.js';
 
 import {playMidiNote} from './Playback.js';
 
-// import { fsync } from 'fs';
-
 function Record() {
     //needed states
     const user = useRecoilValue(userModeState);
@@ -844,10 +842,8 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		// dataDevices.load(device);
 		// dataDevices.load(hegduino);
 
-		// Track handler
+		// Track handler - Should support as many tracks as the connected headset has
 		const handleTrack = (track) => {
-
-			console.log(Constants.MAX_AMPLITUDE)
 
 			// Map track information (e.g. 10-20 Coordinate) to index
 			if (!trackMap.has(track.contentHint)) {
@@ -955,26 +951,13 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			// Handle all tracks
 			stream.tracks.forEach(handleTrack);
 			stream.onaddtrack = (e) => handleTrack(e.track);
-			
-			
 		};
 
 		// This is the function that calls all of the other functions for note generation.
 		const mainDriverFunction = async (tracky, datay, instrument, noteType, noteVolume) => {
 			InitIncrementArr();
 
-			// This entire handleTrack section needs to run 4 times total, once for each channel, every tick.
-			if (channelCounter < 3)
-				channelCounter++;
-			else if (channelCounter >= 3) {
-				if (firstTickSkipped == 0)
-					firstTickSkipped = 1;
-				else
-					//waitForNextTick(quickNoteType);
-					channelCounter = 0;
-			}
-
-			var declaredNote = NoteDeclarationRaw(datay, tracky.contentHint); // Get note increment
+			var declaredNote = NoteDeclarationRaw(datay); // Get note increment
 			var noteAndOctave = GetNoteWRTKey(declaredNote); // Get the actual note and its octave
 			var floorOctave = GetFloorOctave(numNotes); // Get the lowest octave that will be used in the song
 
@@ -1005,11 +988,9 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			{
 				if (noteAndOctave.note == -1) // Rest
 					noteFP1 = new MidiWriter.NoteEvent({wait: getIntFromNoteTypeStringWithMidiWriterJsValues(FP1NoteType).toString(), duration: '0', velocity: 0});
-					//noteFP1 = new MidiWriter.NoteEvent({pitch: 0, duration: getIntFromNoteTypeStringWithMidiWriterJsValues(FP1NoteType).toString(), velocity: 0});
 				else
 					noteFP1 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(FP1NoteType).toString()});
 				trackFP1.addEvent(noteFP1);
-				//console.log("FP1 over");
 			}
 			else if (tracky.contentHint.localeCompare("FP2") == 0)
 			{
@@ -1018,7 +999,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 				else
 					noteFP2 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(FP2NoteType).toString()});
 				trackFP2.addEvent(noteFP2);
-				//console.log("FP2 over");
 			}
 			else if (tracky.contentHint.localeCompare("C3") == 0)
 			{
@@ -1027,7 +1007,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 				else
 					noteC3 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(C3NoteType).toString()});
 				trackC3.addEvent(noteC3);
-				//console.log("C3 over");
 			}
 			else if (tracky.contentHint.localeCompare("C4") == 0)
 			{
@@ -1036,11 +1015,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 				else
 					noteC4 = new MidiWriter.NoteEvent({pitch: [noteOctaveString], duration: getIntFromNoteTypeStringWithMidiWriterJsValues(C4NoteType).toString()});
 				trackC4.addEvent(noteC4);
-				//console.log("C4 over");
 			}
-
-			// Generate a data URI
-			//generateAndDownloadMIDIFile(MidiWriter, trackFP1, trackFP2, trackC3, trackC4);
 
 			if (tracky.contentHint.localeCompare("FP1") == 0)
 				FP1Ready = 1;
@@ -1054,7 +1029,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 
 		// Set button functionality
 		const buttons = document.querySelector("#buttons");
-
 		for (let button of buttons.querySelectorAll("button"))
 			if (button.id === "ganglion") {
 				button.onclick = () => {rec=true;console.log(rec);startAcquisition(button.id)};
@@ -1117,13 +1091,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 	// incrementArr[1] is 0.5, and incrementArr[2] is 1.0. The headset relays data equal to 0.75. Because 0.75 falls
 	// between incrementArr[1] and [2], it will be assigned to note 1, the floor of the indexes it fell between.
 	var incrementArr = new Array(numNotes);
-
-	// Array used to house all of the overtone information for each instrument, used by getOvertoneFrequencies()
-	var instrList;
-
-	// Variables that will likely be removed
-	var channelCounter = 0; // I forgor 💀
-	var firstTickSkipped = 0; // Kinda useless will prob remove
 
 	var FP1Ready = 1,
 		FP2Ready = 1,
@@ -1240,7 +1207,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 	}
 
 	// Takes in the raw value from the headset and the sensor it came from and assigns a note.
-	function NoteDeclarationRaw(ampValue, sensor) {
+	function NoteDeclarationRaw(ampValue) {
 		let ampValue2 = 0;
 		ampValue2 = (ampValue - -Constants.AMPLITUDE_OFFSET); // Applies the offset to the headset's raw data
 
