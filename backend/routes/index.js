@@ -39,6 +39,10 @@ app.use('/api/music', require('./music/music'));
 app.use('/api/likes', require('./likes/likes')); 
 app.use('/api/authentication', require('./authentication/authentication')); 
 
+var bodyParser = require('body-parser');            
+app.use(bodyParser.json({limit:'50mb'})); 
+app.use(bodyParser.urlencoded({extended:true, limit:'50mb'})); 
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 module.exports = router;

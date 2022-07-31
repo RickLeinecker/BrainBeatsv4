@@ -7,8 +7,7 @@ const { user, post } = new PrismaClient();
 const { getJWT, verifyJWT } = require("../../utils/jwt");
 const { getUserExists, getPostExists, getPlaylistExists} = require("../../utils/database");
 const multer  = require('multer')
-const upload = multer({limits: { fieldSize: 25 * 1024 * 1024 }})
-
+const upload = multer({limits: { fieldSize: 5000000 }})
 // Create a new playlist
 
 //Thumbnail is a file upload is here

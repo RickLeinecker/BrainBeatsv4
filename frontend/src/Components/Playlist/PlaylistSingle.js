@@ -31,7 +31,7 @@ const Playlist = () => {
     getPost()
     });
     
-  }, []);
+  }, [playlist]);
 
   const getPost=()=>{
     const params = {
@@ -49,6 +49,7 @@ const Playlist = () => {
       thumbnail: thumbnail,
       token: jwt,
     }
+    console.log(bodyData)
     sendAPI('put', '/playlists/updatePlaylist', bodyData)
       .then((res) =>{
         setMessage('Update Successful')
@@ -59,6 +60,7 @@ const Playlist = () => {
       })
     
   }
+  
 
   const openModal = () => {
     setModalState(true);
@@ -88,6 +90,7 @@ const Playlist = () => {
         setThumbnail(baseString); 
     };
     reader.readAsDataURL(file);
+    console.log(file)
     // setProfilePicture(baseString);
   }
 
@@ -113,7 +116,7 @@ const Playlist = () => {
       {allPost.map((item, index) => {
             return(
               <tr key={index}>
-                <td><img className="smallPostThumbnail" src={item.post.thumbnail? item.post.thumbnail :"https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png"} /> </td>
+                <td><img className="smallPostThumbnail" src={item.thumbnail? item.thumbnail :"https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png"} /> </td>
                 <td className="smallPostText">{index} - {item.post.title}</td>
                 <td><button className="playlistPostButton" onClick={(e) =>deleteSong(item.post.id)}><FaTrash /></button></td>
                 <td><button className="playlistPostButton"><FaPlayCircle /></button></td>
@@ -124,34 +127,19 @@ const Playlist = () => {
       </table>
       <Modal show={modalState} onHide={closeModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Edit Playlist</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-        <label>New Playlist Title</label>
-        <input type="text" onChange={(e) => setNewTitle(e.target.value)}/>
-        <label for="file-upload" className="custom-file-upload">
-    				Upload Image (optional)
-				</label>
-				<input id="file-upload" type="file" />
-        
-        
-        </Modal.Body>
-      </Modal>
-      <Modal show={modalState} onHide={closeModal}>
-        <Modal.Header closeButton>
           <Modal.Title>Create Playlist</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p style={{ textAlign: "left" }}>
-            Playlist Title <span style={{ color: "red" }}>*</span>
+            New Playlist Title <span style={{ color: "red" }}>*</span>
           </p>
           <input
             onChange={(e) => setNewTitle(e.target.value)}
             className="inputModal"
           />
-          <p style={{ textAlign: "left" }}>Playlist Thumbnail</p>
+          <p style={{ textAlign: "left" }}> New Playlist Thumbnail</p>
           <label for="file-upload" className="custom-file-upload">
-    				Upload Image (optional)
+    				Edit Image (optional)
 				</label>
 				<input id="file-upload" onChange={(event) => updateProfilePic(event.target.files[0])} type="file"/>
         </Modal.Body>
