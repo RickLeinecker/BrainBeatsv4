@@ -766,7 +766,6 @@ function VidLink({link}) {
     )
 }
 
-
 function ValidScript({slides, setCurrentSlide, currentSlide, autoplay}) {
 	const changeCarosel = useCallback((slide) => {
 		setCurrentSlide(slide)
@@ -1174,53 +1173,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		}, false);
 	}
 
-	function playMidiFile(uri)
-	{
-		// Initialize player and register event handler
-		var Player = new MidiPlayer.Player(function(event) {});
-
-		// Load a MIDI file and start combing through it
-		//Player.loadDataUri(uri); this is the good one that you should use (:
-		//Player.loadDataUri(btoa("file://C:\Users\Noah\Documents\GitHub\BrainBeatsWeb\frontend\src\Components\Record/UseThisToTestMIDI.mid"));
-		
-		//console.log("URI passed in: " + uri);
-		Player.loadDataUri(uri);
-		Player.play();
-
-		var eventCount = 0;
-
-		// We will be getting all of these from the database on a per-post basis, but for now setting them here.
-		var track1Inst = FP1Instrument, 
-			track2Inst = FP2Instrument, 
-			track3Inst = C3Instrument, 
-			track4Inst = C4Instrument;
-		var track1NoteType = FP1NoteType,
-			track2NoteType = FP2NoteType,
-			track3NoteType = C3NoteType,
-			track4NoteType = C4NoteType;
-
-		// Event listener for midiEvents
-		Player.on('midiEvent', function(event) {
-			if (event.noteNumber != 0 && event.noteNumber != undefined)// && eventCount % 2 == 0) // As long as the midiEvent is a valid NOTE (other events not supported) and not undefined
-			{
-				//console.log(event);
-				console.log("" + eventCount + ": " + event.noteNumber + ", AKA " + event.noteName + " [Track " + event.track + "]");
-
-				var midiNoteFrequency = getFrequencyFromNoteOctaveString(event.noteName);
-
-				if (event.track == 1) //FP1
-					playMidiNote(midiNoteFrequency, Constants.DEFAULT_VOLUME, track1Inst, track1NoteType);
-				else if (event.track == 2) // FP2
-					playMidiNote(midiNoteFrequency, Constants.DEFAULT_VOLUME, track2Inst, track2NoteType);
-				else if (event.track == 3) // FP3
-					playMidiNote(midiNoteFrequency, Constants.DEFAULT_VOLUME, track3Inst, track3NoteType);
-				else if (event.track == 4) // FP4
-					playMidiNote(midiNoteFrequency, Constants.DEFAULT_VOLUME, track4Inst, track4NoteType);
-			}
-			eventCount++;
-		});
-	}
-
 	// Stolen from https://stackoverflow.com/questions/3916191/download-data-url-file, thanks!
 	function downloadURI(uri, name) {
 		var link = document.createElement("a");
@@ -1315,23 +1267,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			var noteDiv = Math.floor(note / 7); // Divide by 7 to find octave WRT numNotes/3.
 			return { note: keySignature[noteMod], octave: noteDiv };
 		}
-	}
-
-	// Returns the lowest octave necessary for this song, using numNotes to determine.
-	// Octave 5 is used as the center/default octave.
-	
-
-	function getIntFromNoteTypeString(noteType) {
-		if (noteType.localeCompare("sixteenth") == 0)
-			return 0;
-		else if (noteType.localeCompare("eighth") == 0)
-			return 1;
-		else if (noteType.localeCompare("quarter") == 0)
-			return 2;
-		else if (noteType.localeCompare("half") == 0)
-			return 3;
-		else if (noteType.localeCompare("whole") == 0)
-			return 4;
 	}
 	
 	return (
