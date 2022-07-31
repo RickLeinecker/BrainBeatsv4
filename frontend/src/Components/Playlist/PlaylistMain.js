@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { FaTrash } from "react-icons/fa";
 import { Card, Container} from "react-bootstrap";
 import "./Playlist.css";
 import { useRecoilValue } from "recoil";
@@ -14,8 +15,11 @@ const PlaylistBody = () => {
   const [playlist, setPlaylist] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() =>{
+  useEffect(() =>{ 
+    getAllMyPlaylist();
+  },[playlist])
 
+  const getAllMyPlaylist = () =>{
     const params = {
       userID: user.id,
     }
@@ -24,7 +28,18 @@ const PlaylistBody = () => {
     .then((res) => {
       setPlaylist(res.data)
     })
-  },[])
+  }
+
+  const deletePlaylist = (playlistID) => {
+    const dataBody ={
+      id: playlistID,
+      token: jwt,
+    }
+    sendAPI('delete', '/playlists/deletePlaylist', dataBody)
+    .then(res => {
+      getAllMyPlaylist()
+    })
+  }
 
 
 
@@ -46,16 +61,20 @@ const PlaylistBody = () => {
                 }
 
                 return (
-                    <Card className="playlistCover" key={index} onClick={onClick}>
+                    <Card key={index} style={{border: '0px', margin: '10px'}}>
                       <Card.Img
                         variant="top"
-                        className="playhover"
+                        className="playlistCover"
                         src={item.thumbnail}
+                        onClick={onClick}
                       />
                       <Card.Body>
                         <Card.Title className="cardText">
                           {item.name}
                         </Card.Title>
+                        <button className='cardTrash'>
+                          <FaTrash onClick={()=>deletePlaylist(item.id)} className='playlistTrash'/>
+                        </button>  
                       </Card.Body>
                     </Card>
                 );

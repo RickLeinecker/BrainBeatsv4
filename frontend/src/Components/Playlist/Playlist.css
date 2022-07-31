@@ -15,7 +15,7 @@
 }
 .playlistCover:hover{
     cursor: pointer;
-    box-shadow: 1px 1px 1px 1px black;
+    box-shadow: 0px 0px 30px black;
 }
 
 .playlistHeader{
@@ -87,4 +87,9 @@
     border: none;
     width: 100px;
     height: 100px;
+}
+.playlistTrash{
+    position: relative;
+    bottom: 18px;
+    left: 60px
 }
