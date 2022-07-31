@@ -194,7 +194,6 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
                     firstName: firstName,
                     lastName: lastName,
                     email: email,
-                    dob: new Date(dob).toISOString(),
                     username: username,
                     bio: bio,
                     profilePicture: profilePicture,
