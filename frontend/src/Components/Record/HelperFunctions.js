@@ -1,5 +1,6 @@
 import * as Constants from './Constants.js'
 
+// Takes an int, returns the respective note type in string form.
 export function getNoteLengthStringFromInt(input)
 {
     if (input == 0) return "whole";
@@ -9,6 +10,7 @@ export function getNoteLengthStringFromInt(input)
     else if (input == 4) return "sixteenth";
 }
 
+// Takes an int, returns the respective instrument in string form.
 export function getInstrumentNameFromInt(input) {
     if (input == -3) return "Sine Wave";
     else if (input == -2) return "Triangle Wave";
@@ -23,6 +25,7 @@ export function getInstrumentNameFromInt(input) {
     else if (input == 7) return "Tuba";
 }
 
+// Takes a string, returns the respective note type in int form.
 export function getIntFromNoteTypeString(input) {
     if (input.localeCompare("sixteenth") == 0) return 0;
     else if (input.localeCompare("eighth") == 0) return 1;
@@ -31,6 +34,7 @@ export function getIntFromNoteTypeString(input) {
     else if (input.localeCompare("whole") == 0) return 4;
 }
 
+// Takes a string, returns the respective note type in int form, but using the values that MidiWriterJS uses.
 export function getIntFromNoteTypeStringWithMidiWriterJsValues(input)
 {
     if (input.localeCompare("sixteenth") == 0) return 16;
@@ -40,7 +44,7 @@ export function getIntFromNoteTypeStringWithMidiWriterJsValues(input)
     else if (input.localeCompare("whole") == 0) return 1;
 }
 
-// This if/else stack returns a note length multiplier based off input. Quarter notes are used as the baseline (x1.0 multiplier).
+// This if/else stack returns a note length multiplier based off an int. Quarter notes are used as the baseline (x1.0 multiplier).
 // Input should just be a lowercase string of the note type. Ex: "quarter", "half"
 export function getNoteLengthMultiplier(noteType) {
     var noteLengthMultiplier = 1;
@@ -58,7 +62,7 @@ export function getNoteLengthMultiplier(noteType) {
     return noteLengthMultiplier;
 }
 
-// Takes in a BPM and returns the length of one QUARTER NOTE in milliseconds.
+// Takes in a BPM int and returns the length of one QUARTER NOTE in milliseconds.
 export function getMilliecondsFromBPM(bpm) {
     return 60000 / bpm;
 }
@@ -78,3 +82,25 @@ export function findNumSamples(ms) {
     let numSamples = Constants.sampleRate / relationToSecond;
     return numSamples;
 }
+
+// Stolen from https://gist.github.com/stuartmemo/3766449. Thanks!!
+// Takes in a note and octave in string form (ex: 'C#6', 'F4') and returns the raw frequency for that note.
+export function getFrequencyFromNoteOctaveString(note)
+{
+    var notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'], octave, keyNumber;
+
+    if (note.length === 3)
+        octave = note.charAt(2);
+    else
+        octave = note.charAt(1);
+
+    keyNumber = notes.indexOf(note.slice(0, -1));
+
+    if (keyNumber < 3)
+        keyNumber = keyNumber + 12 + ((octave - 1) * 12) + 1;
+    else
+        keyNumber = keyNumber + ((octave - 1) * 12) + 1;
+
+    // Return frequency of note
+    return 440 * Math.pow(2, (keyNumber - 49) / 12);
+};
