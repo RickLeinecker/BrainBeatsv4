@@ -68,7 +68,7 @@ export function printTrack(track)
         console.log(trackC4);
 }
 
-// Borrowed from https://stackoverflow.com/questions/3916191/download-data-url-file, thanks!!
+// Borrowed from https://stackoverflow.com/questions/3916191/download-data-url-file. Thanks!!
 function downloadURI(uri, name) {
     var link = document.createElement("a");
     link.download = name;
@@ -76,25 +76,26 @@ function downloadURI(uri, name) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  }
-
-function generateAndDownloadMIDIFile()
-{
-    var write = new MidiWriter.Writer([trackFP1, trackFP2, trackC3, trackC4]);
-    var writeURI = write.dataUri();
-    //COOOL TRICK
-    //you can pass setState as a parameter and have it change in a different function
-    setMIDIFile(writeURI)
-    // pass writeURI to the database
-
-    // downloadURI(writeURI, "BrainBeatsMasterpiece"); // <------------ this is where the MIDI file is actually generated
-    // playMidiFile(writeURI);
-    console.log("From the function:" + writeURI);
 }
 
-function generateMIDIURI()
+// This function is for downloading the MIDI file during or after RECORDING
+export function generateMIDIURIAndDownloadFile()
+{
+    // Second param is the default name of the file in the pop-up to download, you can make it whatever you want.
+    downloadURI(generateMIDIURI(), "BrainBeatsMasterpiece");
+}
+
+// This function is for downloading a MIDI file AT ANY TIME, you just need to pass in a midi URI
+export function generateMIDIFileFromURI(uri)
+{
+    downloadURI(uri);
+}
+
+export function generateMIDIURI()
 {
     var write = new MidiWriter.Writer([trackFP1, trackFP2, trackC3, trackC4]);
     var writeURI = write.dataUri();
+    console.log(writeURI);
     return writeURI;
 }
+

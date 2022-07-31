@@ -27,11 +27,16 @@ import {
 	getMilliecondsFromBPM,
 	GetFloorOctave,
 	findNumSamples,
-	getFrequencyFromNoteOctaveString
-} from './HelperFunctions.js';
+	getFrequencyFromNoteOctaveString} from './HelperFunctions.js';
 import * as Constants from './Constants.js';
 import {playMidiNote} from './Playback.js';
-import {initMIDIWriter, addNoteToMIDITrack, printTrack} from './MIDIWriting.js';
+import {
+	initMIDIWriter, 
+	addNoteToMIDITrack, 
+	printTrack, 
+	generateMIDIURIAndDownloadFile, 
+	generateMIDIURI, 
+	generateMIDIFileFromURI} from './MIDIWriting.js';
 
 function Record() {
     //needed states
@@ -654,7 +659,7 @@ function Record() {
 				</OverlayTrigger>
 			</div>
 			<h2>Record</h2>
-			<button onClick={() => console.log(MIDIFile)}>MIDI FILE</button>
+			{/* <button onClick={() => console.log(MIDIFile)}>MIDI FILE</button> */}
 			<img src={Img} className="scriptless"/>
 			<Setting numNotes={numNotes} instrumentArr={instrumentList} noteDuration={noteDuration} scale={scale} keyNum={keyNum} BPM={BPM} setMIDIFile={setMIDIFile}/>
 			<button className='arrowButtonMain' onClick={() => {setStage(1)}}>{<FaAngleLeft />} Script </button>
@@ -801,6 +806,8 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 	console.log("BPM: " + BPM)
     const [record, setRecord] = useState(false);
 
+	// ------------------------------------------------------------------------------ WILL BE RETIREVED FROM USER ------------------------------------------------------------------------------
+
 	// This isnt a constant its a user variable but it needs to be at the top I'm sorry I can move it later probably hopefully
 	var BPM = 120; // Beats Per Minute of the track [aka tempo]
 
@@ -810,6 +817,14 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		FP2NoteType = getNoteLengthStringFromInt(noteDuration[1]),
 		C3NoteType = getNoteLengthStringFromInt(noteDuration[2]),
 		C4NoteType = getNoteLengthStringFromInt(noteDuration[3]);
+
+	// The instrument that each channel will be "playing" SineWave as a default unless changed from GUI
+	var FP1Instrument = instrumentArr[0],
+		FP2Instrument = instrumentArr[1],
+		C3Instrument = instrumentArr[2],
+		C4Instrument = instrumentArr[3];
+
+	// ------------------------------------------------------------------------------ "GLOBAL" VARIABLES (TRYING TO ELIMINATE) ------------------------------------------------------------------------------
 
 	// The amount of time (in milliseconds) that each of the supported notes would take at the specified BPM.
 	const timeForEachNoteARRAY =
@@ -839,22 +854,13 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 	// between incrementArr[1] and [2], it will be assigned to note 1, the floor of the indexes it fell between.
 	var incrementArr = new Array(numNotes);
 
-	var FP1Ready = 1,
-		FP2Ready = 1,
-		C3Ready = 1,
-		C4Ready = 1,
-		TempoCounterReady = 1;
+	// These act as booleans
+	var FP1Ready = true, FP2Ready = true, C3Ready = true, C4Ready = true, TempoCounterReady = true;
 
 	var FP1NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(FP1NoteType)],
 		FP2NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(FP2NoteType)],
 		C3NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C3NoteType)],
 		C4NoteLengthMS = timeForEachNoteARRAY[getIntFromNoteTypeString(C4NoteType)];
-
-	// The instrument that each channel will be "playing" SineWave as a default unless changed from GUI
-	var FP1Instrument = instrumentArr[0],
-		FP2Instrument = instrumentArr[1],
-		C3Instrument = instrumentArr[2],
-		C4Instrument = instrumentArr[3];
 
 	//These values will determine all instrument volume which is changed in GUI
 	var FP1VolChange = 0, FP2VolChange = 0, C3VolChange = 0, C4VolChange = 0
@@ -942,11 +948,11 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 						i === j ? arr.push(data) : arr.push([]);
 
 					// This is a block meant for debugging only; it prints out some information every time a quarter note elapses. Think of it as a metronome. 
-					if (TempoCounterReady == 1) {
-						TempoCounterReady = 0;
+					if (TempoCounterReady == true) {
+						TempoCounterReady = false;
 						setTimeout(() => {
 							console.log("----- It's been " + getMilliecondsFromBPM(BPM) + "ms (one quarter note at " + BPM + "bpm) -----");
-							TempoCounterReady = 1;
+							TempoCounterReady = true;
 						}, getMilliecondsFromBPM(BPM));
 					}
 
@@ -969,24 +975,24 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 					//     T5Ready = 0;
 					//     setTimeout(() => { mainDriverFunction(track, data, T5Instrument, T5NoteType, T5Volume) }, T5NoteLengthMS)
 					// }
-					if (track.contentHint.localeCompare("FP1") == 0 && FP1Ready == 1 ) 
+					if (track.contentHint.localeCompare("FP1") == 0 && FP1Ready == true) 
 					{
-						FP1Ready = 0;
+						FP1Ready = false;
 						setTimeout(() => { mainDriverFunction(track, data, FP1Instrument, FP1NoteType, FP1Volume) }, FP1NoteLengthMS)
 					}
-					else if (track.contentHint.localeCompare("FP2") == 0 && FP2Ready == 1 ) 
+					else if (track.contentHint.localeCompare("FP2") == 0 && FP2Ready == true) 
 					{
-						FP2Ready = 0;
+						FP2Ready = false;
 						setTimeout(() => { mainDriverFunction(track, data, FP2Instrument, FP2NoteType, FP2Volume) }, FP2NoteLengthMS)
 					}
-					else if (track.contentHint.localeCompare("C3") == 0 && C3Ready == 1 ) 
+					else if (track.contentHint.localeCompare("C3") == 0 && C3Ready == true) 
 					{
-						C3Ready = 0;
+						C3Ready = false;
 						setTimeout(() => { mainDriverFunction(track, data, C3Instrument, C3NoteType, C3Volume) }, C3NoteLengthMS)
 					}
-					else if (track.contentHint.localeCompare("C4") == 0 && C4Ready == 1) 
+					else if (track.contentHint.localeCompare("C4") == 0 && C4Ready == true) 
 					{
-						C4Ready = 0;
+						C4Ready = false;
 						setTimeout(() => { mainDriverFunction(track, data, C4Instrument, C4NoteType, C4Volume) }, C4NoteLengthMS)
 					}
 				}
@@ -1037,13 +1043,13 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 				addNoteToMIDITrack(track, noteAndOctave, noteOctaveString, noteType)
 
 			if (track.contentHint.localeCompare("FP1") == 0)
-				FP1Ready = 1;
+				FP1Ready = true;
 			else if (track.contentHint.localeCompare("FP2") == 0)
-				FP2Ready = 1;
+				FP2Ready = true;
 			else if (track.contentHint.localeCompare("C3") == 0)
-				C3Ready = 1;
+				C3Ready = true;
 			else if (track.contentHint.localeCompare("C4") == 0)
-				C4Ready = 1;
+				C4Ready = true;
 		};
 
 		// Set button functionality
@@ -1056,11 +1062,11 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			// 	button.onclick = () => downloadData();
 			// }
 			else if (button.id === 'Disconnect'){
-				button.onclick = () => {rec=false;console.log("I GOT CLICKED " + rec)};
+				button.onclick = () => {rec=false;console.log("Rec is: " + rec)};
 			}
 	},[])
 		
-	// ------------------------------------------------------------------------------ FUNCTIONS RELATED TO MIDI GENERATION ------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------------ FUNCTIONS RELATED TO RAW DATA ------------------------------------------------------------------------------
 
 	function downloadData() 
 	{
@@ -1072,7 +1078,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		XLSX.writeFile(workbook, "sheetjs.csv", { compression: true });
 	}
 
-// ------------------------------------------------------------------------------ FUNCTIONS RELATED TO MUSIC GENERATION ------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------------ FUNCTIONS RELATED TO MUSIC GENERATION ------------------------------------------------------------------------------
 
 	// This creates the array in which different "increments" for notes are housed. I already sort-of explained this
 	// near the top of this file in the comment for "var incrementArr".
@@ -1125,7 +1131,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		console.log("Number of notes: " + numNotes);
 		console.log("Notes in key signature: " + keySignature);
 		console.log("FP1, FP2, C3, C4 Instruments: " + getInstrumentNameFromInt(FP1Instrument), ", " + getInstrumentNameFromInt(FP2Instrument) + ", "
-			+ getInstrumentNameFromInt(C3Instrument) + ", " + getInstrumentNameFromInt(C4Instrument));
+					+ getInstrumentNameFromInt(C3Instrument) + ", " + getInstrumentNameFromInt(C4Instrument));
 		console.log("FP1, FP2, C3, C4 Note Types: " + FP1NoteType, ", " + FP2NoteType + ", " + C3NoteType + ", " + C4NoteType);
 		console.log("----------------------------------------------");
 	}
@@ -1136,21 +1142,19 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		  <button id="ganglion" className="recordButton">
 			RECORD
 		  </button>
-		  <button id="Disconnect" className="stopButton" onClick={generateAndDownloadMIDIFile}>
+		  <button id="Disconnect" className="stopButton" onClick={generateMIDIURI}>
 			STOP
 		  </button>
 		</div>
 		{/* <input type="file" onChange={previewFile}></input> */}
 
-		<label for="file-upload" className="custom-file-upload">
+		{/* <label for="file-upload" className="custom-file-upload">
     				Upload MIDI
-				</label>
+				</label> */}
 
-		<div style={{ color: "white" }}>Helpful Buttons</div>
-		<button onClick={handleStuff}>Print Debug Stuff</button> <br></br>
-		<button onClick={generateAndDownloadMIDIFile}>
-		  Download MIDI and play WIP
-		</button>
+		{/* <div style={{ color: "white" }}>Helpful Buttons</div> */}
+		<button onClick={handleStuff}>Print Debug Info To Console</button> <br></br>
+		<button onClick={generateMIDIURIAndDownloadFile}>Download MIDI</button>
 		<button onClick={downloadData}>Download Raw Data</button> <br></br>
 	  </>
     );
