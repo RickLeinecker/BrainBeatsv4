@@ -25,6 +25,20 @@ import _, {cloneDeep, first} from 'lodash'
 import { useRecoilValue } from "recoil";
 import {userJWT, userModeState} from '../context/GlobalState'
 import sendAPI from '../sendAPI';
+
+import {
+	getNoteLengthStringFromInt,
+	getInstrumentNameFromInt,
+	getIntFromNoteTypeString,
+	getIntFromNoteTypeStringWithMidiWriterJsValues,
+	getNoteLengthMultiplier,
+	getMilliecondsFromBPM,
+	GetFloorOctave,
+	findNumSamples
+} from './HelperFunctions.js';
+
+import * as Constants from './Constants.js';
+
 // import { fsync } from 'fs';
 
 function Record() {
@@ -796,7 +810,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 	console.log("BPM: " + BPM)
     const [record, setRecord] = useState(false);
 
-
 	//this rec is to stop the infinite loop from track.subscribe
 	let rec;
 
@@ -825,19 +838,15 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 
 		dataDevices = new datastreams.DataDevices();
 		dataDevices.load(ganglion);
-
 		// dataDevices.load(muse);
 		// dataDevices.load(device);
 		// dataDevices.load(hegduino);
 
-		// Set up graph (rough)
-		// const graphDiv = document.getElementById("graph");
-		// graphDiv.style.padding = "25px";
-		// const timeseries = new components.streams.data.TimeSeries();
-		// graphDiv.insertAdjacentElement("beforeend", timeseries);
-
 		// Track handler
 		const handleTrack = (track) => {
+
+			console.log(Constants.MAX_AMPLITUDE)
+
 			// Map track information (e.g. 10-20 Coordinate) to index
 			if (!trackMap.has(track.contentHint)) {
 				const index = trackMap.size;
@@ -852,21 +861,16 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			// Subscribe to new data
 			// This track.subscribe thing is basically one big infinite loop that iterates every time a new "tick" or "frame" of data
 			// is sent from the headset... so it basically runs super quickly. 
-
-
-			// UUIDArray.push(track.callbacks)
-			// console.log(UUIDArray)
-
-			
 			track.subscribe((data) => {
 				//Stops the recording
 				//TODO: find solution to unsubscribe the tracks
-				if(!rec){
-					//console.log(track.unsubscribe(track))
-
-				}else
+				if(!rec)
 				{
-						// Organize New Data
+					//console.log(track.unsubscribe(track))
+				}
+				else
+				{
+					// Organize New Data
 					let arr = [];
 					for (let j = 0; j <= channels; j++)
 						i === j ? arr.push(data) : arr.push([]);
@@ -970,7 +974,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 
 			var declaredNote = NoteDeclarationRaw(datay, tracky.contentHint); // Get note increment
 			var noteAndOctave = GetNoteWRTKey(declaredNote); // Get the actual note and its octave
-			var floorOctave = GetFloorOctave(); // Get the lowest octave that will be used in the song
+			var floorOctave = GetFloorOctave(numNotes); // Get the lowest octave that will be used in the song
 
 			let noteOctaveString;
 			let noteFrequency;
@@ -1084,67 +1088,15 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		C3NoteType = getNoteLengthStringFromInt(noteDuration[2]),
 		C4NoteType = getNoteLengthStringFromInt(noteDuration[3]);
 
-	// 2D arrays that hold every note in each key signature, starting from C. 
-
-
-	const KEY_SIGNATURES_MAJOR =
-		[
-			["C", "D", "E", "F", "G", "A", "B"], // 0 done
-			["C#", "D#", "F", "F#", "G#", "A#", "C"], // 1 done
-			["D", "E", "F#", "G", "A", "B", "C#"], // 2 done
-			["D#", "F", "G", "G#", "A#", "C", "D"], // 3 done
-			["E", "F#", "G#", "A", "B", "C#", "D#"], // 4 done
-			["F", "G", "A", "A#", "C", "D", "E"], // 6 done
-			["F#", "G#", "A#", "B", "C#", "D#", "E#"], // 7 done
-			["G", "A", "B", "C", "D", "E", "F#"], // 8 done
-			["G#", "A#", "C", "C#", "D#", "F", "G"], // 9 done
-			["A", "B", "C#", "D", "E", "F#", "G#"], // 10 done
-			["A#", "C", "D", "D#", "F", "G", "A"], // 11 done 
-			["B", "C#", "D#", "E", "F#", "G#", "A#"] // 12 done
-		];
-	const KEY_SIGNATURES_MINOR =
-		[
-			["C", "D", "D#", "F", "G", "G#", "A#"], // 0 done
-			["C#", "D#", "E", "F#", "G#", "A", "B"], // 1 done
-			["D", "E", "F", "G", "A", "A#", "C"], // 2 done 
-			["D#", "F", "F#", "G#", "A#", "B", "C#"], // 3 done 
-			["E", "F#", "G", "A", "B", "C", "D"], // 4 done 
-			["F", "G", "G#", "A#", "C", "C#", "D#"], // 6 done
-			["F#", "G#", "A", "B", "C#", "D", "E"], // 7 done
-			["G", "A", "A#", "C", "D", "D#", "F"], // 8 done
-			["G#", "A#", "B", "C#", "D#", "E", "F#"], // 9 done
-			["A", "B", "C", "D", "E", "F", "G"], // 10 done
-			["A#", "C", "C#", "D#", "F", "F#", "G#"], // 11 done
-			["B", "C#", "D", "E", "F#", "G", "A"] // 12 done
-		];
-	const KEY_SIGNATURES = [KEY_SIGNATURES_MAJOR, KEY_SIGNATURES_MINOR]
-
-	// Constant to hold the sample rate in hz. May remove. Not sure if we need it. We'll see...
-	const SAMPLE_RATE = 44100
-
 	// The amount of time (in milliseconds) that each of the supported notes would take at the specified BPM.
 	const timeForEachNoteARRAY =
-		[
-			getMilliecondsFromBPM(BPM) / 4,
-			getMilliecondsFromBPM(BPM) / 2,
-			getMilliecondsFromBPM(BPM),
-			getMilliecondsFromBPM(BPM) * 2,
-			getMilliecondsFromBPM(BPM) * 4
-		];
-
-	// The highest and lowest possible values of the headset's data that we will actually use and parse into musical data.
-	// Anything under the maximum and above the minimum will be sorted into respective notes, but anything above the maximum
-	// or below the minimum will be treated as rests. 
-	const MAX_AMPLITUDE = 0.001;
-	const MIN_AMPLITUDE = -0.001;
-
-	// The distance between the ceiling amplitude and the floor amplitude.
-	const MIN_MAX_AMPLITUDE_DIFFERENCE = MAX_AMPLITUDE - MIN_AMPLITUDE;
-
-	// An offset that is equal to the absolute value of MIN_AMPLITUDE. This offset is used to turn the negative MIN value 
-	// into effectively zero, and the MAX value into itself plus this offset. This just removes negative numbers from all
-	// of the calculation, making it simpler for humans to both read and write the code.
-	const AMPLITUDE_OFFSET = 0.001;
+	[
+		getMilliecondsFromBPM(BPM) / 4,
+		getMilliecondsFromBPM(BPM) / 2,
+		getMilliecondsFromBPM(BPM),
+		getMilliecondsFromBPM(BPM) * 2,
+		getMilliecondsFromBPM(BPM) * 4
+	];
 
 	// Number of total notes that are able to be assigned. 7 is one octave, 14 is two octaves, 21 is three octaves.
 	// Going above 21 is NOT recommended and has NOT been tested, but should theoretically work. DO NOT use values 
@@ -1153,25 +1105,10 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 	//       the scale. For example, C major is C, D, E, F, G, A, B. It does NOT include the C of the next octave.
 	//var numNotes = 7;
 
-	const instrumentEnums =
-	{
-		SineWave: -3,
-		TriangleWave: -2,
-		SquareWave: -1,
-		Flute: 0,
-		Oboe: 1,
-		Clarinet: 2,
-		Bassoon: 3,
-		Trumpet: 4,
-		FrenchHorn: 5,
-		Trombone: 6,
-		Tuba: 7
-	}
-
 	// The array of size numNotes that is used to house the cutoffs for each of the numNotes incremements. 
 	// The value of MIN_MAX_AMPLITUDE_DIFFERENCE is divided by numNotes, and the result (let's call this X) is then used to 
 	// create evenly-spaced "sections" in the array. 
-	// incrementArr[0] will always be 0, and incrementArr[numNotes - 1] will always be MAX_AMPLITUDE + AMPLITUDE_OFFSET.
+	// incrementArr[0] will always be 0, and incrementArr[numNotes - 1] will always be Constants.MAX_AMPLITUDE + AMPLITUDE_OFFSET.
 	// incrementArr[1] will be X. incrementArr[2] will be X * 2. incrementArr[3] will be X * 3.
 	// In runtime, the data that the headset relays will be compared to entries in incrementArr simultaneously to find
 	// which values it falls between, and from there a note will be declared. For example, let's say incrementArr[0] is 0,
@@ -1199,31 +1136,21 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 
 	// ------------------------------------------------------------------------------ USER-DEFINED VARIABLES ------------------------------------------------------------------------------
 
-
-	// Feel free to change all of these! That's their purpose!
-
-	var quickNoteType = "quarter"; // sixteenth, eighth, quarter, half, or whole. Don't forget the ""! Currently not used but available if-need be.
-
 	// The instrument that each channel will be "playing" SineWave as a default unless changed from GUI
 	var FP1Instrument = instrumentArr[0],
 		FP2Instrument = instrumentArr[1],
 		C3Instrument = instrumentArr[2],
 		C4Instrument = instrumentArr[3];
 
-	//Default volume value
-	const DEFAULT_VOLUME = 0.1;
-
 	//These values will determine all instrument volume which is changed in GUI
 	var FP1VolChange = 0, FP2VolChange = 0, C3VolChange = 0, C4VolChange = 0
 
-	var FP1Volume = DEFAULT_VOLUME - FP1VolChange,
-		FP2Volume = DEFAULT_VOLUME -  FP2VolChange,
-		C3Volume = DEFAULT_VOLUME - C3VolChange,
-		C4Volume = DEFAULT_VOLUME - C4VolChange;
+	var FP1Volume = Constants.DEFAULT_VOLUME - FP1VolChange,
+		FP2Volume = Constants.DEFAULT_VOLUME -  FP2VolChange,
+		C3Volume = Constants.DEFAULT_VOLUME - C3VolChange,
+		C4Volume = Constants.DEFAULT_VOLUME - C4VolChange;
 
-	var keySignature = KEY_SIGNATURES[scale][keyNum];
-
-	var UUIDArray = new Array();
+	var keySignature = Constants.KEY_SIGNATURES[scale][keyNum];
 		
 	// ------------------------------------------------------------------------------ CUSTOM HELPER FUNCTIONS ------------------------------------------------------------------------------
 
@@ -1279,25 +1206,16 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 				var midiNoteFrequency = getFrequencyFromNoteOctaveString(event.noteName);
 
 				if (event.track == 1) //FP1
-					playMidiNote(midiNoteFrequency, DEFAULT_VOLUME, track1Inst, track1NoteType);
+					playMidiNote(midiNoteFrequency, Constants.DEFAULT_VOLUME, track1Inst, track1NoteType);
 				else if (event.track == 2) // FP2
-					playMidiNote(midiNoteFrequency, DEFAULT_VOLUME, track2Inst, track2NoteType);
+					playMidiNote(midiNoteFrequency, Constants.DEFAULT_VOLUME, track2Inst, track2NoteType);
 				else if (event.track == 3) // FP3
-					playMidiNote(midiNoteFrequency, DEFAULT_VOLUME, track3Inst, track3NoteType);
+					playMidiNote(midiNoteFrequency, Constants.DEFAULT_VOLUME, track3Inst, track3NoteType);
 				else if (event.track == 4) // FP4
-					playMidiNote(midiNoteFrequency, DEFAULT_VOLUME, track4Inst, track4NoteType);
+					playMidiNote(midiNoteFrequency, Constants.DEFAULT_VOLUME, track4Inst, track4NoteType);
 			}
 			eventCount++;
 		});
-	}
-
-	function getNoteLengthStringFromInt(input)
-	{
-		if (input == 0) return "whole";
-		else if (input == 1) return "half";
-		else if (input == 2) return "quarter";
-		else if (input == 3) return "eighth";
-		else if (input == 4) return "sixteenth";
 	}
 
 	// Stolen from https://stackoverflow.com/questions/3916191/download-data-url-file, thanks!
@@ -1353,77 +1271,23 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		trackC4.setTimeSignature(4, 4); 
 	}
 
-	function getInstrumentNameFromInt(input) {
-		if (input == -3) return "Sine Wave";
-		else if (input == -2) return "Triangle Wave";
-		else if (input == -1) return "Square Wave";
-		else if (input == 0) return "Flute";
-		else if (input == 1) return "Oboe";
-		else if (input == 2) return "Clarinet";
-		else if (input == 3) return "Bassoon";
-		else if (input == 4) return "Trumpet";
-		else if (input == 5) return "French Horn";
-		else if (input == 6) return "Trombone";
-		else if (input == 7) return "Tuba";
-	}
-
-	function getIntFromNoteTypeString(input) {
-		if (input.localeCompare("sixteenth") == 0) return 0;
-		else if (input.localeCompare("eighth") == 0) return 1;
-		else if (input.localeCompare("quarter") == 0) return 2;
-		else if (input.localeCompare("half") == 0) return 3;
-		else if (input.localeCompare("whole") == 0) return 4;
-	}
-
-	function getIntFromNoteTypeStringWithMidiWriterJsValues(input)
-	{
-		if (input.localeCompare("sixteenth") == 0) return 16;
-		else if (input.localeCompare("eighth") == 0) return 8;
-		else if (input.localeCompare("quarter") == 0) return 4;
-		else if (input.localeCompare("half") == 0) return 2;
-		else if (input.localeCompare("whole") == 0) return 1;
-	}
-
-	// This if/else stack returns a note length multiplier based off input. Quarter notes are used as the baseline (x1.0 multiplier).
-	// Input should just be a lowercase string of the note type. Ex: "quarter", "half"
-	function getNoteLengthMultiplier(noteType) {
-		var noteLengthMultiplier = 1;
-		if (noteType.localeCompare("sixteenth") == 0) // A sixteenth note is 1/4 the length of a quarter note.
-			noteLengthMultiplier = 0.25;
-		else if (noteType.localeCompare("eighth") == 0)
-			noteLengthMultiplier = 0.5;
-		else if (noteType.localeCompare("quarter") == 0)
-			noteLengthMultiplier = 1;
-		else if (noteType.localeCompare("half") == 0)
-			noteLengthMultiplier = 2;
-		else if (noteType.localeCompare("whole") == 0) // A whole note is 4x the length of a quarter note
-			noteLengthMultiplier = 4;
-
-		return noteLengthMultiplier;
-	}
-
-	// Takes in a BPM and returns the length of one QUARTER NOTE in milliseconds.
-	function getMilliecondsFromBPM(bpm) {
-		return 60000 / bpm;
-	}
-
 	// This creates the array in which different "increments" for notes are housed. I already sort-of explained this
 	// near the top of this file in the comment for "var incrementArr".
 	function InitIncrementArr() {
-		var incrementAmount = MIN_MAX_AMPLITUDE_DIFFERENCE / numNotes; // Dividing the total range by the number of notes
+		var incrementAmount = Constants.MIN_MAX_AMPLITUDE_DIFFERENCE / numNotes; // Dividing the total range by the number of notes
 
 		incrementArr[0] = 0; // First index will always be 0
-		incrementArr[numNotes - 1] = MAX_AMPLITUDE + AMPLITUDE_OFFSET; // Last index will always be the max value + the offset that was used to remove negative numbers.
+		incrementArr[numNotes - 1] = Constants.MAX_AMPLITUDE + Constants.AMPLITUDE_OFFSET; // Last index will always be the max value + the offset that was used to remove negative numbers.
 
 		// Fill out the array so that each index is populated with incrementAmount * index
 		for (var i = 1; i < numNotes - 1; i++)
-			incrementArr[i] = incrementAmount * i + AMPLITUDE_OFFSET;
+			incrementArr[i] = incrementAmount * i + Constants.AMPLITUDE_OFFSET;
 	}
 
 	// Takes in the raw value from the headset and the sensor it came from and assigns a note.
 	function NoteDeclarationRaw(ampValue, sensor) {
 		let ampValue2 = 0;
-		ampValue2 = (ampValue - -AMPLITUDE_OFFSET); // Applies the offset to the headset's raw data
+		ampValue2 = (ampValue - -Constants.AMPLITUDE_OFFSET); // Applies the offset to the headset's raw data
 
 		// For every possible note, check to see if ampValue falls between two array positions. If so, return that position.
 		// If not, it will be treated as a rest (returning -1).
@@ -1452,14 +1316,9 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 
 	// Returns the lowest octave necessary for this song, using numNotes to determine.
 	// Octave 5 is used as the center/default octave.
-	function GetFloorOctave() {
-		if (numNotes == 7 || numNotes == 14)
-			return 5;
-		if (numNotes == 21)
-			return 4;
-	}
+	
 
-	function getNoteType(noteType) {
+	function getIntFromNoteTypeString(noteType) {
 		if (noteType.localeCompare("sixteenth") == 0)
 			return 0;
 		else if (noteType.localeCompare("eighth") == 0)
@@ -1470,15 +1329,6 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			return 3;
 		else if (noteType.localeCompare("whole") == 0)
 			return 4;
-	}
-
-	function findNumSamples(ms) {
-		// Sample rate is number of samples every second
-		// numSamples is the number of total samples played
-		// ms is how many milliseconds we want something to play for
-		let relationToSecond = 1000 / ms;
-		let numSamples = SAMPLE_RATE / relationToSecond;
-		return numSamples;
 	}
 
 	// Stolen from https://gist.github.com/stuartmemo/3766449. Thanks!!
@@ -1589,14 +1439,14 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		var buffer; // Local buffer variable.
 
 		// For each supported sound type we call the correct function.
-		if (soundType == instrumentEnums.SineWave)
-			buffer = sineWave(findNumSamples(timeForEachNoteARRAY[getNoteType(noteLength)]), freq, amplitude, ctx);
-		else if (soundType == instrumentEnums.TriangleWave)
-			buffer = triangleWave(findNumSamples(timeForEachNoteARRAY[getNoteType(noteLength)]), freq, amplitude, ctx);
-		else if (soundType == instrumentEnums.SquareWave)
-			buffer = squareWave(findNumSamples(timeForEachNoteARRAY[getNoteType(noteLength)]), freq, amplitude, ctx);
+		if (soundType == Constants.instrumentEnums.SineWave)
+			buffer = sineWave(findNumSamples(timeForEachNoteARRAY[getIntFromNoteTypeString(noteLength)]), freq, amplitude, ctx);
+		else if (soundType == Constants.instrumentEnums.TriangleWave)
+			buffer = triangleWave(findNumSamples(timeForEachNoteARRAY[getIntFromNoteTypeString(noteLength)]), freq, amplitude, ctx);
+		else if (soundType == Constants.instrumentEnums.SquareWave)
+			buffer = squareWave(findNumSamples(timeForEachNoteARRAY[getIntFromNoteTypeString(noteLength)]), freq, amplitude, ctx);
 		else
-			buffer = instrumentWave(findNumSamples(timeForEachNoteARRAY[getNoteType(noteLength)]), freq, ctx, soundType);
+			buffer = instrumentWave(findNumSamples(timeForEachNoteARRAY[getIntFromNoteTypeString(noteLength)]), freq, ctx, soundType);
 
 		return buffer;
 	}
@@ -1636,16 +1486,13 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 	// ------------------------------------------------------------------------------ INSTRUMENT DATA STOLEN FROM MICROTONALITY.NET ------------------------------------------------------------------------------
 
 
-	// We are using a standard sample rate of 44100hz. Would not recommend changing this. I don't know what would happen, but you still probably shouldn't.
-	var sampleRate = 44100;
-
 	// Sine wave
 	function sineWave(numSamples, frequency, amplitude, ctx) {
 		// Precalculate 2PI
 		let PI_2 = Math.PI * 2;
 
 		// Create the buffer for the node.
-		let buffer = ctx.createBuffer(1, numSamples, SAMPLE_RATE);
+		let buffer = ctx.createBuffer(1, numSamples, Constants.sampleRate);
 
 		// Create the buffer into which the audio data will be placed.
 		let buf = buffer.getChannelData(0);
@@ -1653,7 +1500,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		// Loop numSamples times -- that's how many samples we will calculate and store.
 		for (let i = 0; i < numSamples; i++) {
 			// Calculate and store the value for this sample.
-			buf[i] = Math.sin(frequency * PI_2 * i / SAMPLE_RATE) * amplitude;
+			buf[i] = Math.sin(frequency * PI_2 * i / Constants.sampleRate) * amplitude;
 		}
 
 		// Return the channel buffer.
@@ -1664,7 +1511,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 	function triangleWave(numSamples, frequency, amplitude, ctx) {
 
 		// Here we calculate the number of samples for each wave oscillation.
-		var samplesPerOscillation = sampleRate / frequency;
+		var samplesPerOscillation = Constants.sampleRate / frequency;
 		// This is the first quarter of the oscillation. 0 - 1/4
 		var first = samplesPerOscillation / 4;
 		// This is the second quarter of the oscillation. 1/4 - 1/2
@@ -1678,7 +1525,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		var step = 1 / first;
 
 		// Create the buffer for the node.
-		var buffer = ctx.createBuffer(1, numSamples, sampleRate);
+		var buffer = ctx.createBuffer(1, numSamples, Constants.sampleRate);
 
 		// Create the buffer into which the audio data will be placed.
 		var buf = buffer.getChannelData(0);
@@ -1731,14 +1578,14 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 	function squareWave(numSamples, frequency, amplitude, ctx) {
 
 		// Here we calculate the number of samples for each wave oscillation.
-		var samplesPerOscillation = sampleRate / frequency;
+		var samplesPerOscillation = Constants.sampleRate / frequency;
 		// Create the value for the first oscillation change.
 		var first = samplesPerOscillation / 2;
 		// We will count the samples as we go.
 		var counter = 0;
 
 		// Create the buffer for the node.
-		var buffer = ctx.createBuffer(1, numSamples, sampleRate);
+		var buffer = ctx.createBuffer(1, numSamples, Constants.sampleRate);
 
 		// Create the buffer into which the audio data will be placed.
 		var buf = buffer.getChannelData(0);
@@ -1781,7 +1628,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		let PI_2 = Math.PI * 2;
 
 		// Create the buffer for the node.
-		let buffer = ctx.createBuffer(1, numSamples, sampleRate);
+		let buffer = ctx.createBuffer(1, numSamples, Constants.sampleRate);
 
 		// Create the buffer into which the audio data will be placed.
 		var buf = buffer.getChannelData(0);
@@ -1802,7 +1649,7 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			// Loop numSamples times -- that's how many samples we will calculate and store.
 			for (var i = 0; i < numSamples; i++) {
 				// Calculate and store the value for this sample.
-				buf[i] += (Math.sin(f * PI_2 * i / sampleRate) * a);
+				buf[i] += (Math.sin(f * PI_2 * i / Constants.sampleRate) * a);
 				//buf[i] = frequency;
 			}
 		}
