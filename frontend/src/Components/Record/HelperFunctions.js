@@ -68,7 +68,7 @@ export function getInstrumentNameFromInt(input) {
 
 // ------------------------------------------------------------------------------ OTHER FUNCTIONS ------------------------------------------------------------------------------
 
-// Takes in a BPM int and returns the length of one QUARTER NOTE in milliseconds.
+// Takes in a BPM int and returns the length of one QUARTER NOTE in milliseconds at that BPM.
 export function getMilliecondsFromBPM(bpm) {
     return 60000 / bpm;
 }
