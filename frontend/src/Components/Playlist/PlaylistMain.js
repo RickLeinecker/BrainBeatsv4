@@ -61,7 +61,7 @@ const PlaylistBody = () => {
                 }
 
                 return (
-                    <Card key={index} style={{border: '0px', margin: '10px'}}>
+                    <Card key={index} style={{border: '0px', margin: '1.9em'}}>
                       <Card.Img
                         variant="top"
                         className="playlistCover"

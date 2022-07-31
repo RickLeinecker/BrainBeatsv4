@@ -10,12 +10,15 @@
 }
 
 .playlistCover{
-    border: 0px
+    border: 0px;
+    width: 185px;
+    height: 185px;
 
 }
 .playlistCover:hover{
     cursor: pointer;
     box-shadow: 0px 0px 30px black;
+
 }
 
 .playlistHeader{
