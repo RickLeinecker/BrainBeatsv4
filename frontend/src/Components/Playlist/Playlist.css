@@ -9,6 +9,15 @@
     overflow-y: scroll;
 }
 
+.playlistCover{
+    border: 0px
+
+}
+.playlistCover:hover{
+    cursor: pointer;
+    box-shadow: 1px 1px 1px 1px black;
+}
+
 .playlistHeader{
     display: flex;
     height: 30vh;

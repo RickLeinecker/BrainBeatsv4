@@ -18,9 +18,6 @@ const PlaylistBody = () => {
 
     const params = {
       userID: user.id,
-      // title: title, 
-      thumbnail: thumbnail,
-      token: jwt,
     }
 
     sendAPI('get', '/playlists/getUserPlaylists', params)
@@ -49,7 +46,7 @@ const PlaylistBody = () => {
                 }
 
                 return (
-                    <Card className="cardStyle" key={index} onClick={onClick}>
+                    <Card className="playlistCover" key={index} onClick={onClick}>
                       <Card.Img
                         variant="top"
                         className="playhover"
