@@ -168,7 +168,7 @@ router.get('/getUserImages', async (req, res) => {
 // Update user info 
 router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
     try{
-        const { id, firstName, lastName, password, email, username, bio, token, profilePicture } = req.body;
+        const { id, firstName, lastName, email, username, bio, token, profilePicture } = req.body;
         
         const decoded = verifyJWT(token);
 
@@ -186,7 +186,7 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
                 msg: "User ID not found"
             });
         } else {
-            encryptedPassword = await bcrypt.hash(password, 10);
+            //encryptedPassword = await bcrypt.hash(password, 10);
 
             const updateUser = await prisma.User.update({
                 where: { id },
@@ -196,8 +196,7 @@ router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
                     email: email,
                     username: username,
                     bio: bio,
-                    profilePicture: profilePicture,
-                    password: encryptedPassword
+                    profilePicture: profilePicture
                 }
             });
             res.status(200).send({msg: "User was successfully updated"});
