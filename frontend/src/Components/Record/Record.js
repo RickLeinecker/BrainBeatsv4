@@ -1228,9 +1228,8 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 		</div>
 		<div>
 			<button onClick={downloadData} className="downloadRawButton">Download Raw Data</button> <br></br>
+			{/* <button onClick={initMIDIWriter} className="downloadRawButton">Reset?</button> <br></br> */}
 		</div>
-
-		
 	  </>
     );
 }

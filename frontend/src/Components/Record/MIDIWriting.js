@@ -36,12 +36,23 @@ export function addNoteToMIDITrack(track, noteAndOctave, noteOctaveString, noteT
 
 export function initMIDIWriter(BPM)
 {
+    console.log("Setting everything back to default?")
     trackFP1 = new MidiWriter.Track();
     trackFP2 = new MidiWriter.Track();
     trackC3 = new MidiWriter.Track();
     trackC4 = new MidiWriter.Track();
+    console.log(trackFP1);
     initMIDIWriterParams(BPM);
 }
+
+// export function resetMIDI()
+// {
+//     trackFP1 = new MidiWriter.Track();
+//     trackFP2 = new MidiWriter.Track();
+//     trackC3 = new MidiWriter.Track();
+//     trackC4 = new MidiWriter.Track();
+//     initMIDIWriterParams(BPM);-
+// }
 
 function initMIDIWriterParams(BPM)
 {
