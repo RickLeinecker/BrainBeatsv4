@@ -6,12 +6,10 @@ const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
 const { getJWT, verifyJWT } = require("../../utils/jwt");
 const { getUserExists, getPostExists, getPlaylistExists} = require("../../utils/database");
-const multer  = require('multer')
-const upload = multer({limits: { fieldSize: 5000000 }})
 // Create a new playlist
 
 //Thumbnail is a file upload is here
-router.post('/createPlaylist', upload.single('thumbnail'), async (req, res) => {
+router.post('/createPlaylist', async (req, res) => {
 
     try {
         const { name, userID, token, thumbnail} = req.body;

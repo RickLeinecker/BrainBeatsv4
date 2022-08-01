@@ -7,8 +7,8 @@ const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
 const { getJWT, verifyJWT } = require("../../utils/jwt");
 const { getUserExists } = require("../../utils/database");
-const multer  = require('multer')
-const upload = multer({limits: { fieldSize: 25 * 1024 * 1024 }})
+// const multer  = require('multer')
+// const upload = multer()
 const fs = require('fs');
 const crypto = require('crypto');
 
@@ -166,7 +166,7 @@ router.get('/getUserImages', async (req, res) => {
 });
 
 // Update user info 
-router.put('/updateUser', upload.single('profilePicture'), async (req, res) => {
+router.put('/updateUser', async (req, res) => {
     try{
         const { id, firstName, lastName, email, username, bio, token, profilePicture } = req.body;
         
