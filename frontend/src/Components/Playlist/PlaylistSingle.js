@@ -8,6 +8,8 @@ import { Modal, Button } from "react-bootstrap";
 
 import {userJWT, userModeState} from '../context/GlobalState'
 
+import { playMidiFile } from "../Record/Playback";
+
 const Playlist = () => {
   //id for the playlist
   const { pid } = useParams();
@@ -119,7 +121,7 @@ const Playlist = () => {
                 <td><img className="smallPostThumbnail" src={item.thumbnail? item.thumbnail :"https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png"} /> </td>
                 <td className="smallPostText">{index} - {item.post.title}</td>
                 <td><button className="playlistPostButton" onClick={(e) =>deleteSong(item.post.id)}><FaTrash /></button></td>
-                <td><button className="playlistPostButton"><FaPlayCircle /></button></td>
+                <td><button className="playlistPostButton" onClick={(e) => playMidiFile(item.post.midi, item.post.instruments, item.post.noteTypes, item.post.bpm)}><FaPlayCircle /></button></td>
               </tr>
             )
           })}

@@ -14,6 +14,8 @@ import { useRecoilValue } from "recoil";
 
 import { userJWT, userModeState } from "../context/GlobalState";
 import sendAPI from "../sendAPI";
+import { playMidiFile } from "../Record/Playback";
+
 
 const SearchComp = () => {
   const user = useRecoilValue(userModeState);
@@ -212,7 +214,10 @@ const SearchComp = () => {
                         <Card.Body>
                           <button
                             className="cardPlayButton"
-                            onClick={(e) => {}}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                playMidiFile(item.midi, item.instruments, item.noteTypes, item.bpm);
+                            }}
                           >
                             <FaPlayCircle size={90} />
                           </button>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Button, Container } from 'react-bootstrap';
-import { FaHeart, FaPlayCircle, FaRegHeart, FaTrash } from 'react-icons/fa';
+import { FaHeart, FaPlayCircle, FaRegHeart, FaTrash, FaTruck } from 'react-icons/fa';
 import MidiPlayer from 'react-midi-player';
 import './homepage.css';
 import Carousel from '../Carousel/Carousel';
@@ -34,7 +34,7 @@ const Cards = () => {
         if(user){
             getUserPostInfo()
         }
-    }, [allPost, userPost])
+    }, [])
 
     const getAllSong = () => {
         sendAPI('get', '/posts/getAllPosts')
@@ -91,7 +91,6 @@ const Cards = () => {
     },[])
 
     const onRemovePost = useCallback((post) => {
-        console.log("HELLO")
         let bodyData = {
             id: post,
             token: jwt,
@@ -108,10 +107,6 @@ const Cards = () => {
     },[])
 
     const playSong =(midi, instruments, noteTypes, bpm) => {
-        console.log(midi)
-        console.log(instruments)
-        console.log(noteTypes)
-        console.log(bpm)
         playMidiFile(midi, instruments, noteTypes, bpm);
     }
     return (
@@ -173,8 +168,7 @@ const Cards = () => {
                                                 <Card.Subtitle className='cardText'>{item.user.username}</Card.Subtitle>
                                                 <button className='homePlayButton' onClick={(e) => {
                                                     e.preventDefault();
-                                                    //setData(item.data); //store this items midi string to Data
-                                                    //setShowMedia(true); //reveal midi player
+                                                    playSong(item.midi, item.instruments, item.noteTypes, item.bpm)
                                                 }}><FaPlayCircle size={90} />
                                                 </button>
                                                 <button className='cardHeart'>
