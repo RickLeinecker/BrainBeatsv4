@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Button, Container } from 'react-bootstrap';
 import { FaHeart, FaPlayCircle, FaRegHeart, FaTrash, FaTruck } from 'react-icons/fa';
-import MidiPlayer from 'react-midi-player';
+import Logo from '../Navbar/Logo.jpg'
 import './homepage.css';
 import Carousel from '../Carousel/Carousel';
 import { useRecoilValue } from 'recoil';
@@ -129,7 +129,7 @@ const Cards = () => {
                                 <div key={index}>
                                     
                                     <Card className='cardStyle'>
-                                        <Card.Img variant="top" className='playhover cardImg' src={item.thumbnail} />
+                                        <Card.Img variant="top" className='playhover cardImg' src={item.thumbnail ? item.thumbnail : Logo} />
                                         <Card.Body>
 
                                             <Card.Title className='cardText'>{item.title}</Card.Title>
@@ -161,7 +161,7 @@ const Cards = () => {
                                 return (
                                     <div key={index}>
                                         <Card className='cardStyle'>
-                                            <Card.Img variant="top" className='playhover cardImg' src={item.thumbnail}/>
+                                            <Card.Img variant="top" className='playhover cardImg'  src={item.thumbnail ? item.thumbnail : Logo}/>
                                             <Card.Body>
         
                                                 <Card.Title className='cardText'>{item.title}</Card.Title>

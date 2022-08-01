@@ -53,6 +53,8 @@
     width: 200px;
     height: 200px;
     float: left;
+    margin-left: 45px;
+    margin-right: 35px;
     
 }
 .thumbnailInput {
@@ -78,12 +80,14 @@
 .smallPostThumbnail {
     width: 100px;
     height: 100px;
+    margin: 5px
 }
 
 .smallPostText{
     font-size: 20px;
     text-align: left;
     width: 75vw;
+    padding-left: 10px
 }
 .playlistPostButton {
     background: none;

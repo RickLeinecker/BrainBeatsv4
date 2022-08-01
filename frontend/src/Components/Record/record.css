@@ -95,6 +95,25 @@
   border-radius: 5px;
 }
 
+.downloadRawButton {
+  background: rgb(236, 51, 138);
+  font-size: 20px;
+  width: 260px;
+  border: 0px;
+  margin: 10px;
+  border-radius: 5px;
+
+}
+.downloadMidiButton {
+  background: rgb(0, 203, 85);
+  font-size: 20px;
+  width: 120px;
+  border: 0px;
+  margin: 10px;
+  border-radius: 5px;
+
+}
+
 .reactIcon {
     color: red;
 }

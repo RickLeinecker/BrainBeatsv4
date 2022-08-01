@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom";
 import sendAPI from "../sendAPI";
 import { useRecoilValue } from 'recoil';
 
+import Logo from '../Navbar/Logo.jpg'
+
 import { Modal, Button } from "react-bootstrap";
 
 import {userJWT, userModeState} from '../context/GlobalState'
@@ -103,7 +105,7 @@ const Playlist = () => {
           src={
             playlist.thumbnail
               ? playlist.thumbnail
-              : "https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png"
+              : Logo
           }
           className="playlistSinglePic"
         />
@@ -118,10 +120,10 @@ const Playlist = () => {
       {allPost.map((item, index) => {
             return(
               <tr key={index}>
-                <td><img className="smallPostThumbnail" src={item.thumbnail? item.thumbnail :"https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png"} /> </td>
-                <td className="smallPostText">{index} - {item.post.title}</td>
-                <td><button className="playlistPostButton" onClick={(e) =>deleteSong(item.post.id)}><FaTrash /></button></td>
-                <td><button className="playlistPostButton" onClick={(e) => playMidiFile(item.post.midi, item.post.instruments, item.post.noteTypes, item.post.bpm)}><FaPlayCircle /></button></td>
+                <td><img className="smallPostThumbnail" src={item.thumbnail? item.thumbnail : Logo} /> </td>
+                <td className="smallPostText">{index + 1} - {item.post.title}</td>
+                <td><button className="playlistPostButton" onClick={(e) =>deleteSong(item.post.id)}><FaTrash size={30}/></button></td>
+                <td><button className="playlistPostButton" onClick={(e) => playMidiFile(item.post.midi, item.post.instruments, item.post.noteTypes, item.post.bpm)} ><FaPlayCircle size={30}/></button></td>
               </tr>
             )
           })}

@@ -6,6 +6,8 @@ import { useRecoilValue } from "recoil";
 import {useNavigate} from 'react-router-dom'
 import { userJWT, userModeState } from "../context/GlobalState";
 import sendAPI from "../sendAPI";
+import Logo from '../Navbar/Logo.jpg'
+
 
 const PlaylistBody = () => {
   const user = useRecoilValue(userModeState);
@@ -65,7 +67,7 @@ const PlaylistBody = () => {
                       <Card.Img
                         variant="top"
                         className="playlistCover"
-                        src={item.thumbnail}
+                        src={item.thumbnail ? item.thumbnail : Logo}
                         onClick={onClick}
                       />
                       <Card.Body>

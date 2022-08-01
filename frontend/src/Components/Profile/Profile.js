@@ -80,7 +80,7 @@ const Profile = () => {
         // for (const value of newUser.values()) {
         //     console.log(value);
         //   }
-        console.log(newUser);
+        
 
         sendAPI('put', '/users/updateUser', newUser)
             .then(function (res) {
@@ -90,7 +90,7 @@ const Profile = () => {
                 setErrorMsg(err.response.data.msg);
             })
 
-        console.log(newUser);
+            window.location.reload(false);
     }
 
 
@@ -117,22 +117,24 @@ const Profile = () => {
                                 <div className="pr-1 col-md-3">
                                     <div className="form-group">
                                         <label>Username</label>
-                                        <input placeholder={user ? user.username : 'username'} onChange={(event) => setUsername(event.target.value)} type="text" className="form-control" value={username} />
+                                        <input placeholder={username} onChange={(event) => setUsername(event.target.value)} type="text" className="form-control" value={username} />
                                     </div>
                                 </div>
                                 <div className="px-1 col-md-3">
                                 <div className="form-group">
                                     <label>Profile Picture</label>
-                                    <label for="file-upload" className="custom-file-upload" style={{position: 'relative', bottom: '18px', left: '5px'}}>
+                                    <br />
+                                    <label for="file-upload" className="custom-file-upload" style={{position: 'relative', bottom: '17px', width: '100%', height: '35px', textAlign: 'center'}}>
                                         Upload Image (optional)
+                                        <input id="file-upload" onChange={(event) => updateProfilePic(event.target.files[0])} type="file"/>
                                     </label>
-                                    <input id="file-upload" onChange={(event) => updateProfilePic(event.target.files[0])} type="file"/>
+                                    
                                     </div>
                                 </div>
                                 <div className="pl-1 col-md-6">
                                     <div className="form-group">
                                         <label>Email address</label>
-                                        <input placeholder={user ? user.email : 'email'} onChange={(event) => setEmail(event.target.value)} type="text" className="form-control" value={email} />
+                                        <input placeholder={email} onChange={(event) => setEmail(event.target.value)} type="text" className="form-control" value={email} />
                                     </div>
                                 </div>
                             </div>
@@ -140,13 +142,13 @@ const Profile = () => {
                                 <div className="pr-1 col-md-6">
                                     <div className="form-group">
                                         <label>First Name</label>
-                                        <input placeholder={user ? user.firstName : 'First Name'} onChange={(event) => setFirstName(event.target.value)} type="text" className="form-control" value={firstName} />
+                                        <input placeholder={firstName} onChange={(event) => setFirstName(event.target.value)} type="text" className="form-control" value={firstName} />
                                     </div>
                                 </div>
                                 <div className="pl-1 col-md-6">
                                     <div className="form-group">
                                         <label>Last Name </label>
-                                        <input placeholder={user ? user.lastName : 'Last Name'} onChange={(event) => setLastName(event.target.value)} type="text" className="form-control" value={lastName} />
+                                        <input placeholder={lastName} onChange={(event) => setLastName(event.target.value)} type="text" className="form-control" value={lastName} />
                                     </div>
                                 </div>
                             </div>
@@ -154,7 +156,7 @@ const Profile = () => {
                                 <div className="col-md-12">
                                     <div className="form-group">
                                         <label>About Me</label>
-                                        <textarea cols="80" placeholder={user.bio ? user.bio : 'User bio'} onChange={(event) => setBio(event.target.value)} rows="5" className="form-control" value={bio}></textarea>
+                                        <textarea cols="80" placeholder={bio ? bio : 'User bio'} onChange={(event) => setBio(event.target.value)} rows="5" className="form-control" value={bio}></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -173,7 +175,7 @@ const Profile = () => {
                     <div className="userCard">
                         <div className="author">
                             <img className='profileImg' src={profilePicture}></img>
-                            <p>{user ? user.firstName + " " + user.lastName : "First Name Last Name"}</p>
+                            <p>{firstName + " " + lastName}</p>
                         </div>
                         <div className='userBody'>
                             <p>{bio ? bio : 'Please fill in your bio'}</p>

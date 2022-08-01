@@ -43,19 +43,20 @@
 
 .playhover {
     position: 'absolute';
+    
 }
 .homePlayButton{
     position: absolute;
     background: none;
     color: red;
     border: 0;
-    top: 20px;
+    top: 45px;
     left: 50px;
-    opacity: 0;
+    opacity: 0%;
     transition: .2s ease-in-out;
 }
 
-.cardStyle:hover .cardPlayButton{
+.cardStyle:hover .homePlayButton{
     opacity: 100;
     transition: .2s ease-in-out;
 }

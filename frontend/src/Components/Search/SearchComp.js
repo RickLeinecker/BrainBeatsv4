@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FaHeart,
   FaRegHeart,
@@ -15,6 +15,8 @@ import { useRecoilValue } from "recoil";
 import { userJWT, userModeState } from "../context/GlobalState";
 import sendAPI from "../sendAPI";
 import { playMidiFile } from "../Record/Playback";
+
+import Logo from '../Navbar/Logo.jpg'
 
 
 const SearchComp = () => {
@@ -33,6 +35,8 @@ const SearchComp = () => {
   const [thumbnail, setThumbnail] = useState('');
   const [currentSelectPost, setCurretSelectPost] = useState("");
 
+  const [liked, setLiked] = useState([]);
+
   useEffect(() => {
     sendAPI("get", "/posts/getAllPosts").then((res) => {
       setPost(res.data);
@@ -44,8 +48,13 @@ const SearchComp = () => {
       sendAPI("get", "/playlists/getUserPlaylists", dataParam).then((res) => {
         setUserPlaylist(res.data);
       });
+
+      sendAPI('get', '/likes/getAllUserLikes', dataParam)
+        .then((res) => {
+         setLiked(res.data);
+         })
     }
-  }, []);
+  }, [liked]);
 
   function showAdd(event) {
     console.log(event);
@@ -115,6 +124,35 @@ const SearchComp = () => {
     reader.readAsDataURL(file);
     // setProfilePicture(baseString);
   }
+  const onLike = useCallback((post) => {
+    let bodyData = {
+        userID: user.id,
+        postID: post,
+        token: jwt,
+    }
+    sendAPI('post', '/likes/createUserLike', bodyData)
+    .then((res) => {
+        setLiked((l) => [... l,res.data])
+    })
+    .catch((err) => {
+        console.log(err.data)
+    })
+},[])
+
+const onRemove = useCallback((post) => {
+    let bodyData = {
+        userID: user.id,
+        postID: post,
+        token: jwt,
+    }
+    sendAPI('delete', '/likes/removeUserLike', bodyData)
+    .then((res) => {
+        setLiked((l) => l.filter((p) => p.postID !== post))})
+    .catch((err) => {
+        console.log(err.data)
+    })
+
+},[])
 
   return (
     <>
@@ -129,7 +167,7 @@ const SearchComp = () => {
                 <div className="row" style={{ margin: "3px" }}>
                   <div className="col-sm-3">
                     <img
-                      src={thumbnail}
+                      src={thumbnail ? thumbnail : Logo}
                       className="modalImg"
                     />
                   </div>
@@ -203,12 +241,12 @@ const SearchComp = () => {
               <div key={index}>
                 <div>
                   <div className="row">
-                    <div className="col-sm-3">
+                    <div style={{width: '200px'}}>
                       <Card className="cardStyleSearch">
                         <Card.Img
                           variant="top"
                           className="playhover"
-                          src={item.thumbnail}
+                          src={item.thumbnail ? item.thumbnail : Logo}
                           style={{ height: "150px", width: "150px" }}
                         />
                         <Card.Body>
@@ -240,8 +278,9 @@ const SearchComp = () => {
                         <p className="postText">{item.title}</p>
                       </div>
                       <div style={{ display: "flex" }}>
+
                         <button className="statusButton">
-                          <FaHeart />
+                        {liked.filter((like) => like.postID === item.id).length ? <FaHeart onClick={()=>onRemove(item.id)}/> : <FaRegHeart onClick={() => onLike(item.id)}/>}
                           &nbsp; <p className="statusText">{item.likeCount}</p>
                         </button>
                         <Dropdown className="reactDrop">
