@@ -2,20 +2,33 @@ import React from "react";
 import { Carousel } from "react-responsive-carousel";
 import Background1 from "./Background1.png";
 import Background2 from "./Background2.png";
-
-import Link from 'react-router-dom'
+import { Button } from "react-bootstrap";
 
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
+const cardStyle ={
+    position: 'relative',
+    bottom: '50%',
+    transform: 'translateY(-50%)',
+    fontSize: '24px',
+    transform: 'translateX(400px)'
+}
+const cardContainer = {
+    position: 'relative',
+    height:'100%',
+}
+
 export default () => (
-    <div style={{display: 'flex', justifyContent: 'center'}}>
+    <div>
         <Carousel autoPlay showThumbs={false}
         infiniteLoop={true} dynamicHeight={true} interval={10000}>
-            <div>
-                <a href="/About" style={{display: 'block'}}><img alt="About Us" src={Background1} /></a>
+            <div style={cardContainer}>
+                <img alt="About Us" src={Background1} /> 
+                <Button style={cardStyle}>About Us</Button> 
             </div>
-            <div>
-                <a href="/Register" style={{display: 'block'}}><img alt="Create an account" src={Background2} /></a>
+            <div style={cardContainer}>
+                <img alt="Create an account" src={Background2} />
+                <Button style={cardStyle}>Register</Button>
             </div>
         </Carousel>
     </div>
