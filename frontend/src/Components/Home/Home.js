@@ -117,7 +117,7 @@ const Cards = () => {
                 <Carousel />
             </div> : <></>
         }
-        <h1>RECENT SONGS</h1>
+        <h1>RECENT POSTS</h1>
         
         <div style={{ overflowX: 'hidden' }}>
             <div className='row'>
@@ -153,7 +153,7 @@ const Cards = () => {
             <div className='row'>
                 {//Only appears if user is signed in
                     user ? <>
-                    <h1> YOUR SONG </h1>
+                    <h1> YOUR POSTS </h1>
                     <Container className='containerOverflow'>
                         <div style={{ display: 'inline-flex' }}>
                             <p>{yourFirst}</p>

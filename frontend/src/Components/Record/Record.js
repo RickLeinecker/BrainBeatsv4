@@ -515,6 +515,7 @@ function Record() {
               value={cardText}
             />
           </div>
+		  <br></br>
           <div className="row">
             <div className="col-sm-2">
 			<p>Text Color</p>
