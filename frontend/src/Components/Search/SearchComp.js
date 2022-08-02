@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FaHeart,
   FaRegHeart,
@@ -14,6 +14,10 @@ import { useRecoilValue } from "recoil";
 
 import { userJWT, userModeState } from "../context/GlobalState";
 import sendAPI from "../sendAPI";
+import { playMidiFile } from "../Record/Playback";
+
+import Logo from '../Navbar/Logo.jpg'
+
 
 const SearchComp = () => {
   const user = useRecoilValue(userModeState);
@@ -28,8 +32,10 @@ const SearchComp = () => {
   const [picture, setPicture] = useState();
   const [message, setMessage] = useState("");
   const [username, setUsername] = useState('');
-
+  const [thumbnail, setThumbnail] = useState('');
   const [currentSelectPost, setCurretSelectPost] = useState("");
+
+  const [liked, setLiked] = useState([]);
 
   useEffect(() => {
     sendAPI("get", "/posts/getAllPosts").then((res) => {
@@ -42,8 +48,13 @@ const SearchComp = () => {
       sendAPI("get", "/playlists/getUserPlaylists", dataParam).then((res) => {
         setUserPlaylist(res.data);
       });
+
+      sendAPI('get', '/likes/getAllUserLikes', dataParam)
+        .then((res) => {
+         setLiked(res.data);
+         })
     }
-  }, []);
+  }, [liked]);
 
   function showAdd(event) {
     console.log(event);
@@ -77,6 +88,7 @@ const SearchComp = () => {
       name: playListTitle,
       userID: user.id,
       token: jwt,
+      thumbnail: thumbnail
     };
     sendAPI("post", "/playlists/createPlaylist", dataBody).then((res) => {
       setMessage("Playlist Created");
@@ -99,7 +111,48 @@ const SearchComp = () => {
     if(event.key === 'Enter'){
       searchFuntion()
     }
-}
+  }
+
+  const updateProfilePic = (file) => {
+    var file = document.querySelector('input[type=file]')['files'][0];
+    var reader = new FileReader();
+    var baseString;
+    reader.onloadend = function () {
+        baseString = reader.result;
+        setThumbnail(baseString); 
+    };
+    reader.readAsDataURL(file);
+    // setProfilePicture(baseString);
+  }
+  const onLike = useCallback((post) => {
+    let bodyData = {
+        userID: user.id,
+        postID: post,
+        token: jwt,
+    }
+    sendAPI('post', '/likes/createUserLike', bodyData)
+    .then((res) => {
+        setLiked((l) => [... l,res.data])
+    })
+    .catch((err) => {
+        console.log(err.data)
+    })
+},[])
+
+const onRemove = useCallback((post) => {
+    let bodyData = {
+        userID: user.id,
+        postID: post,
+        token: jwt,
+    }
+    sendAPI('delete', '/likes/removeUserLike', bodyData)
+    .then((res) => {
+        setLiked((l) => l.filter((p) => p.postID !== post))})
+    .catch((err) => {
+        console.log(err.data)
+    })
+
+},[])
 
   return (
     <>
@@ -114,7 +167,7 @@ const SearchComp = () => {
                 <div className="row" style={{ margin: "3px" }}>
                   <div className="col-sm-3">
                     <img
-                      src="https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png"
+                      src={thumbnail ? thumbnail : Logo}
                       className="modalImg"
                     />
                   </div>
@@ -153,11 +206,10 @@ const SearchComp = () => {
             className="inputModal"
           />
           <p style={{ textAlign: "left" }}>Playlist Thumbnail</p>
-          <input
-            type="file"
-            onChange={(e) => setPicture(e.target.value)}
-            className="inputModal"
-          />
+          <label for="file-upload" className="custom-file-upload">
+    				Upload Image (optional)
+				</label>
+				<input id="file-upload" onChange={(event) => updateProfilePic(event.target.files[0])} type="file"/>
         </Modal.Body>
         <Modal.Footer>
           <p>{message}</p>
@@ -189,18 +241,21 @@ const SearchComp = () => {
               <div key={index}>
                 <div>
                   <div className="row">
-                    <div className="col-sm-3">
+                    <div style={{width: '200px'}}>
                       <Card className="cardStyleSearch">
                         <Card.Img
                           variant="top"
                           className="playhover"
-                          src="https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png"
+                          src={item.thumbnail ? item.thumbnail : Logo}
                           style={{ height: "150px", width: "150px" }}
                         />
                         <Card.Body>
                           <button
                             className="cardPlayButton"
-                            onClick={(e) => {}}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                playMidiFile(item.midi, item.instruments, item.noteTypes, item.bpm);
+                            }}
                           >
                             <FaPlayCircle size={90} />
                           </button>
@@ -223,8 +278,9 @@ const SearchComp = () => {
                         <p className="postText">{item.title}</p>
                       </div>
                       <div style={{ display: "flex" }}>
+
                         <button className="statusButton">
-                          <FaHeart />
+                        {liked.filter((like) => like.postID === item.id).length ? <FaHeart onClick={()=>onRemove(item.id)}/> : <FaRegHeart onClick={() => onLike(item.id)}/>}
                           &nbsp; <p className="statusText">{item.likeCount}</p>
                         </button>
                         <Dropdown className="reactDrop">

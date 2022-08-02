@@ -1,34 +1,53 @@
 import React, { useState, useEffect } from "react";
+import { FaTrash } from "react-icons/fa";
 import { Card, Container} from "react-bootstrap";
 import "./Playlist.css";
-
 import { useRecoilValue } from "recoil";
-
+import {useNavigate} from 'react-router-dom'
 import { userJWT, userModeState } from "../context/GlobalState";
 import sendAPI from "../sendAPI";
+import Logo from '../Navbar/Logo.jpg'
+
 
 const PlaylistBody = () => {
   const user = useRecoilValue(userModeState);
   const jwt = useRecoilValue(userJWT);
-
+  const [thumbnail, setThumbnail] = useState();
   const [noPlaylist, setNoPlaylist] = useState('');
   const [playlist, setPlaylist] = useState([]);
+  const navigate = useNavigate();
 
-  useEffect(() =>{
+  useEffect(() =>{ 
+    getAllMyPlaylist();
+  },[playlist])
 
+  const getAllMyPlaylist = () =>{
     const params = {
-      userID: user.id
+      userID: user.id,
     }
 
     sendAPI('get', '/playlists/getUserPlaylists', params)
     .then((res) => {
       setPlaylist(res.data)
     })
-  },[])
+  }
+
+  const deletePlaylist = (playlistID) => {
+    const dataBody ={
+      id: playlistID,
+      token: jwt,
+    }
+    sendAPI('delete', '/playlists/deletePlaylist', dataBody)
+    .then(res => {
+      getAllMyPlaylist()
+    })
+  }
+
+
 
   return (
     <>
-      <div className="playlistBody">
+      <div className="playlistMain">
         <div className="Header">
           <p className="headerText">Your Playlists</p>
           <hr />
@@ -38,21 +57,28 @@ const PlaylistBody = () => {
             <div className="displayBodyCard">
               <p>{noPlaylist}</p>
               {playlist.map((item, index) => {
+
+                const onClick = () => {
+                    navigate("/Playlist/"+item.id)
+                }
+
                 return (
-                  <div key={index}>
-                    <Card className="cardStyle">
+                    <Card key={index} style={{border: '0px', margin: '1.9em'}}>
                       <Card.Img
                         variant="top"
-                        className="playhover"
-                        src="https://wtwp.com/wp-content/uploads/2015/06/placeholder-image.png"
+                        className="playlistCover"
+                        src={item.thumbnail ? item.thumbnail : Logo}
+                        onClick={onClick}
                       />
                       <Card.Body>
                         <Card.Title className="cardText">
                           {item.name}
                         </Card.Title>
+                        <button className='cardTrash'>
+                          <FaTrash onClick={()=>deletePlaylist(item.id)} className='playlistTrash'/>
+                        </button>  
                       </Card.Body>
                     </Card>
-                  </div>
                 );
               })}
             </div>

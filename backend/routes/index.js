@@ -5,6 +5,13 @@ const swaggerUI = require('swagger-ui-express')
 const YAML = require("yamljs");
 const cors = require("cors")
 require("dotenv").config();
+app.use(express.json())
+bodyParser = require("body-parser");
+
+app.use(bodyParser.json({limit: '3mb'}));
+app.use(bodyParser.urlencoded({limit: '3mb', extended: true}));
+app.use(express.json());
+
 
 const PORT = process.env.PORT || 2000;
 
@@ -38,6 +45,10 @@ app.use('/api/playlists', require('./playlists/playlists'));
 app.use('/api/music', require('./music/music')); 
 app.use('/api/likes', require('./likes/likes')); 
 app.use('/api/authentication', require('./authentication/authentication')); 
+
+var bodyParser = require('body-parser');            
+app.use(bodyParser.json({limit:'3mb'})); 
+app.use(bodyParser.urlencoded({extended:true, limit:'3mb'})); 
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

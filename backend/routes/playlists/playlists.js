@@ -6,13 +6,10 @@ const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
 const { getJWT, verifyJWT } = require("../../utils/jwt");
 const { getUserExists, getPostExists, getPlaylistExists} = require("../../utils/database");
-const multer  = require('multer')
-const upload = multer()
-
 // Create a new playlist
 
 //Thumbnail is a file upload is here
-router.post('/createPlaylist', upload.single('thumbnail'), async (req, res) => {
+router.post('/createPlaylist', async (req, res) => {
 
     try {
         const { name, userID, token, thumbnail} = req.body;
@@ -132,13 +129,12 @@ router.get('/getPostsByPlaylistID', async (req, res) => {
             });
         } else {
             const posts = await prisma.PlaylistPost.findMany({
-                where: { playlistID: req.query.id }
+                where: { playlistID: req.query.id },
+                select: { post: true }
             });
 
             res.json(posts);
         }
-
-        res.json(playlist);
     } catch (err) {
         console.log(err);
         res.status(500).send({ msg: err });

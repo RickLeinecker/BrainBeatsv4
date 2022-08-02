@@ -1,7 +1,16 @@
 import React from 'react'
 import Navbar from '../Components/Navbar/Navbar'
-import PlaylistBody from '../Components/Playlist/PlaylistMain'
+import PlaylistsBody from '../Components/Playlist/PlaylistMain'
+import PlaylistBody from '../Components/Playlist/PlaylistSingle'
 
+const Playlists = () => {
+  return (
+    <>
+    <Navbar />
+    <PlaylistsBody />
+    </>
+  )
+}
 const Playlist = () => {
   return (
     <>
@@ -11,4 +20,4 @@ const Playlist = () => {
   )
 }
 
-export default Playlist
+export {Playlist, Playlists}

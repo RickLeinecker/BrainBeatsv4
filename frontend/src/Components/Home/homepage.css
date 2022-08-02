@@ -6,9 +6,8 @@
 .mainHomeBody {
     position: relative;
     background: #fff;
-    height: 108vh;
+    height: 111vh;
     width: 70vw;
-    top: -3vh;
     left: 15vw;
 }
 
@@ -17,7 +16,6 @@
     background: #fff;
     height: 100vh;
     width: 70vw;
-    top: -22px;
     left: 15vw;
 }
 
@@ -45,19 +43,20 @@
 
 .playhover {
     position: 'absolute';
+    
 }
-.cardPlayButton{
+.homePlayButton{
     position: absolute;
     background: none;
-    color: #fff;
+    color: red;
     border: 0;
-    top: 25px;
+    top: 45px;
     left: 50px;
-    opacity: 0;
+    opacity: 0%;
     transition: .2s ease-in-out;
 }
 
-.cardStyle:hover .cardPlayButton{
+.cardStyle:hover .homePlayButton{
     opacity: 100;
     transition: .2s ease-in-out;
 }
@@ -67,8 +66,17 @@
     background: none;
     border: 0px;
     color: rgb(239, 70, 70);
-    top:147px;
-    left: 175px
+    bottom: -10px;
+    right: 9px
+}
+
+.cardTrash{
+    position: relative;
+    background: none;
+    border: 0px;
+    left: 20px;
+    bottom: 32px
+
 }
 
 .errMsg{
@@ -100,3 +108,7 @@
     transition: .5s ease-in-out;
 }
   
+.cardImg {
+    width: 185px;
+    height: 185px;
+}

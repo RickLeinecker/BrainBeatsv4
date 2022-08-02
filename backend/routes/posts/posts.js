@@ -6,11 +6,9 @@ const { user, post } = new PrismaClient();
 // const { JSON } = require("express");
 const { getJWT, verifyJWT} = require("../../utils/jwt");
 const { getUserExists, getPostExists } = require("../../utils/database");
-const multer  = require('multer')
-const upload = multer({limits: { fieldSize: 25 * 1024 * 1024 }})
 
 // Create a post
-router.post('/createPost',  upload.single('thumbnail'), async (req, res) => {
+router.post('/createPost', async (req, res) => {
     try {
         const { userID, title, bpm, key, midi, instruments, noteTypes, visibility, token, thumbnail} = req.body;
 

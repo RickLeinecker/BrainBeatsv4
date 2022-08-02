@@ -95,6 +95,25 @@
   border-radius: 5px;
 }
 
+.downloadRawButton {
+  background: #3b689c;
+  font-size: 20px;
+  width: 260px;
+  border: 0px;
+  margin: 10px;
+  border-radius: 5px;
+
+}
+.downloadMidiButton {
+  background: rgb(0, 203, 85);
+  font-size: 20px;
+  width: 120px;
+  border: 0px;
+  margin: 10px;
+  border-radius: 5px;
+
+}
+
 .reactIcon {
     color: red;
 }
@@ -120,8 +139,10 @@
 .defaultRadio {
   margin: 2rem;
 }
-.scriptDisplayCard {
-  margin-left: 13%;
+.alignSlide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .scriptless{
@@ -135,7 +156,7 @@ input[type="file"] {
   display: none;
 }
 .custom-file-upload {
-  border: 1px solid #ccc;
+  border: 1px solid black;
   display: inline-block;
   padding: 6px 12px;
   cursor: pointer;
