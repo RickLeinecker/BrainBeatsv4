@@ -31,7 +31,7 @@ const SearchComp = () => {
   const [playListTitle, setPlayListTitle] = useState("");
   const [picture, setPicture] = useState();
   const [message, setMessage] = useState("");
-  const [username, setUsername] = useState('');
+  const [title, setTitle] = useState('');
   const [thumbnail, setThumbnail] = useState('');
   const [currentSelectPost, setCurretSelectPost] = useState("");
   const [addedToPlay, setAddedToPlay] = useState('');
@@ -76,9 +76,9 @@ const SearchComp = () => {
 
   function searchFuntion(){
     const bodyData ={
-      username: username
+      title: title
     }
-    sendAPI("get", "/posts/getUserPostsByUsername", bodyData)
+    sendAPI("get", "/posts/getPostsByTitle", bodyData)
     .then((res) => {
       setPost(res.data);
     })
@@ -231,7 +231,7 @@ const onRemove = useCallback((post) => {
             className="me-2"
             aria-label="Search"
             onKeyPress={handleSearch}
-            onChange={(e)=> setUsername(e.target.value)}
+            onChange={(e)=> setTitle(e.target.value)}
           />
           <Button className="buttonStyle" onClick={searchFuntion}>
             Search

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Navbar, Container, Button, NavDropdown, Form } from 'react-bootstrap'
 import Logo from './Logo.jpg'
 import {
-    FaHome, FaUserEdit, FaRegPlayCircle, FaDoorOpen, FaSearch, FaMusic, FaRegArrowAltCircleRight
+    FaHome, FaUserEdit, FaDoorOpen, FaSearch, FaInfo
     , FaBars,FaRegClone
 } from 'react-icons/fa';
 import './Nav.css'
@@ -49,7 +49,7 @@ const Navbars = () => {
                     <Navbar.Brand className='d-flex justify-content-start'>
                         <NavDropdown title={<FaBars size={30} />}>
                             <NavDropdown.Item href="/Search"><FaSearch /> Search</NavDropdown.Item>
-                            <NavDropdown.Item href="/About"><FaSearch /> About Us</NavDropdown.Item>
+                            <NavDropdown.Item href="/About"><FaInfo /> About Us</NavDropdown.Item>
                         </NavDropdown>
                     </Navbar.Brand>
                     <Navbar.Brand className='d-flex justify-content-start'>
