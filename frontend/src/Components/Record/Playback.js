@@ -40,11 +40,18 @@ var numContexts = 0;
 
 //These values will determine all instrument volume which is changed in GUI
 var volumeDeltas = [0, 0, 0, 0];
+
+var allowToPlay = true;
     
 // ------------------------------------------------------------------------------ MAIN FUNCTIONS ------------------------------------------------------------------------------
 
 export function playMidiFile(uri, instArr, NTArr, bpm)
 {
+    if (!allowToPlay)
+        return;
+        
+    allowToPlay = false;
+
     // Initialize player and register event handler
     setupInstrumentList();
     var Player = new MidiPlayer.Player(function(event) {});
@@ -67,6 +74,10 @@ export function playMidiFile(uri, instArr, NTArr, bpm)
             playMidiNote(midiNoteFrequency, Constants.DEFAULT_VOLUME + volumeDeltas[event.track - 1], instArr[event.track - 1], getNoteLengthStringFromInt(NTArr[event.track - 1]));
         }
         eventCount++;
+    });
+
+    Player.on('endOfFile', function() {
+        allowToPlay = true;
     });
 }
 
