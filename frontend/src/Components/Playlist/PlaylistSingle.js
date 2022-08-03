@@ -120,7 +120,7 @@ const Playlist = () => {
       {allPost.map((item, index) => {
             return(
               <tr key={index}>
-                <td><img className="smallPostThumbnail" src={item.thumbnail? item.thumbnail : Logo} /> </td>
+                <td><img className="smallPostThumbnail" src={item.post.thumbnail? item.post.thumbnail : Logo} /> </td>
                 <td className="smallPostText">{index + 1} - {item.post.title}</td>
                 <td><button className="playlistPostButton" onClick={(e) =>deleteSong(item.post.id)}><FaTrash size={30}/></button></td>
                 <td><button className="playlistPostButton" onClick={(e) => playMidiFile(item.post.midi, item.post.instruments, item.post.noteTypes, item.post.bpm)} ><FaPlayCircle size={30}/></button></td>
