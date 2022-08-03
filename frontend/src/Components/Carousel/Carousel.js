@@ -4,6 +4,8 @@ import Background1 from "./Background1.png";
 import Background2 from "./Background2.png";
 import { Button } from "react-bootstrap";
 
+import {useNavigate} from 'react-router-dom'
+
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 const cardStyle ={
@@ -19,17 +21,20 @@ const cardContainer = {
     height:'100%',
 }
 
+function ToAboutUs() {
+    
+}
 export default () => (
     <div>
         <Carousel autoPlay showThumbs={false}
         infiniteLoop={true} dynamicHeight={true} interval={10000}>
             <div style={cardContainer}>
                 <img alt="About Us" src={Background1} /> 
-                <Button style={cardStyle}>About Us</Button> 
+                <Button style={cardStyle} href="/About">About Us</Button> 
             </div>
             <div style={cardContainer}>
                 <img alt="Create an account" src={Background2} />
-                <Button style={cardStyle}>Register</Button>
+                <Button style={cardStyle} href="/register">Register</Button>
             </div>
         </Carousel>
     </div>
