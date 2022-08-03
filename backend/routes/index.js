@@ -6,10 +6,8 @@ const YAML = require("yamljs");
 const cors = require("cors")
 require("dotenv").config();
 bodyParser = require("body-parser");
-
 app.use(bodyParser.json({limit: '3mb'}));
 app.use(bodyParser.urlencoded({limit: '3mb', extended: true}));
-
 
 
 const PORT = process.env.PORT || 2000;
@@ -19,6 +17,7 @@ const corsOptions ={
     credentials: true,
     optionSuccessStatus: 200
 }
+
 app.use(cors(corsOptions));
 
 var router = express.Router();
@@ -44,10 +43,6 @@ app.use('/api/playlists', require('./playlists/playlists'));
 app.use('/api/music', require('./music/music')); 
 app.use('/api/likes', require('./likes/likes')); 
 app.use('/api/authentication', require('./authentication/authentication')); 
-
-var bodyParser = require('body-parser');            
-app.use(bodyParser.json({limit:'3mb'})); 
-app.use(bodyParser.urlencoded({extended:true, limit:'3mb'})); 
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
