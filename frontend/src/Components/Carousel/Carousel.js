@@ -8,10 +8,11 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 const cardStyle ={
     position: 'relative',
-    bottom: '50%',
-    transform: 'translateY(-50%)',
-    fontSize: '24px',
-    transform: 'translateX(400px)'
+    bottom: '20%',
+    fontSize: '40px',
+    transform: 'translateX(400px)',
+    background: '#78BC61',
+    border: '1px solid #E8EBF7'
 }
 const cardContainer = {
     position: 'relative',
