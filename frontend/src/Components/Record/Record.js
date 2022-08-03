@@ -1124,9 +1124,9 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			if (button.id === "ganglion") {
 				button.onclick = () => {rec = true; startAcquisition(button.id)};
 			}
-			// else if (button.id === "downloadBtn") {
-			// 	button.onclick = () => downloadData();
-			// }
+			else if (button.id === "downloadBtn") {
+				button.onclick = () => downloadData();
+			}
 			else if (button.id === 'Disconnect'){
 				button.onclick = () => {rec=false;console.log("Rec is: " + rec)};
 			}
