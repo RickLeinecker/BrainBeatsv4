@@ -90,6 +90,39 @@ router.get('/getUserPostsByUsername', async (req, res) => {
     }
 });
 
+// Get all posts based on a title
+router.get('/getPostsByTitle', async (req, res) => {
+    try {
+        const title = req.query.title;
+        if (title === "") {
+            const allPosts = await prisma.Post.findMany({
+                include: {user : true}
+            });
+
+            res.json(allPosts);
+            return;
+        }
+        
+        // Find the records
+        const posts = await prisma.Post.findMany({
+            where: { title: title },
+            include: {user: true}
+        });
+
+        if (!posts) {
+            return res.status(400).json({
+                msg: "Posts not found"
+            });
+        }
+
+        res.json(posts);
+        
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ msg: err });
+    }
+});
+
 // Get all posts based on a user ID
 router.get('/getUserPostsByID', async (req, res) => {
     try {

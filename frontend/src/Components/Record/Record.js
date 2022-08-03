@@ -304,11 +304,11 @@ function Record() {
 			<>
 			  <div>
 				<div className="row">
-				  <p className="textHeader">Music Setting</p>
+				  <p className="textHeader">Music Settings</p>
 				</div>
 				<Accordion defaultActiveKey="0">
 				  <Accordion.Item eventKey="0">
-					<Accordion.Header>Basic Setting
+					<Accordion.Header>Basic Settings
 							
 					</Accordion.Header>
 					<Accordion.Body>
@@ -326,7 +326,7 @@ function Record() {
 					</Accordion.Body>
 				  </Accordion.Item>
 				  <Accordion.Item eventKey="1">
-					<Accordion.Header>Advance Setting</Accordion.Header>
+					<Accordion.Header>Advanced Settings</Accordion.Header>
 					<Accordion.Body>
 						<div>
 						<OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderAdvanceTip}>
