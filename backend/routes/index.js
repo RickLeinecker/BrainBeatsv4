@@ -5,12 +5,11 @@ const swaggerUI = require('swagger-ui-express')
 const YAML = require("yamljs");
 const cors = require("cors")
 require("dotenv").config();
-app.use(express.json())
 bodyParser = require("body-parser");
 
 app.use(bodyParser.json({limit: '3mb'}));
 app.use(bodyParser.urlencoded({limit: '3mb', extended: true}));
-app.use(express.json());
+
 
 
 const PORT = process.env.PORT || 2000;

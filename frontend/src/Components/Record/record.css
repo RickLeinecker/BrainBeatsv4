@@ -87,7 +87,7 @@
 }
 
 .publishButton {
-  background: rgb(0, 166, 203);
+  background: rgb(0, 203, 85);
   font-size: 20px;
   width: 120px;
   border: 0px;
@@ -105,7 +105,7 @@
 
 }
 .downloadMidiButton {
-  background: rgb(0, 203, 85);
+  background: rgb(0, 166, 203);
   font-size: 20px;
   width: 120px;
   border: 0px;
