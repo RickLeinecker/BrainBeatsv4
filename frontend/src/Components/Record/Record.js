@@ -731,8 +731,8 @@ function Record() {
 			<div> <input type="text" className='titleInput' onChange={(e) => setTitle(e.target.value)}/></div>
 			</div>
 			<p>Post Title</p>
-			<button className='publishButton' onClick={postFile}>Publish</button>
 			<button onClick={generateMIDIURIAndDownloadFile} className="downloadMidiButton">Download</button>
+			<button className='publishButton' onClick={postFile}>Publish</button>
 			
 			<br />
 			<p>{msg}</p>

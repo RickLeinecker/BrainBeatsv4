@@ -125,7 +125,7 @@ const Profile = () => {
                                     <label>Profile Picture</label>
                                     <br />
                                     <label for="file-upload" className="custom-file-upload" style={{position: 'relative', bottom: '17px', width: '100%', height: '35px', textAlign: 'center'}}>
-                                        Upload Image (optional)
+                                        Upload (optional)
                                         <input id="file-upload" onChange={(event) => updateProfilePic(event.target.files[0])} type="file"/>
                                     </label>
                                     
