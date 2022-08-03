@@ -105,7 +105,11 @@ router.get('/getPostsByTitle', async (req, res) => {
         
         // Find the records
         const posts = await prisma.Post.findMany({
-            where: { title: title },
+            where: { title: 
+                {
+                    contains: title 
+                },
+            },
             include: {user: true}
         });
 
