@@ -39,9 +39,11 @@ const SearchComp = () => {
   const [liked, setLiked] = useState([]);
 
   useEffect(() => {
-    sendAPI("get", "/posts/getAllPosts").then((res) => {
-      setPost(res.data);
-    });
+    if(!title){
+      sendAPI("get", "/posts/getAllPosts").then((res) => {
+        setPost(res.data);
+    })
+    };
     if (user) {
       const dataParam = {
         userID: user.id,
