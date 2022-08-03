@@ -32,7 +32,7 @@ const Login = () => {
                 setUserMode(res.data.user)
             })
             .catch((err) =>{
-                setErrMsg(err.response.data);
+                setErrMsg(err.response.data.msg);
             })
         
     }

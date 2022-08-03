@@ -34,6 +34,7 @@ const SearchComp = () => {
   const [username, setUsername] = useState('');
   const [thumbnail, setThumbnail] = useState('');
   const [currentSelectPost, setCurretSelectPost] = useState("");
+  const [addedToPlay, setAddedToPlay] = useState('');
 
   const [liked, setLiked] = useState([]);
 
@@ -103,7 +104,7 @@ const SearchComp = () => {
     };
     console.log(bodyData);
     sendAPI("post", "/playlists/addPostToPlaylist", bodyData).then((res) => {
-      console.log(res);
+      setAddedToPlay("Post added to playlist");
     });
   }
 
@@ -154,6 +155,8 @@ const onRemove = useCallback((post) => {
 
 },[])
 
+
+
   return (
     <>
       <Modal show={addPlay} onHide={hideModals}>
@@ -191,6 +194,7 @@ const onRemove = useCallback((post) => {
               </div>
             );
           })}
+          <p>{addedToPlay}</p>
         </Modal.Body>
       </Modal>
       <Modal show={createPlay} onHide={hideModals}>

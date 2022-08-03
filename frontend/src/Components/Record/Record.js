@@ -620,6 +620,7 @@ function Record() {
               </div>
             </div>
             <div className="col">
+				<p>Card Duration</p>
               <input
                 type="number"
                 placeholder="Seconds"
@@ -631,7 +632,7 @@ function Record() {
 
             <div className="col">
               <Button
-                style={{ width: "100px", float: "center", marginTop: '10px'}}
+                style={{ width: "100px", float: "center", marginTop: '20px'}}
                 onClick={addCard}
               >
                 Add
@@ -647,6 +648,7 @@ function Record() {
           <p className="line">
             <span className="wordInLine">OR</span>
           </p>
+		  <br />
           <Button
             style={{ width: "100px", marginTop: "10px" }}
             onClick={noScript}
@@ -1122,9 +1124,9 @@ function Setting({numNotes, instrumentArr, noteDuration, scale, keyNum, BPM, set
 			if (button.id === "ganglion") {
 				button.onclick = () => {rec = true; startAcquisition(button.id)};
 			}
-			// else if (button.id === "downloadBtn") {
-			// 	button.onclick = () => downloadData();
-			// }
+			else if (button.id === "downloadBtn") {
+				button.onclick = () => downloadData();
+			}
 			else if (button.id === 'Disconnect'){
 				button.onclick = () => {rec=false;console.log("Rec is: " + rec)};
 			}

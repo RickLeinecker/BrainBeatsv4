@@ -96,7 +96,7 @@
 }
 
 .downloadRawButton {
-  background: #3b689c;
+  background-color: #3b689c;
   font-size: 20px;
   width: 260px;
   border: 0px;
@@ -131,7 +131,7 @@
 }
 
 .timeInput {
-  margin-top: 10px;
+  margin-top: 0px;
   padding: .5rem 1rem .5rem 1rem;
   border-radius: 25px;
 }

@@ -69,7 +69,7 @@ router.post('/loginUser', async (req, res) => {
         const userExists = await getUserExists(email, "email");
 
         // If password is related to the email console log a successful login
-        if (userExists && (bcrypt.compare(password, userExists.password))) {
+        if (userExists && await (bcrypt.compare(password, userExists.password))) {
             const token = getJWT(userExists.id, userExists.email);
             const data = {
                 user: userExists,
