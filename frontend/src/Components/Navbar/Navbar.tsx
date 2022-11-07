@@ -1,10 +1,12 @@
-import React from 'react'
+import React from 'react';
 import './Navbar.css';
+import bbmascot from '../../images/bbmascot1.png';
 
 const Navbar = () => {
   return (
     <div>
         <nav className="navbar navbar-expand-md navbar-dark bg-light" id="navBarID">
+        <img className='navbar-image' src={bbmascot} alt="" width="35" height="35"/>
             <div className="collapse navbar-collapse d-flex justify-content-end" id="navbarSupportedContent">
                 <ul className="navbar-nav ml-auto">
                     <form className="form-inline" id="formID">

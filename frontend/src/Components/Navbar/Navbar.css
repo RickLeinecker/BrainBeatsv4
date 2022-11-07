@@ -19,3 +19,7 @@
 #navbarSupportedContent {
     background-color: green;
 }
+
+.navbar-image {
+    background: none;
+}
