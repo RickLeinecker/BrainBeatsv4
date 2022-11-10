@@ -19,3 +19,8 @@
 #navbarSupportedContent {
     background-color: green;
 }
+
+.navbar-image,
+.navbar-image-link {
+    background: none;
+}

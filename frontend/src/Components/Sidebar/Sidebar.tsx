@@ -4,7 +4,6 @@ import { NavLink } from "react-router-dom";
 // Import for Icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-
 const Sidebar = () => {
 
   const menuItem=[
