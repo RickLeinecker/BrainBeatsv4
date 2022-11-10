@@ -4,6 +4,15 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// Imports for Icons
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { fab } from '@fortawesome/free-brands-svg-icons'
+import { faHome } from '@fortawesome/free-solid-svg-icons'
+
+// Adding icons to global library
+library.add(fab, faHome)
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
