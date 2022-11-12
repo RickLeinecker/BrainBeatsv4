@@ -8,10 +8,10 @@ import reportWebVitals from './reportWebVitals';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fab } from '@fortawesome/free-brands-svg-icons'
-import { faHome } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faHome, faInfo, faCircleInfo, faSearch, faPlugCirclePlus, faPlusCircle, faPlus } from '@fortawesome/free-solid-svg-icons'
 
 // Adding icons to global library
-library.add(fab, faHome)
+library.add(fab, faBars, faHome, faInfo, faCircleInfo, faSearch, faPlusCircle, faPlus)
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
