@@ -1,5 +1,6 @@
 import React from 'react';
 import parse from 'html-react-parser';
+import './TrackCard.css';
 
 let getPopularTracks = (numTracks:number) => {
     // hit api for 'numTracks' tracks
@@ -47,7 +48,7 @@ function PopulateTrackCards() {
 
             populateStr += '<div className="col">'
                             + '<div className="card" href="' + trackLink +'">'
-                                + '<img src=' + image + ' className="card-img-top" alt="..."/> '
+                                + '<img src=' + image + ' className="card-img-top" id="card-img-ID" alt="..."/> '
                                 + '<div className="card-body">'
                                     + '<h5 className="card-title">' + title + '</h5>'
                                     + '<p className="card-text">' + user + '</p>'
