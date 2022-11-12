@@ -1,3 +1,10 @@
-.container {
-    background-color: rgb(46, 255, 5) !important; 
+#main-container {
+    display: flex;
+    flex-direction: column;
+    width: 80vw !important;
+}
+
+#home-image{
+    max-width: 700px;
+    margin: auto;
 }

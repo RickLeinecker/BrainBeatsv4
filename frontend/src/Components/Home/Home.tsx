@@ -9,7 +9,7 @@ const Home = () => {
     
     return (
         <div className='container' id='main-container'>
-            <img src="https://img.freepik.com/free-vector/music-studio-control-room-singer-booth_107791-1637.jpg?w=2000" className="img-fluid" alt="..." />
+            <img src="https://img.freepik.com/free-vector/music-studio-control-room-singer-booth_107791-1637.jpg?w=2000" className="img-fluid" id="home-image" alt="..." />
             <br /><br />
             <h3 className="text-decoration-underline">Featured Tracks</h3>
             <TrackCard />

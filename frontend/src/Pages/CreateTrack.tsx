@@ -1,14 +1,14 @@
 import React from 'react'
 import Navbar from '../Components/Navbar/Navbar'
-import HomePage from '../Components/Home/Home'
 import Sidebar from '../Components/Sidebar/Sidebar'
+import CreateTrackPage from '../Components/CreateTrack/CreateTrack'
 
-const Home = () => {
+const CreateTrack = () => {
   return (
     <>
-    <HomePage />
+    <CreateTrackPage />
     </>
   )
 }
-
-export default Home;
+  
+export default CreateTrack;

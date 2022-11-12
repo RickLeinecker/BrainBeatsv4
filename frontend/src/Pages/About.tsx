@@ -1,14 +1,14 @@
 import React from 'react'
 import Navbar from '../Components/Navbar/Navbar'
-import HomePage from '../Components/Home/Home'
 import Sidebar from '../Components/Sidebar/Sidebar'
+import AboutPage from '../Components/About/About'
 
-const Home = () => {
+const About = () => {
   return (
     <>
-    <HomePage />
+    <AboutPage />
     </>
   )
 }
-
-export default Home;
+  
+export default About;
