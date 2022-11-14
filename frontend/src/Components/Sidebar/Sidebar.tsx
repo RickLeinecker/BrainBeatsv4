@@ -18,17 +18,17 @@ const Sidebar: React.FunctionComponent<RouteProps> = ({children, ...props}) => {
       icon:<FontAwesomeIcon icon={["fas", "home"]} />
     },
     {
-      path:"/about",
+      path:"about",
       name:"About",
       icon:<FontAwesomeIcon icon={["fas", "circle-info"]} />
     },
     {
-      path:"/search",
+      path:"search",
       name:"Search",
       icon:<FontAwesomeIcon icon={["fas", "search"]} />
     },
     {
-      path:"/create-track",
+      path:"create-track",
       name:"Create Track",
       icon:<FontAwesomeIcon icon={["fas", "plus"]} />
     },
@@ -45,7 +45,7 @@ const Sidebar: React.FunctionComponent<RouteProps> = ({children, ...props}) => {
         </div>
         {
           menuItem.map((item, index)=>(
-            <NavLink to={item.path} key={index} className="link">
+            <NavLink  to={item.path} key={index} className="link" end>
                 <div className="icon">{item.icon}</div>
                 <div style={{display: isOpen? "block" : "none"}} className="link_text">{item.name}</div>
             </NavLink>

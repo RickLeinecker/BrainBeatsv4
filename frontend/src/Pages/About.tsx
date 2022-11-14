@@ -7,8 +7,8 @@ const About = () => {
   return (
     <>
     <AboutPage />
-    <Navbar />
-    <Sidebar />
+    {/* <Navbar /> */}
+    {/* <Sidebar /> */}
     </>
   )
 }

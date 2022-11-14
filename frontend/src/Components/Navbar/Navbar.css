@@ -8,19 +8,22 @@
 }
 
 #navBarID {
-    background-color: blueviolet !important;
+    background-color:#201D21 !important;
+    border-style:groove;
+    border-color: #363237;
 }
 
 #formID {
-    background-color: red;
+    /* background-color: red; */
     
 }
 
 #navbarSupportedContent {
-    background-color: green;
+    /* background-color: #7d3b93; */
 }
 
 .navbar-image,
 .navbar-image-link {
     background: none;
+    padding-left: .5%;
 }

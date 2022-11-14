@@ -12,13 +12,10 @@ import Search from './Pages/Search';
 import CreateTrack from './Pages/CreateTrack';
 import Navbar from './Components/Navbar/Navbar';
 
-
-
-
 function App() {
   return (
     <Router>
-      <Navbar></Navbar>
+      <Navbar />
       <Sidebar>
         <Routes>
           <Route path='/' element={<Home />} />
