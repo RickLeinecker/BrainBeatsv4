@@ -7,6 +7,8 @@ const About = () => {
   return (
     <>
     <AboutPage />
+    <Navbar />
+    <Sidebar />
     </>
   )
 }
