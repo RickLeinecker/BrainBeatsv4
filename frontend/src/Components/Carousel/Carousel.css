@@ -1,0 +1,17 @@
+#cardStyle {
+    position: relative;
+    bottom: 20%;
+    font-size: 40px;
+    transform: translateX(400px);
+    background: #cb1717;
+    border: 1px solid #1f44da;
+
+    height: 500%;
+    width: 500%
+}
+
+#cardContainer {
+    position: relative;
+    height: 500%;
+    width: 500%
+}
