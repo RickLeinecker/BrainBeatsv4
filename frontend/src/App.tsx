@@ -15,8 +15,8 @@ import Navbar from './Components/Navbar/Navbar';
 function App() {
   return (
     <Router>
-      <Navbar />
-      <Sidebar>
+      {/* <Navbar />
+      <Sidebar /> */}
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/about' element={<About />} />
@@ -36,7 +36,7 @@ function App() {
           <Route path='/Test' element={<Test />} />
           <Route path='/About' element={<AboutUs />} /> */}
         </Routes>
-      </Sidebar>
+      {/* </Sidebar> */}
     </Router>
 );
 }

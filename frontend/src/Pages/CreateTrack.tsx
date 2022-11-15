@@ -6,6 +6,8 @@ import CreateTrackPage from '../Components/CreateTrack/CreateTrack'
 const CreateTrack = () => {
   return (
     <>
+        <Navbar />
+    <Sidebar />
     <CreateTrackPage />
     </>
   )

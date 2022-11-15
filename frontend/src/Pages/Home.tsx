@@ -6,9 +6,9 @@ import Sidebar from '../Components/Sidebar/Sidebar'
 const Home = () => {
   return (
     <>
-    <HomePage />
-    {/* <Navbar /> */}
-    {/* <Sidebar /> */}
+      <Navbar />
+      <Sidebar />
+      <HomePage />
     </>
   )
 }
