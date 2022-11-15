@@ -3,19 +3,25 @@ import parse from 'html-react-parser';
 import { Carousel as Caro } from "react-responsive-carousel";
 
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import Img1 from '../../images/CarouselImages/XXX.png'
+import img1 from "../../images/CarouselImages/img1.png"
+import img2 from "../../images/CarouselImages/img2.png"
+import img3 from "../../images/CarouselImages/img3.png"
 
 const Carousel = () => {
-    const tempImage = "https://cdn.discordapp.com/attachments/1019947812592562217/1021486319425294396/unknown.png" // "https://img.freepik.com/free-vector/music-studio-control-room-singer-booth_107791-1637.jpg?w=2000";
-    const imageArray = [tempImage];
+    const imageArray = new Array;
+    const imageDivs = new Array;
+    
+    imageArray.push(img1);
+    imageArray.push(img2);
+    imageArray.push(img3);
 
     const spawnImages = () => {
-        let imageDivs = [""];
          for (let i = 0; i < imageArray.length; i++) {
             imageDivs.push(
-                '<div id="cardContainer">' + 
-                    '<img alt="About Us" src=' + imageArray[i] + '/>' + 
-                    '<Button id="cardStyle" href="/About">About Us</Button>' + 
+                '<div id="card-container">' + 
+                    '<a href="" />' +
+                        '<img id="card" alt="" src="' + imageArray[i] + '"/>' + 
+                    '</a>' + 
                 '</div>'
             );
          }
@@ -26,11 +32,11 @@ const Carousel = () => {
 
     return (
     <div className="container">
-        <Caro autoPlay showThumbs={false} infiniteLoop={true} 
+        <Caro autoPlay={true} showThumbs={true} infiniteLoop={true} 
             dynamicHeight={false} interval={10000}
         > 
         {images.map((image) => (
-            <div>{parse(image)}</div>
+            <div id="cards-container">{parse(image)}</div>
         ))}
 
         </Caro>
