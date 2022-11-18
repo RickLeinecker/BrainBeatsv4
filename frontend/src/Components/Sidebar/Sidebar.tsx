@@ -7,6 +7,9 @@ import './Sidebar.css';
 // Import for Icons
 import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 
+// Implemented using: https://www.youtube.com/watch?v=IathdVB65Lw&t=711s&ab_channel=WebCoder
+// Converted to TypeScript
+
 const Sidebar: React.FunctionComponent<RouteProps> = ({children, ...props}) => {
   
   const[isOpen, setIsOpen] = useState(false);

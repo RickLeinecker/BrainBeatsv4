@@ -10,6 +10,11 @@ import CreateTrack from './Pages/CreateTrack';
 // import Login from './Pages/Login';
 // import Signup from './Pages/Signup';
 
+// Importing sidebar and navbar
+import Sidebar from './Components/Sidebar/Sidebar';
+import Navbar from './Components/Navbar/Navbar';
+
+
 import { useRecoilValue } from 'recoil';
 import { userModeState } from './Components/context/GlobalState'
 
@@ -19,8 +24,8 @@ function App() {
 
   return (
     <Router>
-      {/* <Navbar />
-      <Sidebar /> */}
+      <Navbar></Navbar>
+      <Sidebar>
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/about' element={<About />} />
@@ -41,9 +46,9 @@ function App() {
           <Route path='/Test' element={<Test />} />
           <Route path='/About' element={<AboutUs />} /> */}
         </Routes>
-      {/* </Sidebar> */}
+      </Sidebar>
     </Router>
-);
+  );
 }
 
 export default App;

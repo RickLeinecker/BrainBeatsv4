@@ -6,8 +6,8 @@ import Sidebar from '../Components/Sidebar/Sidebar'
 const Home = () => {
   return (
     <>
-      <Navbar />
-      <Sidebar />
+      {/* <Navbar />
+      <Sidebar /> */}
       <HomePage />
     </>
   )
