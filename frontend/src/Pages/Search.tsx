@@ -6,8 +6,8 @@ import SearchPage from '../Components/Search/Search'
 const Search = () => {
   return (
     <>
-      <Navbar />
-      <Sidebar />
+      {/* <Navbar />
+      <Sidebar /> */}
       <SearchPage />
     </>
   )

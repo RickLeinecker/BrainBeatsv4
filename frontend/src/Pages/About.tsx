@@ -6,8 +6,8 @@ import AboutPage from '../Components/About/About'
 const About = () => {
   return (
     <>
-    <Navbar />
-    <Sidebar />
+    {/* <Navbar />
+    <Sidebar /> */}
     <AboutPage />
     </>
   )
