@@ -8,17 +8,19 @@
   .container{
     display: flex;
     height: fit-content;
+    padding-left: 0px;
+    width: fit-content;
   }
   
   #sidebar-container{
-    margin: 0px !important;
+    margin: 0px;
     padding: 0px !important;
     height:auto !important;
   }
 
   main{
     width: 100%;
-    padding: 20px;
+    /* padding: 20px; */
   }
 
   #main-page{
@@ -27,7 +29,7 @@
   }
 
   .sidebar{
-    background: #201D21;
+    background: #000000;
     color:white;
     /* height: auto; */
     width: 300px;

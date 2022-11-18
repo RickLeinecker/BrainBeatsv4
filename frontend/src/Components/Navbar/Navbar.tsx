@@ -21,8 +21,8 @@ const Navbar = () => {
             <div className="collapse navbar-collapse d-flex justify-content-end" id="navbarSupportedContent">
                 <ul className="navbar-nav ml-auto">
                     <form className="form-inline" id="formID">
-                        <button className="btn btn-sm btn-outline-secondary mx-2" onClick={() => doNavigate('/SignUp')} type="button">Sign Up</button>
-                        <button className="btn btn-sm btn-outline-secondary mx-2" onClick={() => doNavigate('/Login')} type="button">Login</button>
+                        <button className="btn btn-sm btn-outline-secondary mx-2" onClick={() => doNavigate('/SignUp')} type="button" id="signUpBtn">Sign Up</button>
+                        <button className="btn btn-sm btn-outline-secondary mx-2" onClick={() => doNavigate('/Login')} type="button" id="loginBtn">Login</button>
                     </form>    
                 </ul>
             </div>

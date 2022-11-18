@@ -8,9 +8,9 @@
 }
 
 #navBarID {
-    background-color:#201D21 !important;
+    background-color: #141414 !important;
     border-style:groove;
-    border-color: #363237;
+    border-color: #141414;
 }
 
 #formID {
@@ -26,4 +26,35 @@
 .navbar-image-link {
     background: none;
     padding-left: .5%;
+}
+
+#signUpBtn, #loginBtn {
+    border-radius: 15px;
+    width: 100px;
+}
+
+#signUpBtn {
+    background-color: #5B5B5B;
+    border-color: #5B5B5B;
+    color: white;
+}
+
+#signUpBtn:hover {
+    background-color: #323232;
+    border-color: #323232;
+    /* font-weight: bold; */
+    text-decoration: underline;
+}
+
+#loginBtn {
+    background-color: #F8607C;
+    border-color: #F8607C;
+    color: white;
+}
+
+#loginBtn:hover {
+    background-color:#e33051;
+    border-color: #e33051;
+    /* font-weight: bold; */
+    text-decoration: underline;
 }
