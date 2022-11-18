@@ -15,7 +15,8 @@
   #sidebar-container{
     margin: 0px;
     padding: 0px !important;
-    height:auto !important;
+    height:100% !important;
+    z-index: 2 !important;
   }
 
   main{
@@ -26,14 +27,16 @@
   #main-page{
     width: 100vw !important;
     align-content: center !important;
+    height: 100%;
   }
 
   .sidebar{
     background: #000000;
     color:white;
-    /* height: auto; */
+    height: 100%;
     width: 300px;
     transition: all 0.5s;
+    z-index: 2;
   }
 
   .top_section{

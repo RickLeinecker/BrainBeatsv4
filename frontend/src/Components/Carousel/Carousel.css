@@ -1,4 +1,4 @@
-/* #card {
+#card {
     position: relative;
     bottom: 20%;
     height: 10%;
@@ -10,12 +10,7 @@
     width: 10%
 }
 
-
-#cards-container {
-    height: 1%;
-} */
-
 /* Carousel Class */
-/* .Caro {
+.Caro {
     max-height: 10%;
-} */
+}
