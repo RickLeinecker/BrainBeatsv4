@@ -4,6 +4,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Routes, Route, BrowserRouter as Router, Navigate} from 'react-router-dom'
 import Home from './Pages/Home';
+import Login from './Pages/Login';
 
 // import Home from './Pages/Home';
 
@@ -12,6 +13,7 @@ function App() {
     <Router>
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/Login' element={<Login />} />
         {/* <Route path='/Login' element={user ? <Navigate to='/' /> : <Login />}/>
         <Route path='/Record' element={<Record />} />
         <Route path='/Profile' element={user ? <Profile /> : <Navigate to='/Login' />} />
