@@ -20,148 +20,150 @@ import Logo from '../Navbar/Logo.jpg'
 
 
 const SearchComp = () => {
-  const user = useRecoilValue(userModeState);
-  const jwt = useRecoilValue(userJWT);
+//   const user = useRecoilValue(userModeState);
+//   const jwt = useRecoilValue(userJWT);
 
-  const [userPlaylist, setUserPlaylist] = useState([]);
-  const [post, setPost] = useState([]);
-  //states to create/addto playlist
-  const [addPlay, setAddPlay] = useState(false);
-  const [createPlay, setCreatePlay] = useState(false);
-  const [playListTitle, setPlayListTitle] = useState("");
-  const [picture, setPicture] = useState();
-  const [message, setMessage] = useState("");
-  const [title, setTitle] = useState('');
-  const [thumbnail, setThumbnail] = useState('');
-  const [currentSelectPost, setCurretSelectPost] = useState("");
-  const [addedToPlay, setAddedToPlay] = useState('');
+//   const [userPlaylist, setUserPlaylist] = useState([]);
+//   const [post, setPost] = useState([]);
+//   //states to create/addto playlist
+//   const [addPlay, setAddPlay] = useState(false);
+//   const [createPlay, setCreatePlay] = useState(false);
+//   const [playListTitle, setPlayListTitle] = useState("");
+//   const [picture, setPicture] = useState();
+//   const [message, setMessage] = useState("");
+//   const [title, setTitle] = useState('');
+//   const [thumbnail, setThumbnail] = useState('');
+//   const [currentSelectPost, setCurretSelectPost] = useState("");
+//   const [addedToPlay, setAddedToPlay] = useState('');
 
-  const [liked, setLiked] = useState([]);
+//   const [liked, setLiked] = useState([]);
 
-  useEffect(() => {
-    if(!title){
-      sendAPI("get", "/posts/getAllPosts").then((res) => {
-        setPost(res.data);
-    })
-    };
-    if (user) {
-      const dataParam = {
-        userID: user.id,
-      };
-      sendAPI("get", "/playlists/getUserPlaylists", dataParam).then((res) => {
-        setUserPlaylist(res.data);
-      });
+//   useEffect(() => {
+//     if(!title){
+//       sendAPI("get", "/posts/getAllPosts").then((res) => {
+//         setPost(res.data);
+//     })
+//     };
+//     if (user) {
+//       const dataParam = {
+//         userID: user.id,
+//       };
+//       sendAPI("get", "/playlists/getUserPlaylists", dataParam).then((res) => {
+//         setUserPlaylist(res.data);
+//       });
 
-      sendAPI('get', '/likes/getAllUserLikes', dataParam)
-        .then((res) => {
-         setLiked(res.data);
-         })
-    }
-  }, [liked]);
+//       sendAPI('get', '/likes/getAllUserLikes', dataParam)
+//         .then((res) => {
+//          setLiked(res.data);
+//          })
+//     }
+//   }, [liked]);
 
-  function showAdd(event) {
-    console.log(event);
-    setAddPlay(true);
-    setCurretSelectPost(event.id);
-  }
+//   function showAdd(event) {
+//     console.log(event);
+//     setAddPlay(true);
+//     setCurretSelectPost(event.id);
+//   }
 
-  function showCreate() {
-    setCreatePlay(true);
-  }
+//   function showCreate() {
+//     setCreatePlay(true);
+//   }
 
-  function hideModals() {
-    setAddPlay(false);
-    setCreatePlay(false);
-    setCurretSelectPost("");
-    setMessage("");
-  }
+//   function hideModals() {
+//     setAddPlay(false);
+//     setCreatePlay(false);
+//     setCurretSelectPost("");
+//     setMessage("");
+//   }
 
-  function searchFuntion(){
-    const bodyData ={
-      title: title
-    }
-    sendAPI("get", "/posts/getPostsByTitle", bodyData)
-    .then((res) => {
-      setPost(res.data);
-    })
-  }
+//   function searchFuntion(){
+//     const bodyData ={
+//       title: title
+//     }
+//     sendAPI("get", "/posts/getPostsByTitle", bodyData)
+//     .then((res) => {
+//       setPost(res.data);
+//     })
+//   }
 
-  function createPlaylist() {
-    const dataBody = {
-      name: playListTitle,
-      userID: user.id,
-      token: jwt,
-      thumbnail: thumbnail
-    };
-    sendAPI("post", "/playlists/createPlaylist", dataBody).then((res) => {
-      setMessage("Playlist Created");
-    });
-  }
+//   function createPlaylist() {
+//     const dataBody = {
+//       name: playListTitle,
+//       userID: user.id,
+//       token: jwt,
+//       thumbnail: thumbnail
+//     };
+//     sendAPI("post", "/playlists/createPlaylist", dataBody).then((res) => {
+//       setMessage("Playlist Created");
+//     });
+//   }
 
-  function addToPlaylist(prop) {
-    const bodyData = {
-      postID: currentSelectPost,
-      playlistID: prop.id,
-      token: jwt,
-    };
-    console.log(bodyData);
-    sendAPI("post", "/playlists/addPostToPlaylist", bodyData).then((res) => {
-      setAddedToPlay("Post added to playlist");
-    });
-  }
+//   function addToPlaylist(prop) {
+//     const bodyData = {
+//       postID: currentSelectPost,
+//       playlistID: prop.id,
+//       token: jwt,
+//     };
+//     console.log(bodyData);
+//     sendAPI("post", "/playlists/addPostToPlaylist", bodyData).then((res) => {
+//       setAddedToPlay("Post added to playlist");
+//     });
+//   }
 
-  const handleSearch =(event)=> {
-    if(event.key === 'Enter'){
-      searchFuntion()
-    }
-  }
+//   const handleSearch =(event)=> {
+//     if(event.key === 'Enter'){
+//       searchFuntion()
+//     }
+//   }
 
-  const updateProfilePic = (file) => {
-    var file = document.querySelector('input[type=file]')['files'][0];
-    var reader = new FileReader();
-    var baseString;
-    reader.onloadend = function () {
-        baseString = reader.result;
-        setThumbnail(baseString); 
-    };
-    reader.readAsDataURL(file);
-    // setProfilePicture(baseString);
-  }
-  const onLike = useCallback((post) => {
-    let bodyData = {
-        userID: user.id,
-        postID: post,
-        token: jwt,
-    }
-    sendAPI('post', '/likes/createUserLike', bodyData)
-    .then((res) => {
-        setLiked((l) => [... l,res.data])
-    })
-    .catch((err) => {
-        console.log(err.data)
-    })
-},[])
+//   const updateProfilePic = (file) => {
+//     var file = document.querySelector('input[type=file]')['files'][0];
+//     var reader = new FileReader();
+//     var baseString;
+//     reader.onloadend = function () {
+//         baseString = reader.result;
+//         setThumbnail(baseString); 
+//     };
+//     reader.readAsDataURL(file);
+//     // setProfilePicture(baseString);
+//   }
+//   const onLike = useCallback((post) => {
+//     let bodyData = {
+//         userID: user.id,
+//         postID: post,
+//         token: jwt,
+//     }
+//     sendAPI('post', '/likes/createUserLike', bodyData)
+//     .then((res) => {
+//         setLiked((l) => [... l,res.data])
+//     })
+//     .catch((err) => {
+//         console.log(err.data)
+//     })
+// },[])
 
-const onRemove = useCallback((post) => {
-    let bodyData = {
-        userID: user.id,
-        postID: post,
-        token: jwt,
-    }
-    sendAPI('delete', '/likes/removeUserLike', bodyData)
-    .then((res) => {
-        setLiked((l) => l.filter((p) => p.postID !== post))})
-    .catch((err) => {
-        console.log(err.data)
-    })
+// const onRemove = useCallback((post) => {
+//     let bodyData = {
+//         userID: user.id,
+//         postID: post,
+//         token: jwt,
+//     }
+//     sendAPI('delete', '/likes/removeUserLike', bodyData)
+//     .then((res) => {
+//         setLiked((l) => l.filter((p) => p.postID !== post))})
+//     .catch((err) => {
+//         console.log(err.data)
+//     })
 
-},[])
+// },[])
 
 
 
   return (
-    <>
-      <Modal show={addPlay} onHide={hideModals}>
+    <><div>
+        <h1>Search</h1>
+    </div>
+      {/* <Modal show={addPlay} onHide={hideModals}>
         <Modal.Header closeButton>
           <Modal.Title>Add to playlist</Modal.Title>
         </Modal.Header>
@@ -314,7 +316,7 @@ const onRemove = useCallback((post) => {
             );
           })}
         </div>
-      </div>
+      </div> */}
     </>
   );
 };
