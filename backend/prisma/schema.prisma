@@ -31,14 +31,14 @@ model User {
 model Post {
   id       String    @id @default(uuid())
   title    String
-  bpm      Int       @db.Int
-  key      String    @db.VarChar(255)
+  bpm      Int        @db.Int
+  key      String     @db.VarChar(255)
   instruments Json
   noteTypes Json
   likeCount Int
-  midi     String?   @db.LongText // Store file path in database instead of the actual midi
-  thumbnail String? @db.LongText // Store file path in database instead of the actual image
-  user   User      @relation(fields: [userID], references: [id], onDelete: Cascade)
+  midi     String?    @db.LongText // Store file path in database instead of the actual midi
+  thumbnail String?   @db.LongText // Store file path in database instead of the actual image
+  user   User         @relation(fields: [userID], references: [id], onDelete: Cascade)
   userID String // relation scalar field  (used in the `@relation` attribute above)
   createdAt DateTime  @default(now())
   Likes Like[]
@@ -46,20 +46,20 @@ model Post {
 }
 
 model Playlist {
-  id       String    @id @default(uuid())
+  id       String     @id @default(uuid())
   name     String
-  thumbnail String? @db.LongText // Store file path in database instead of the actual image
-  user User          @relation(fields: [userID], references: [id], onDelete: Cascade)
+  thumbnail String?   @db.LongText // Store file path in database instead of the actual image
+  user User           @relation(fields: [userID], references: [id], onDelete: Cascade)
   userID String
   PlaylistPosts PlaylistPost[]
 }
 
 model PlaylistPost {
   postID String
-  post Post @relation(fields: [postID], references: [id], onDelete: Cascade)
+  post Post           @relation(fields: [postID], references: [id], onDelete: Cascade)
   playlistID String
-  playlist Playlist @relation(fields: [playlistID], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  playlist Playlist   @relation(fields: [playlistID], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
   
   @@id([postID, playlistID])
 }
