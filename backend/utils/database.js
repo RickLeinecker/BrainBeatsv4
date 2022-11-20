@@ -7,8 +7,13 @@ async function getUserExists(searchVal, searchType) {
     let result;
     switch (searchType) {
         case 'email':
+            console.log(searchVal);
             result = await prisma.User.findUnique({
-                where: { email: searchVal }
+                where: { email: searchVal },
+                select: {
+                    email: true,
+                    password: true
+                }
             });
             break;
         case 'id':

@@ -1,16 +1,25 @@
 import React, {useEffect, useState} from "react";
 import './Login.css';
+import sendAPI from '../../SendAPI';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    function doLogin() {
+    async function doLogin() {
         const userInformation = {
-            "username": username,
+            "email": username,
             "password": password
         }
+
+        sendAPI('post', '/users/loginUser', userInformation)
+            .then(res => {
+                console.log(res);
+            }).catch(err => {
+                console.log(err);
+            })
     }
+
     return (
         <div className='container' id='main-container'>
             <h1 className="login-text text-center fw-semibold">Welcome back to BrainBeats!</h1>
