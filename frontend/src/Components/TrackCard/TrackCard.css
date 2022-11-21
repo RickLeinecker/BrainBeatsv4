@@ -1,3 +1,29 @@
 .card-img-top {
-    width: 270px;   
+    width: 16vw;
+    align-self: center; 
+    border-radius: 10px;  
+}
+
+.row{
+    width:100vw;
+}
+.col{
+    width: 16vw;
+}
+.card {
+    background-color: #565656;
+    width: 20vw;
+    height: fit-content;
+    border-radius: 10px;  
+    padding-top: 5px;
+}
+
+.card-body{
+    color: white;
+    overflow-wrap: break-word;
+    overflow-x: hidden;
+}
+
+.text-center{
+   flex-direction: column;
 }
