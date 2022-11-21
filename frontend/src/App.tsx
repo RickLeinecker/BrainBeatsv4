@@ -7,8 +7,8 @@ import Home from './Pages/Home';
 import About from './Pages/About';
 import Search from './Pages/Search';
 import CreateTrack from './Pages/CreateTrack';
-// import Login from './Pages/Login';
-// import Signup from './Pages/Signup';
+import Login from './Pages/Login';
+import SignUp from './Pages/SignUp';
 
 // Importing sidebar and navbar
 import Sidebar from './Components/Sidebar/Sidebar';
@@ -31,7 +31,8 @@ function App() {
           <Route path='/about' element={<About />} />
           <Route path='/search' element={<Search />} />
           <Route path='/create-track' element={<CreateTrack />} />
-
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<SignUp />} />
 
           {/* <Route path='/Login' element={user ? <Navigate to='/' /> : <Login />}/>
           <Route path='/Signup' element={user ? <Home /> :<Signup />} /> */}

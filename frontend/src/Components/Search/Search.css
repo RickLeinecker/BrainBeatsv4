@@ -1,0 +1,23 @@
+.form-outline {
+    margin-top: 5%;
+    position: relative;
+    background-color: rgb(66, 61, 61);
+}
+
+.form-control {
+    float: right;
+    margin-top: 5%;
+    text-align: left;
+}
+
+#main-container {
+    position: relative;
+    height: 100vh;
+    padding: 40px 40px 0px 40px;
+    background: rgb(76, 69, 69); 
+    overflow-y: scroll;
+}
+
+#note {
+    background-color: white;
+}

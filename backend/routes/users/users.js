@@ -15,7 +15,7 @@ const crypto = require('crypto');
 // Create a new user
 router.post('/createUser', async (req, res) => {
     try {
-        const { firstName, lastName, dob, email, username, password } = req.body;
+        const { firstName, lastName, email, username, password } = req.body;
 
         const userEmailExists = await getUserExists(email, "email");
 
@@ -34,7 +34,6 @@ router.post('/createUser', async (req, res) => {
                 data: {
                     firstName,
                     lastName,
-                    dob,
                     email,
                     username,
                     password: encryptedPassword,
@@ -67,7 +66,7 @@ router.post('/loginUser', async (req, res) => {
 
         // Validate if user exists in our database
         const userExists = await getUserExists(email, "email");
-
+        console.log(userExists);
         // If password is related to the email console log a successful login
         if (userExists && await (bcrypt.compare(password, userExists.password))) {
             const token = getJWT(userExists.id, userExists.email);
