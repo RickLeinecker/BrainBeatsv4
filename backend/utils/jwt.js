@@ -34,7 +34,7 @@ function getJWT(id, email) {
         const token = jwt.sign({
             id: id,
             email: email
-        }, process.env.NEXT_JWT_KEY, {
+        }, process.env.JWT_KEY, {
             expiresIn: '30d'
         });
 

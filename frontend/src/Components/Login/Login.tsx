@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import './Login.css';
-import sendAPI from '../../SendAPI';
+import sendAPI from '../../sendAPI';
 
 const Login = () => {
     const [username, setUsername] = useState('');

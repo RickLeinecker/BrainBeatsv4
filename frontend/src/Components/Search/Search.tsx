@@ -9,7 +9,7 @@ import {
 import { Card, Modal, Dropdown, Button } from "react-bootstrap";
 
 // import MidiPlayer from "react-midi-player";
-import "./search.css";
+import "./Search.css";
 import { useRecoilValue } from "recoil";
 
 import { userJWT, userModeState } from "../context/GlobalState";
