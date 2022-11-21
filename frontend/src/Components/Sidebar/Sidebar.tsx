@@ -38,7 +38,7 @@ const Sidebar: React.FunctionComponent<RouteProps> = ({children, ...props}) => {
   ]
 
   return (
-    <div className="container" id="sidebar-container">
+    <div className="container" id="sidebar-container" /*style={{marginRight: isOpen? "0vws" : "50vw", width: isOpen ? "90vw" : "100vw" }}*/ >
       <div style={{width: isOpen? "300px" : "60px"}} className="sidebar">
         <div className="top_section">
           <h1 style={{display: isOpen? "block" : "none"}} className="logo">BrainBeats</h1>

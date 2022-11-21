@@ -1,12 +1,14 @@
 .container {
-    /* max-width: 100vw !important; */
+    /* max-width: fit-content !important; */
     background-color: #2E2E2E;
+    /* margin: 0%; */
 }
 
-#main-container {
+#home-container {
     display: flex;
     flex-direction: column;
     width: 100vw !important;
+    /* overflow-x:hidden; */
     width: fit-content !important;
     /* background-color: rgba(255, 105, 105, 0.761); */
 }
@@ -21,7 +23,7 @@
 }
 
 #home-image {
-    max-width: 700px;
+    /* max-width: 700px; */
     margin: auto;
 }
 

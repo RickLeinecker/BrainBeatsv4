@@ -9,6 +9,7 @@
     display: flex;
     /* height: fit-content; */
     padding-left: 0px;
+    /* margin-right: 0%; */
     width: fit-content;
   }
   
@@ -17,12 +18,12 @@
     padding: 0px !important;
     height:100% !important;
     z-index: 2 !important;
-    width: 100vw;
+    width: auto;
   }
 
   main{
     width: 100%;
-    /* padding: 20px; */
+    padding: 20px;
   }
 
   #main-page{
