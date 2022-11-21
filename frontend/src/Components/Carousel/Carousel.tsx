@@ -11,7 +11,7 @@ const Carousel = () => {
     const imageArray = new Array;
     const imageDivs = new Array;
     
-    imageArray.push('https://img.freepik.com/free-vector/music-studio-control-room-singer-booth_107791-1637.jpg?w=2000');
+    //imageArray.push('https://img.freepik.com/free-vector/music-studio-control-room-singer-booth_107791-1637.jpg?w=2000');
     imageArray.push(img1);
     imageArray.push(img2);
     imageArray.push(img3);
@@ -33,7 +33,7 @@ const Carousel = () => {
     let images = spawnImages();
 
     return (
-    <div className="container">
+    <div className="container" id="carousel-container">
         <Caro autoPlay={true} showThumbs={true} infiniteLoop={true} 
             dynamicHeight={false} interval={10000}
         > 

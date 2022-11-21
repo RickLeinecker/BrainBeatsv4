@@ -6,7 +6,7 @@ let getPopularTracks = (numTracks:number) => {
     // hit api for 'numTracks' tracks
     
     let objArray = [
-        {"user":"leinecker", "title":"BrainBeatsTrack", "imageSrc": "https://blog.dozmia.com/content/images/2019/01/Portrait-The-Weeknd.jpg", "trackLink":"#"},
+        {"user":"leinecker", "title":"BrainBeats Track", "imageSrc": "https://blog.dozmia.com/content/images/2019/01/Portrait-The-Weeknd.jpg", "trackLink":"#"},
         {"user":"heinrich", "title":"bot", "imageSrc": "https://preview.redd.it/q12z8iajgqm01.jpg?auto=webp&s=910c47b3bf8b9458f88bcc13208b0175455dbb35","trackLink":"#"},
         {"user":"knightro", "title":"just another knight", "imageSrc": "https://cdn.discordapp.com/attachments/1022862908012634172/1028025868175540355/DALLE_2022-10-07_15.27.09_-_A_brain_listening_music_eyes_open_smiling_vector_art.png","trackLink":"#"},
         {"user":"people", "title":"making music", "imageSrc": "", "trackLink":"#"},
