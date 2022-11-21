@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import sendAPI from "../../sendAPI";
+import sendAPI from "../../SendAPI";
 import './SignUp.css';
 
 const SignUp = () => {

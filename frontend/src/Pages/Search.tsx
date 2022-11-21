@@ -8,7 +8,8 @@ const Search = () => {
     <>
       {/* <Navbar />
       <Sidebar /> */}
-      <SearchPage />
+      <h2>Search</h2>
+      {/* <SearchPage /> */}
     </>
   )
 }
