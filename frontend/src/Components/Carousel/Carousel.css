@@ -10,7 +10,12 @@
     width: 10%
 }
 
-/* Carousel Class */
-.Caro {
-    max-height: 10%;
+#carousel-container{
+    height: 10% !important;
 }
+
+/* Carousel Class
+.Caro {
+    max-height: 10% !important;
+} */
+
