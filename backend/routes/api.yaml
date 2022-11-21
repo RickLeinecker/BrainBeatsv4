@@ -576,7 +576,7 @@ definitions:
       required: 
       - firstName
       - lastName
-      - dob
+      # - dob
       - email
       - username
       - password
@@ -587,9 +587,9 @@ definitions:
         lastName:
           type: string
           example: Doe
-        dob: 
-          type: date 
-          example: 1995-03-25
+        # dob: 
+        #   type: date 
+        #   example: 1995-03-25
         email:
           type: string
           example: JohnDoe@gmail.com
@@ -617,9 +617,9 @@ definitions:
         lastName:
           type: string
           example: Doe
-        dob: 
-          type: date
-          exmaple: 1997-07-13T00:00:00.000Z
+        # dob: 
+        #   type: date
+        #   exmaple: 1997-07-13T00:00:00.000Z
         email:
           type: string
           example: JohnDoe@gmail.com

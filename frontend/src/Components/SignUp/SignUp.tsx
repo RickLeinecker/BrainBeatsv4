@@ -41,6 +41,7 @@ const SignUp = () => {
             sendAPI('post', '/users/createUser', userInformation)
                 .then(res => {
                     setSuccessMsg('Account created successfully');
+                    setErrorMsg('');
                     console.log(res);
                 }).catch(err => {
                     setErrorMsg('Unable to create account');
@@ -73,7 +74,7 @@ const SignUp = () => {
                 <input type="password" className="form-control" id="formGroupExampleInput2" placeholder="Password" onChange={event => setPassword(event.target.value)}/>
             </div>
             <div className='container text-center'>
-                <button type="submit" className="btn btn-primary" onClick={doSignUp}>Sign up</button>
+                <button type="submit" className="btn btn-primary" onClick={() => doSignUp()}>Sign up</button>
             </div>
             <span className="text-center error-msg">{errorMsg}</span>
             <span className="text-center success-msg">{successMsg}</span>

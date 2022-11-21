@@ -30,7 +30,8 @@ router.post('/createUser', async (req, res) => {
             encryptedPassword = await bcrypt.hash(password, 10);
 
             //Create a single record
-            const newUser = await prisma.User.create({
+
+            const newUser = await prisma.user.create({
                 data: {
                     firstName,
                     lastName,
@@ -95,7 +96,7 @@ router.get('/getAllUsers', async (req, res) => {
                 firstName: true,
                 lastName: true,
                 email: true,
-                dob: true,
+                // dob: true,
                 username: true,
                 password: true,
                 bio: true,
