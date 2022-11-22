@@ -3,12 +3,12 @@ import './Login.css';
 import sendAPI from '../../SendAPI';
 
 const Login = () => {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     async function doLogin() {
         const userInformation = {
-            "email": username,
+            "email": email,
             "password": password
         }
 
@@ -24,8 +24,8 @@ const Login = () => {
         <div className='container' id='main-container'>
             <h1 className="login-text text-center fw-semibold">Welcome back to BrainBeats!</h1>
             <div className="mb-3">
-                <label className="form-label form-text login-text">Username</label>
-                <input type="text" className="form-control" id="formGroupExampleInput" placeholder="Username" onChange={event => setUsername(event.target.value)}/>
+                <label className="form-label form-text login-text">Email</label>
+                <input type="text" className="form-control" id="formGroupExampleInput" placeholder="Email" onChange={event => setEmail(event.target.value)}/>
             </div>
             <div className="mb-3">
                 <label className="form-label form-text login-text">Password</label>

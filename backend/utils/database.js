@@ -12,7 +12,8 @@ async function getUserExists(searchVal, searchType) {
                 where: { email: searchVal },
                 select: {
                     email: true,
-                    password: true
+                    password: true,
+                    firstName: true
                 }
             });
             break;
