@@ -7,9 +7,11 @@
 #home-container {
     display: flex;
     flex-direction: column;
+
     width: 100vw !important;
+
     /* overflow-x:hidden; */
-    width: fit-content !important;
+    /* width: fit-content !important; */
     /* background-color: rgba(255, 105, 105, 0.761); */
 }
 

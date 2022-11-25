@@ -7,9 +7,9 @@
   
   .container{
     display: flex;
-    /* height: fit-content; */
+    height: fit-content;
     padding-left: 0px;
-    /* margin-right: 0%; */
+    margin-right: 0%;
     width: fit-content;
   }
   
@@ -19,6 +19,7 @@
     height:100% !important;
     z-index: 2 !important;
     width: auto;
+    
   }
 
   main{
@@ -26,11 +27,12 @@
     padding: 20px;
   }
 
+  /* 
   #main-page{
     width: 100vw !important;
     align-content: center !important;
     height: 100%;
-  }
+  } */
 
   .sidebar{
     background: #000000;
