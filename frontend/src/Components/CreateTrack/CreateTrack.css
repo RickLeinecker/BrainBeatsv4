@@ -1,0 +1,59 @@
+.form-check {
+    float: right;
+}
+
+.btn-group {
+    max-width: 50%;
+}
+
+.form-group {
+    max-width: 100%;
+    margin: 0%;
+    padding-left: 10%;
+}
+
+#main-container {
+    max-width: 80%;
+    height: 100vw;
+    display: block;
+    justify-content: center;
+}
+
+#settings-container {
+    max-width: 60vw;
+    padding: 0%;
+    margin: 0%;
+    height: 20%;
+    position: relative;
+    background-color:rgb(198, 198, 198);
+    display: block;
+    width: fit-content !important;
+}
+
+#next-btn, #back-btn {
+    margin: 3%;
+    float: inline-end;
+}
+
+#settings-text {
+    color:rgb(57, 57, 57);
+    margin-left: 2%;    
+}
+
+#OR {
+    margin: 0%;
+    padding: 0%;
+    padding-left: 50%;
+    position: relative;
+    align-self:center;
+    color: rgb(230, 230, 230);
+}
+
+#back-btn {
+    background-color: #B9B9B7;
+    float: right;
+}
+
+#next-btn {
+    background-color: #F8607C;
+}
