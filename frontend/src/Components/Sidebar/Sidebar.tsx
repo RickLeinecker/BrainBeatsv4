@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useCallback, Children } from "react";
 import { NavLink, RouteProps } from "react-router-dom";
-
-// Import for Navbar functionality
-import bbmascot from '../../images/bbmascot1.png';
-import { useNavigate } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
-import { userModeState } from "../../JWT";
+import Navbar from "../Navbar/Navbar";
 
 // Import CSS
 import './Sidebar.css';
@@ -44,19 +39,6 @@ const Sidebar: React.FunctionComponent<RouteProps> = ({children, ...props}) => {
     },
   ]
 
-  // Functions for navbar
-  const user = useRecoilValue(userModeState);
-    
-  const navigate = useNavigate();
-
-  const doNavigate = (route:string) => {
-      navigate(route);
-  }
-  
-  function doLogout() {
-      
-  }
-
   return (
       <div className="page">
         <header className="header">
@@ -65,21 +47,7 @@ const Sidebar: React.FunctionComponent<RouteProps> = ({children, ...props}) => {
             <div style={{marginLeft: isOpen? "35px" : "0px"}} className="bars">
               <FontAwesomeIcon style={{color: "white"}} icon={["fas", "bars"]} onClick={toggle} />
             </div>
-            <div className="collapse navbar-collapse d-flex justify-content-end" id="navbarSupportedContent">
-                {/* If there isn't a user signed in, prompt them to do so */}
-                {!user && <ul className="navbar-nav ml-auto">
-                    <form className="form-inline" id="formID">
-                        <button className="btn btn-sm btn-outline-secondary mx-2" onClick={() => doNavigate('/Register')} type="button" id="signUpBtn">Sign Up</button>
-                        <button className="btn btn-sm btn-outline-secondary mx-2" onClick={() => doNavigate('/Login')} type="button" id="loginBtn">Login</button>
-                    </form>    
-                </ul>}
-                {user && <ul className="navbar-nav ml-auto">
-                    <form className="form-inline" id="formID">
-                        <button className="btn btn-sm btn-outline-secondary mx-2" onClick={() => doLogout()} type="button" id="signUpBtn">Sign Out</button>
-                    </form>    
-                </ul>
-                }
-            </div>
+            <Navbar></Navbar>
           </div>
         </header> 
 
