@@ -17,24 +17,26 @@ const CreateTrack = () => {
             <form className='justify-content-center' id='settings-container'>
                 <h2 id='settings-text'>Basic Settings</h2>
                 <p id='settings-text'>Please select one of the following music generation options:</p>
-                <span className="text-center" id='state'>{generationType}</span>
-                    
-                <div className='form-group row justify-content-center'>
-                    <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="slowAndMelodic" onClick={() => setGenerationType('slowAndMelodic')} defaultChecked/>
-                        <label className="form-check-label" htmlFor="inlineRadio1">Slow and Melodic</label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="moderateAndTimely" onClick={() => setGenerationType('moderateAndTimely')}/>
-                        <label className="form-check-label" htmlFor="inlineRadio2">Moderate and Timely</label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="quickAndLively" onClick={() => setGenerationType('quickAndLively')}/>
-                        <label className="form-check-label" htmlFor="inlineRadio3">Quick and Lively</label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio4" value="fastAndFrenzied" onClick={() => setGenerationType('fastAndFrenzied')}/>
-                        <label className="form-check-label" htmlFor="inlineRadio4">Fast and Frenzied</label>
+                {/* <span className="text-center" id='state'>{generationType}</span> */}
+                
+                <div className='row' id='checkbox-div'>
+                    <div className='justify-content-center' id="setting-options-div">
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="slowAndMelodic" onClick={() => setGenerationType('slowAndMelodic')} defaultChecked/>
+                            <label className="form-check-label" htmlFor="inlineRadio1"><span>Slow and Melodic</span></label>
+                        </div>
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="moderateAndTimely" onClick={() => setGenerationType('moderateAndTimely')}/>
+                            <label className="form-check-label" htmlFor="inlineRadio2"><span>Moderate and Timely</span></label>
+                        </div>
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="quickAndLively" onClick={() => setGenerationType('quickAndLively')}/>
+                            <label className="form-check-label" htmlFor="inlineRadio3"><span>Quick and Lively</span></label>
+                        </div>
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio4" value="fastAndFrenzied" onClick={() => setGenerationType('fastAndFrenzied')}/>
+                            <label className="form-check-label" htmlFor="inlineRadio4"><span>Fast and Frenzied</span></label>
+                        </div>
                     </div>
                 </div>
 
@@ -57,7 +59,7 @@ const CreateTrack = () => {
 
                 <div className='form-group row justify-content-center'>
                     <div className="btn-group" role="group" aria-label="Basic example">
-                        <button type="button" className="btn btn-primary" id='next-btn'>Adanced Settings</button>
+                        <button type="button" className="btn btn-primary" id='adv-btn'>Adanced Settings</button>
                     </div>
                 </div>
 
