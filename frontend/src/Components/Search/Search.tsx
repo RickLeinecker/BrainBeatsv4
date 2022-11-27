@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback, ReactPropTypes } from "react";
-import {
-  FaHeart,
-  FaRegHeart,
-  FaPlayCircle,
-  FaPlus,
-  FaEllipsisH,
-} from "react-icons/fa";
+// import {
+//   FaHeart,
+//   FaRegHeart,
+//   FaPlayCircle,
+//   FaPlus,
+//   FaEllipsisH,
+// } from "react-icons/fa";
+import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
+
 import { Card, Modal, Dropdown, Button } from "react-bootstrap";
 
 // import MidiPlayer from "react-midi-player";
@@ -14,6 +16,7 @@ import { useRecoilValue } from "recoil";
 
 import { userJWT, userModeState } from "../context/GlobalState";
 import sendAPI from "../../SendAPI";
+
 // import { playMidiFile } from "../Record/Playback";
 
 // import Logo from '../Navbar/Logo.jpg'
@@ -266,7 +269,8 @@ const SearchPage = () => {
                                 // playMidiFile(item.midi, item.instruments, item.noteTypes, item.bpm);
                             }}
                           >
-                            <FaPlayCircle size={90} />
+                            {/* <FaPlayCircle size={90} /> */}
+                            <FontAwesomeIcon icon={["fas", "play-circle"]} />
                           </button>
                         </Card.Body>
                       </Card>
@@ -297,7 +301,8 @@ const SearchPage = () => {
                             variant="default"
                             id="dropdown-basic"
                           >
-                            <FaEllipsisH /> &nbsp; More
+                            {/* <FaEllipsisH /> &nbsp; More */}
+                            <FontAwesomeIcon icon={["fas", "ellipsis-h"]} /> &nbsp; More
                           </Dropdown.Toggle>
 
                           <Dropdown.Menu>
