@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { getUserExists } = require('./database');
-require("dotenv").config();
+require("dotenv");
 
 // Checks the local storage for an existing token and logs them in if one exists
 function verifyJWT(jwtToken) {
@@ -41,6 +41,7 @@ function getJWT(id, email) {
         console.log("token: " + token);
         return token;
     } catch (err) {
+        console.log('error here\n');
         console.log(err);
     }
 }

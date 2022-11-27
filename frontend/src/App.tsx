@@ -9,6 +9,7 @@ import Search from './Pages/Search';
 import CreateTrack from './Pages/CreateTrack';
 import Login from './Pages/Login';
 import SignUp from './Pages/SignUp';
+import Profile from './Pages/Profile';
 
 // Importing sidebar and navbar
 import Sidebar from './Components/Sidebar/Sidebar';
@@ -33,7 +34,7 @@ function App() {
           <Route path='/create-track' element={<CreateTrack />} />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<SignUp />} />
-
+          <Route path='/profile' element={<Profile />} />
           {/* <Route path='/Login' element={user ? <Navigate to='/' /> : <Login />}/>
           <Route path='/Signup' element={user ? <Home /> :<Signup />} /> */}
 

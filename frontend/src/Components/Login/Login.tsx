@@ -1,11 +1,18 @@
-import React, {useEffect, useState} from "react";
+import {useState} from "react";
 import './Login.css';
 import sendAPI from '../../SendAPI';
+import { useRecoilState } from 'recoil';
+import { useNavigate } from "react-router-dom";
+import { userJWT, userModeState } from "../../JWT";
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [JWT, setJWT] = useRecoilState(userJWT);
+    const [userMode, setUserMode] = useRecoilState(userModeState);
+    const navigate = useNavigate();
 
+    
     async function doLogin() {
         const userInformation = {
             "email": email,
@@ -14,7 +21,9 @@ const Login = () => {
 
         sendAPI('post', '/users/loginUser', userInformation)
             .then(res => {
-                console.log(res);
+                setJWT(res.data.token);
+                setUserMode(res.data.user);
+                navigate('/profile');
             }).catch(err => {
                 console.log(err);
             })
@@ -27,6 +36,7 @@ const Login = () => {
                 <label className="form-label form-text login-text">Email</label>
                 <input type="text" className="form-control" id="formGroupExampleInput" placeholder="Email" onChange={event => setEmail(event.target.value)}/>
             </div>
+            <br />            <br />
             <div className="mb-3">
                 <label className="form-label form-text login-text">Password</label>
                 <input type="password" className="form-control" id="formGroupExampleInput2" placeholder="Password" onChange={event => setPassword(event.target.value)}/>

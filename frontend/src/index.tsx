@@ -9,6 +9,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fab } from '@fortawesome/free-brands-svg-icons'
 import { faBars, faHome, faInfo, faCircleInfo, faSearch, faPlugCirclePlus, faPlusCircle, faPlus } from '@fortawesome/free-solid-svg-icons'
+import {RecoilRoot} from 'recoil'
+
 
 // Adding icons to global library
 library.add(fab, faBars, faHome, faInfo, faCircleInfo, faSearch, faPlusCircle, faPlus)
@@ -18,7 +20,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <RecoilRoot>
+      <App />
+    </RecoilRoot>
   </React.StrictMode>
 );
 

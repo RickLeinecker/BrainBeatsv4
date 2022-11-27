@@ -13,7 +13,10 @@ async function getUserExists(searchVal, searchType) {
                 select: {
                     email: true,
                     password: true,
-                    firstName: true
+                    firstName: true,
+                    lastName: true,
+                    bio: true,
+                    profilePicture: true
                 }
             });
             break;

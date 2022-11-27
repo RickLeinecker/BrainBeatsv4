@@ -43,7 +43,6 @@ router.post('/createUser', async (req, res) => {
 
             // Create JWT
             const token = getJWT(newUser.id, newUser.email);
-
             const data = {
                 user: newUser,
                 token: token
@@ -73,7 +72,12 @@ router.post('/loginUser', async (req, res) => {
         if (userExists && await (bcrypt.compare(password, userExists.password))) {
             const token = getJWT(userExists.id, userExists.email);
             const data = {
-                firstName: userExists.firstName,
+                user: {
+                    firstName: userExists.firstName,
+                    lastName: userExists.lastName,
+                    bio: userExists.bio,
+                    profilePicture: userExists.profilePicture
+                },
                 token: token
             }
             res.json(data);
@@ -169,7 +173,7 @@ router.get('/getUserImages', async (req, res) => {
 // Update user info 
 router.put('/updateUser', async (req, res) => {
     try{
-        const { id, firstName, lastName, email, username, bio, token, profilePicture } = req.body;
+        const { id, firstName, lastName, email, bio, token, profilePicture } = req.body;
         
         const decoded = verifyJWT(token);
 
