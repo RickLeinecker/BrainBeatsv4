@@ -1,18 +1,13 @@
-.container {
-    /* max-width: fit-content !important; */
-    background-color: #2E2E2E;
-    /* margin: 0%; */
-}
-
+/* CSS for Home */
 #home-container {
     display: flex;
     flex-direction: column;
-
     width: 100vw !important;
+}
 
-    /* overflow-x:hidden; */
-    /* width: fit-content !important; */
-    /* background-color: rgba(255, 105, 105, 0.761); */
+/* CSS for Tracks Section on Home */
+#featured-tracks-heading { 
+    color: #ffffff;
 }
 
 #track-card-container {
@@ -22,14 +17,5 @@
     flex-direction: column;
     background-color: none;
     width: 100vw;
-}
-
-#home-image {
-    /* max-width: 700px; */
-    margin: auto;
-}
-
-#featured-tracks-heading { 
-    color: #ffffff;
 }
 

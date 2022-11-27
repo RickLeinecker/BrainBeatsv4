@@ -1,91 +1,119 @@
-/* CSS for Sidebar */
+/* CSS for Navigation (Navbar, Sidebar, Main Content */
+
+/* CSS for Page */
 *{
-    margin: 0;
-    padding-left: 0;
-    text-decoration: none;
-  }
+  margin: 0;
+  padding-left: 0;
+  text-decoration: none;
+}
   
-  .container{
-    display: flex;
-    height: fit-content;
-    padding-left: 0px;
-    margin-right: 0%;
-    width: fit-content;
-  }
-  
-  #sidebar-container{
-    margin: 0px;
-    padding: 0px !important;
-    height:100% !important;
-    z-index: 2 !important;
-    width: auto;
-    
-  }
+.container{
+  display: flex;
+  height: fit-content;
+  padding-left: 0px;
+  margin-right: 0%;
+  width: fit-content;
+}
 
-  main{
-    width: 100%;
-    padding: 20px;
-  }
+main{
+  padding: 20px;
+  align-content: center;
+  margin: auto;
+}
 
-  /* 
-  #main-page{
-    width: 100vw !important;
-    align-content: center !important;
-    height: 100%;
-  } */
+#main-page{
+  overflow: auto;
+}
 
-  .sidebar{
-    background: #000000;
-    color:white;
-    /* height: 100%; */
-    width: 300px;
-    transition: all 0.5s;
-    z-index: 2;
-  }
+/* CSS for Navbar */
+.header {
+  background-color: rgb(11, 11, 11);
+}
 
-  .top_section{
-    display: flex;
-    align-items: center;
-    padding: 20px 15px;
-  }
+.top_section{
+  display: flex;
+  align-items: center;
+  padding: 20px 15px;
+}
 
-  .logo {
-    font-size: 25px;
-    width: auto;
-  }
+.logo {
+  font-size: 25px;
+  width: auto;
+}
 
-  .bars{
-    display: flex;
-    font-size: 25px;
-    margin-left: 30px;
-  }
+.bars{
+  display: flex;
+  font-size: 25px;
+  margin-left: 30px;
+}
 
-  .link{
-    display: flex;
+/* CSS For Navbar buttons */
+#signUpBtn, #loginBtn {
+  border-radius: 15px;
+  width: 100px;
+}
+
+#signUpBtn {
+    background-color: #5B5B5B;
+    border-color: #5B5B5B;
     color: white;
-    padding: 10px 15px;
-    gap: 15px;
-    transition: all 0.5s;
-    text-decoration: none;
-  }
+}
 
-  .active{
-    background-color: #F8607C;
-    color: black;
-  }
-
-  .link:hover{
-    background: #B9B9B7;
-    color:black;
-    transition: all 0.5s;
+#signUpBtn:hover {
+    background-color: #323232;
+    border-color: #323232;
     text-decoration: underline;
-    cursor: pointer;
-  }
+}
 
-  .link:active{
-    background-color: #B9B9B7;
-  }
+#loginBtn {
+    background-color: #F8607C;
+    border-color: #F8607C;
+    color: white;
+}
 
-  .icon, .link_text{
-    font-size: 20px;
-  } 
+#loginBtn:hover {
+    background-color:#e33051;
+    border-color: #e33051;
+    text-decoration: underline;
+}
+
+/* CSS for Sidebar */
+.sidebar-container{
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+.sidebar{
+  background: #000000;
+  color:white;
+  width: 300px;
+  transition: all 0.5s;
+  z-index: 2;
+}
+
+.link{
+  display: flex;
+  color: white;
+  padding: 10px 15px;
+  gap: 15px;
+  transition: all 0.5s;
+  text-decoration: none;
+}
+.link:hover{
+  background: #B9B9B7;
+  color:black;
+  transition: all 0.5s;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.active{
+  background-color: #F8607C;
+  color: black;
+}
+
+.icon, .link_text{
+  font-size: 20px;
+} 

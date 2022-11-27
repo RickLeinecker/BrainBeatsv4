@@ -25,7 +25,7 @@ function App() {
 
   return (
     <Router>
-      <Navbar></Navbar>
+      {/* <Navbar></Navbar> */}
       <Sidebar>
         <Routes>
           <Route path='/' element={<Home />} />
