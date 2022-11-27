@@ -1,15 +1,4 @@
-.card-img-top {
-    width: 16vw;
-    align-self: center; 
-    border-radius: 10px;  
-}
-
-.row{
-    width:100vw;
-}
-.col{
-    width: 16vw;
-}
+/* CSS for Music Track Cards */
 .card {
     background-color: #565656;
     width: 20vw;
@@ -18,12 +7,19 @@
     padding-top: 5px;
 }
 
+.card:hover{
+    background-color: #7c7c7c;
+    border-color: rgb(60, 60, 60);
+}
+
 .card-body{
     color: white;
     overflow-wrap: break-word;
     overflow-x: hidden;
 }
 
-.text-center{
-   flex-direction: column;
+.card-img-top {
+    width: 16vw;
+    align-self: center; 
+    border-radius: 10px;  
 }
