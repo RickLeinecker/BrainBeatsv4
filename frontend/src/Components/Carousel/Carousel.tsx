@@ -34,7 +34,7 @@ const Carousel = () => {
 
     return (
     <div className="container" id="carousel-container">
-        <Caro autoPlay={true} showThumbs={true} infiniteLoop={true} 
+        <Caro autoPlay={true} showThumbs={false} infiniteLoop={true} 
             dynamicHeight={false} interval={10000}
         > 
         {images.map((image) => (
