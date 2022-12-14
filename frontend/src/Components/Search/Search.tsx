@@ -24,6 +24,10 @@ import sendAPI from "../../SendAPI";
 
 // import Logo from '../Navbar/Logo.jpg'
 
+
+// !!! Current errors temporarily solved with "any" type, though everything should 
+// be explicitly typed later.
+
 const SearchPage = () => {
   const user = useRecoilValue(userModeState);
   const jwt = useRecoilValue(userJWT);
@@ -41,7 +45,7 @@ const SearchPage = () => {
   const [currentSelectPost, setCurretSelectPost] = useState("");
   const [addedToPlay, setAddedToPlay] = useState("");
 
-  const [liked, setLiked] = useState([]);
+  const [liked, setLiked] = useState([]) as any;
 
   useEffect(() => {
     if (!title) {
@@ -119,46 +123,54 @@ const SearchPage = () => {
     }
   };
 
-  // const updateProfilePic = (file) => {
-  //   var file = document.querySelector('input[type=file]')['files'][0];
-  //   var reader = new FileReader();
-  //   var baseString;
-  //   reader.onloadend = function () {
-  //       baseString = reader.result;
-  //       setThumbnail(baseString);
-  //   };
-  //   reader.readAsDataURL(file);
-  //   // setProfilePicture(baseString);
-  // }
-  // const onLike = useCallback((post: any) => {
-  //   let bodyDasta = {
-  //       userID: user.id,
-  //       postID: post,
-  //       token: jwt,
-  //   }
-  //   sendAPI('post', '/likes/createUserLike', bodyData)
-  //   .then((res) => {
-  //       setLiked((l) => [... l,res.data])
-  //   })
-  //   .catch((err) => {
-  //       console.log(err.data)
-  //   })
-  // },[])
+  const updateProfilePic = (file: File) => {
+    const fileInput = document.querySelector('input[type=file]') as HTMLInputElement;
+    var file: File;
 
-  // const onRemove = useCallback((post: any) => {
-  //     let bodyData = {
-  //         userID: user.id,
-  //         postID: post,
-  //         token: jwt,
-  //     }
-  //     sendAPI('delete', '/likes/removeUserLike', bodyData)
-  //     .then((res) => {
-  //         setLiked((l) => l.filter((p) => p.postID !== post))})
-  //     .catch((err) => {
-  //         console.log(err.data)
-  //     })
+    if (fileInput.files && fileInput.files[0]) 
+      file = fileInput.files[0];
+    
+    var reader = new FileReader();
+    var baseString;
+    reader.onloadend = () => {
+      baseString = String(reader.result);
+      setThumbnail(baseString);
+    };
+    reader.readAsDataURL(file);
+    // setProfilePicture(baseString);
+  };
+  
+  const onLike = useCallback((post: any) => {
+    let bodyData = {
+        userID: user.id,
+        postID: post,
+        token: jwt,
+    }
+    sendAPI('post', '/likes/createUserLike', bodyData)
+    .then((res) => {
+        setLiked((l: any[]) => [... l,res.data])
+    })
+    .catch((err) => {
+        console.log(err.data)
+    })
+  },[])
 
-  // },[])
+
+
+  const onRemove = useCallback((post: any) => {
+      let bodyData = {
+          userID: user.id,
+          postID: post,
+          token: jwt,
+      }
+      sendAPI('delete', '/likes/removeUserLike', bodyData)
+      .then((res) => {
+          setLiked((l: any[]) => l.filter((p) => p.postID !== post))})
+      .catch((err) => {
+          console.log(err.data)
+      })
+
+  },[])
 
   return (
     <>
